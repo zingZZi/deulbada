@@ -13,6 +13,7 @@ export const GlobalStyle = createGlobalStyle`
     }
     body{
       font-size: ${({ theme }) => theme.fontSize.base};
+      font-weight: ${({ theme }) => theme.fonts.weights.medium};
     }
     button{
       background-color: transparent;

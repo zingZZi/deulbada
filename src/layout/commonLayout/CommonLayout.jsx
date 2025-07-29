@@ -1,3 +1,4 @@
+import Header from '../../components/header/Header';
 import ChatList from '../../pages/chatList/ChatList';
 import Home from '../../pages/home/home';
 
@@ -13,6 +14,7 @@ function Content({ page }) {
 const CommonLayout = ({ page }) => {
   return (
     <>
+      <Header />
       <Content page={page} />
     </>
   );
