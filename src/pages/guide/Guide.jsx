@@ -5,7 +5,6 @@ import { IconButton, StyledGuide } from './Guide.style';
 import { Camera } from 'lucide-react';
 
 const Guide = () => {
-  const sample = 'sample';
   return (
     <StyledGuide>
       <h1>디자인 가이드</h1>
