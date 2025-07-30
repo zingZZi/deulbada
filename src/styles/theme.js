@@ -21,7 +21,7 @@ const theme = {
     large: '1.6rem',
     base: '1.4rem',
     small: '1.2rem',
-    xSmall: '1.2rem',
+    xSmall: '1.0rem',
   },
 
   fonts: {

@@ -19,12 +19,16 @@ export const GlobalStyle = createGlobalStyle`
       background-color: transparent;
       border:none;
     }
+    img{
+      max-width: 100%;
+    }
     li{
       list-style: none;
     }
     a{
       text-decoration: none;
-      color:inherit
+      color:inherit;
+      font-family: ${({ theme }) => theme.fonts.base};
     }
     button{
       padding:0;

@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { House, MessageCircle, SquarePlus, User } from 'lucide-react';
+import { House, MessageCircle, SquarePlus, User, Heart } from 'lucide-react';
 
 const HouseIcon = styled(House)`
   color: ${({ theme }) => theme.colors.white700};
@@ -8,6 +8,8 @@ const HouseIcon = styled(House)`
   }
 `;
 const MessageCircleIcon = styled(MessageCircle)`
+  width: 2rem;
+  height: 2rem;
   color: ${({ theme }) => theme.colors.white700};
   &.primary {
     color: ${({ theme }) => theme.colors.primary};
@@ -25,4 +27,12 @@ const UserIcon = styled(User)`
     color: ${({ theme }) => theme.colors.primary};
   }
 `;
-export { HouseIcon, MessageCircleIcon, SquarePlusIcon, UserIcon };
+const HeartIcon = styled(Heart)`
+  width: 2rem;
+  height: 2rem;
+  color: ${({ theme }) => theme.colors.white700};
+  &.primary {
+    color: ${({ theme }) => theme.colors.primary};
+  }
+`;
+export { HouseIcon, MessageCircleIcon, SquarePlusIcon, UserIcon, HeartIcon };
