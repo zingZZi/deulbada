@@ -1,11 +1,4 @@
-import {
-  CategoryMainTabs,
-  StyledCategoryTab,
-  CategorySubList,
-  CategorySubItem,
-  CategoryMainItem,
-  CategoryMainButton,
-} from './CategoryTab.style';
+import * as Styled from './CategoryTab.style.js';
 import sampleImage from './../../assets/images/sample.png'; //추후 개발붙으면
 const sampleList = [
   '입채소류',
@@ -17,18 +10,18 @@ const sampleList = [
   '입채소류',
   '입채소류',
 ];
+const sampleList2 = ['어업1', '어업3', '어업1', '어업1', '어업1', '어업1', '어업1', '어업8'];
 const CategoryTab = ({ setCategorySelected, categorySelected }) => {
   function categoryChange(e) {
     setCategorySelected(e.target.dataset.id);
   }
-  console.log(categorySelected);
   return (
-    <StyledCategoryTab>
+    <Styled.CategoryLayout>
       <h3 className="text-ir">카테고리 선택</h3>
       {/* depth1 선택영역 */}
-      <CategoryMainTabs>
-        <CategoryMainItem>
-          <CategoryMainButton
+      <Styled.CategoryMainTabs>
+        <Styled.CategoryMainItem>
+          <Styled.CategoryMainButton
             className={
               categorySelected === 'agricultural'
                 ? 'active'
@@ -40,35 +33,40 @@ const CategoryTab = ({ setCategorySelected, categorySelected }) => {
             data-id="agricultural"
           >
             농산물
-          </CategoryMainButton>
-        </CategoryMainItem>
-        <CategoryMainItem>
-          <CategoryMainButton
+          </Styled.CategoryMainButton>
+        </Styled.CategoryMainItem>
+        <Styled.CategoryMainItem>
+          <Styled.CategoryMainButton
             onClick={categoryChange}
             data-id="fishing"
             className={categorySelected === 'fishing' ? 'active' : null}
           >
             수산물
-          </CategoryMainButton>
-        </CategoryMainItem>
-      </CategoryMainTabs>
+          </Styled.CategoryMainButton>
+        </Styled.CategoryMainItem>
+      </Styled.CategoryMainTabs>
 
       {/* depth2 선택영역 */}
-      <CategorySubList>
-        {categorySelected === 'agricultural' || categorySelected === 'default' ? (
-          sampleList.map((e, i) => (
-            <li key={i}>
-              <CategorySubItem>
-                <img src={sampleImage} alt="샘플이미지" />
-              </CategorySubItem>
-              <span>{e}</span>
-            </li>
-          ))
-        ) : (
-          <>어업</>
-        )}
-      </CategorySubList>
-    </StyledCategoryTab>
+      <Styled.CategorySubList>
+        {categorySelected === 'agricultural' || categorySelected === 'default'
+          ? sampleList.map((e, i) => (
+              <li key={i}>
+                <Styled.CategorySubItem>
+                  <img src={sampleImage} alt="샘플이미지" />
+                </Styled.CategorySubItem>
+                <Styled.CategorySubTitle>{e}</Styled.CategorySubTitle>
+              </li>
+            ))
+          : sampleList2.map((e, i) => (
+              <li key={i}>
+                <Styled.CategorySubItem>
+                  <img src={sampleImage} alt="샘플이미지" />
+                </Styled.CategorySubItem>
+                <Styled.CategorySubTitle>{e}</Styled.CategorySubTitle>
+              </li>
+            ))}
+      </Styled.CategorySubList>
+    </Styled.CategoryLayout>
   );
 };
 

@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const StyledCategoryTab = styled.section`
+export const CategoryLayout = styled.section`
   border-radius: 1.6rem 1.6rem 0 0;
   box-shadow: 0 -1px 8px -1px rgb(73 73 73 / 25%);
 `;
@@ -46,14 +46,15 @@ export const CategoryMainButton = styled.button`
 `;
 export const CategorySubList = styled.ul`
   padding: 1.8rem 3.3rem 1.4rem;
-  gap: 1.1rem 2.4rem;
+  gap: 1.1rem 0;
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   align-content: center;
+  text-align: center;
   li {
-    width: calc((100%-3.3rem) / 4);
+    width: calc((100% - 3.3rem) / 4);
   }
 `;
 export const CategorySubItem = styled.div`
@@ -70,4 +71,8 @@ export const CategorySubItem = styled.div`
     left: 50%;
     transform: translate(-50%, -50%);
   }
+`;
+export const CategorySubTitle = styled.span`
+  color: #515151;
+  font-size: ${({ theme }) => theme.fontSize.small};
 `;

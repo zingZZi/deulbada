@@ -1,18 +1,18 @@
 import { Link } from 'react-router-dom';
+import * as Styled from './UserInfo.style';
 import sampleImage from './../../assets/images/sample.png'; //추후 개발붙으면 지워야함
-import { StyledUserInfo, StyledProfileBox, StyledUserName, StyledUserId } from './UserInfo.style';
 
 const UserInfo = ({ as = 'div', ...props }) => {
   return (
-    <StyledUserInfo as={as} {...props}>
-      <StyledProfileBox>
+    <Styled.UserInfoLayout as={as} {...props}>
+      <Styled.ProfileBox>
         <img src={sampleImage} alt="샘플이미지" />
-      </StyledProfileBox>
+      </Styled.ProfileBox>
       <Link to="">
-        <StyledUserName>서귀포시 한라봉 타운</StyledUserName>
-        <StyledUserId>@ weniv_Mandarin</StyledUserId>
+        <Styled.UserName>서귀포시 한라봉 타운</Styled.UserName>
+        <Styled.UserId>@ weniv_Mandarin</Styled.UserId>
       </Link>
-    </StyledUserInfo>
+    </Styled.UserInfoLayout>
   );
 };
 export default UserInfo;

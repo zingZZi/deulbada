@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import PostContent from '../../components/postContent/PostContent';
 import UserInfo from '../../components/userInfo/UserInfo';
 import CategoryTab from './CategoryTab';
-import { StyledHome, StyledContent } from './Home.style';
+import * as Styled from './Home.style.js';
 import { ThemeProvider } from 'styled-components';
 import theme from '../../styles/theme';
 
@@ -33,22 +33,23 @@ const Home = () => {
   }, [categorySelected]);
   return (
     <ThemeProvider theme={customTheme}>
-      <StyledHome>
+      <Styled.StyledHome>
         <h2 className="text-ir">들바다 메인페이지</h2>
         <CategoryTab
           categorySelected={categorySelected}
           setCategorySelected={setCategorySelected}
         />
-        <StyledContent>
+        <Styled.StyledContent>
           <h3 className="text-ir">{mainTitle}</h3>
+          {categorySelected === 'default'}
           <ul>
-            <li>
+            <Styled.StyledContentList>
               <UserInfo as="div" />
               <PostContent />
-            </li>
+            </Styled.StyledContentList>
           </ul>
-        </StyledContent>
-      </StyledHome>
+        </Styled.StyledContent>
+      </Styled.StyledHome>
     </ThemeProvider>
   );
 };
