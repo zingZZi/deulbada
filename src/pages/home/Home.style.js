@@ -10,4 +10,6 @@ export const StyledContentList = styled.li`
     margin-bottom: 0;
   }
 `;
-export const ProductListWrap = styled.section``;
+export const ProductListWrap = styled.section`
+  padding-top: 1.3rem;
+`;
