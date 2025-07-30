@@ -5,10 +5,12 @@ import CategoryTab from './CategoryTab';
 import * as Styled from './Home.style.js';
 import { ThemeProvider } from 'styled-components';
 import theme from '../../styles/theme';
+import ProductList from './ProductList.jsx';
 
 const Home = () => {
   const [categorySelected, setCategorySelected] = useState('default');
   const [mainTitle, setMainTitle] = useState('');
+  const [subCategory, setSubCategory] = useState(null);
 
   //primary 컬러변경건
   const customTheme = {
@@ -38,16 +40,25 @@ const Home = () => {
         <CategoryTab
           categorySelected={categorySelected}
           setCategorySelected={setCategorySelected}
+          subCategory={subCategory}
+          setSubCategory={setSubCategory}
         />
         <Styled.StyledContent>
           <h3 className="text-ir">{mainTitle}</h3>
-          {categorySelected === 'default'}
+          {/* 일반피드영역 */}
           <ul>
             <Styled.StyledContentList>
               <UserInfo as="div" />
               <PostContent />
             </Styled.StyledContentList>
           </ul>
+          {/* 상품리스트 */}
+          <Styled.ProductListWrap>
+            <h4>
+              지금 가장 <b>인기있는 상품!</b>
+            </h4>
+            <ProductList />
+          </Styled.ProductListWrap>
         </Styled.StyledContent>
       </Styled.StyledHome>
     </ThemeProvider>

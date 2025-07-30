@@ -10,3 +10,4 @@ export const StyledContentList = styled.li`
     margin-bottom: 0;
   }
 `;
+export const ProductListWrap = styled.section``;

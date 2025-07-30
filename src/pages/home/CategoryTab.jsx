@@ -1,19 +1,23 @@
 import * as Styled from './CategoryTab.style.js';
 import sampleImage from './../../assets/images/sample.png'; //추후 개발붙으면
 const sampleList = [
-  '입채소류',
-  '입채소류',
-  '입채소류',
-  '입채소류',
-  '입채소류',
-  '입채소류',
-  '입채소류',
-  '입채소류',
+  '입채소류1',
+  '열매채소류',
+  '뿌리채소류 ',
+  '입채소류4',
+  '입채소류5',
+  '입채소류6',
+  '입채소류7',
+  '입채소류8',
 ];
-const sampleList2 = ['어업1', '어업3', '어업1', '어업1', '어업1', '어업1', '어업1', '어업8'];
-const CategoryTab = ({ setCategorySelected, categorySelected }) => {
+const sampleList2 = ['어업1', '어업2', '어업3', '어업4', '어업5', '어업6', '어업7', '어업8'];
+const CategoryTab = ({ setCategorySelected, categorySelected, setSubCategory, subCategory }) => {
+  console.log(subCategory);
   function categoryChange(e) {
     setCategorySelected(e.target.dataset.id);
+  }
+  function categorySelect(e) {
+    setSubCategory(e);
   }
   return (
     <Styled.CategoryLayout>
@@ -49,20 +53,28 @@ const CategoryTab = ({ setCategorySelected, categorySelected }) => {
       {/* depth2 선택영역 */}
       <Styled.CategorySubList>
         {categorySelected === 'agricultural' || categorySelected === 'default'
-          ? sampleList.map((e, i) => (
-              <li key={i}>
-                <Styled.CategorySubItem>
+          ? sampleList.map((item, i) => (
+              <li key={i} className={item === subCategory ? 'active' : null}>
+                <Styled.CategorySubItem
+                  onClick={() => {
+                    categorySelect(item);
+                  }}
+                >
                   <img src={sampleImage} alt="샘플이미지" />
                 </Styled.CategorySubItem>
-                <Styled.CategorySubTitle>{e}</Styled.CategorySubTitle>
+                <Styled.CategorySubTitle>{item}</Styled.CategorySubTitle>
               </li>
             ))
-          : sampleList2.map((e, i) => (
-              <li key={i}>
-                <Styled.CategorySubItem>
+          : sampleList2.map((item, i) => (
+              <li key={i} className={item === subCategory ? 'active' : null}>
+                <Styled.CategorySubItem
+                  onClick={() => {
+                    categorySelect(item);
+                  }}
+                >
                   <img src={sampleImage} alt="샘플이미지" />
                 </Styled.CategorySubItem>
-                <Styled.CategorySubTitle>{e}</Styled.CategorySubTitle>
+                <Styled.CategorySubTitle>{item}</Styled.CategorySubTitle>
               </li>
             ))}
       </Styled.CategorySubList>

@@ -55,6 +55,15 @@ export const CategorySubList = styled.ul`
   text-align: center;
   li {
     width: calc((100% - 3.3rem) / 4);
+    cursor: pointer;
+    &.active {
+      div {
+        box-shadow: 0 0 0 5px ${({ theme }) => theme.colors.primary};
+      }
+      span {
+        color: ${({ theme }) => theme.colors.primary};
+      }
+    }
   }
 `;
 export const CategorySubItem = styled.div`
@@ -64,7 +73,7 @@ export const CategorySubItem = styled.div`
   border-radius: 10px;
   position: relative;
   overflow: hidden;
-  margin-bottom: 5px;
+  margin-bottom: 0.5rem;
   img {
     position: absolute;
     top: 50%;
@@ -75,4 +84,5 @@ export const CategorySubItem = styled.div`
 export const CategorySubTitle = styled.span`
   color: #515151;
   font-size: ${({ theme }) => theme.fontSize.small};
+  line-height: 1.17em;
 `;

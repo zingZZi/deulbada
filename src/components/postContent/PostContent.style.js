@@ -2,7 +2,8 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
 export const PostContentLayout = styled.section`
-  padding: 1.6rem 0 0 5.4rem;
+  margin-top: 1.2rem;
+  padding-left: calc(12% + 1.2rem);
 `;
 export const PostActions = styled.div`
   display: flex;

@@ -6,10 +6,18 @@ export const UserInfoLayout = styled.div`
   align-items: center;
 `;
 export const ProfileBox = styled.div`
-  width: 4.2rem;
-  height: 4.2rem;
+  width: 12%;
+  height: 0;
+  padding-top: 12%;
   border-radius: 50%;
   overflow: hidden;
+  position: relative;
+  img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
 `;
 export const UserName = styled.p`
   font-size: 1.4rem;
