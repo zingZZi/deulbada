@@ -1,8 +1,8 @@
 const theme = {
   colors: {
-    primary: '#F26E22',
-    subPrimary: '#FFC7A7',
-    error: '#EB5757',
+    primary: '#5CA14E',
+    subPrimary: '#1B91EA',
+    primaryOpacity: '#A2D098',
 
     white100: '#ffffff',
     white200: '#F2F2F2',

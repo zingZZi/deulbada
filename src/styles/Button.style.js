@@ -19,7 +19,7 @@ const BasicBtn = styled.button`
   border-radius: ${(props) => radiusMap[props.radius] || '44px'};
   cursor: pointer;
   &:disabled {
-    background-color: ${({ theme }) => theme.colors.subPrimary};
+    background-color: ${({ theme }) => theme.colors.primaryOpacity};
     border: none;
   }
 `;
