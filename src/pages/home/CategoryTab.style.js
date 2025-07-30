@@ -19,7 +19,7 @@ export const CategoryMainButton = styled.button`
   color: ${({ theme }) => theme.colors.white500};
   font-weight: ${({ theme }) => theme.fonts.weights.bold};
   position: relative;
-  &.active {
+  &.off {
     color: ${({ theme }) => theme.colors.black};
     &::after {
       content: '';
@@ -29,6 +29,18 @@ export const CategoryMainButton = styled.button`
       width: 100%;
       height: 3px;
       background-color: ${({ theme }) => theme.colors.black};
+    }
+  }
+  &.active {
+    color: ${({ theme }) => theme.colors.primary};
+    &::after {
+      content: '';
+      bottom: 0%;
+      left: 0;
+      position: absolute;
+      width: 100%;
+      height: 3px;
+      background-color: ${({ theme }) => theme.colors.primary};
     }
   }
 `;
