@@ -20,7 +20,6 @@ function App() {
           <Route path="/profile" element={<CommonLayout page={'profile'} />} />
           <Route path="/chatList" element={<CommonLayout page={'chatList'} />} />
           <Route path="/chat" element={<CommonLayout page={'chat '} />} />
-
         </Routes>
       </StyledContainer>
     </>
