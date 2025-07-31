@@ -19,7 +19,7 @@ export const H2 = styled.h2`
 export const InputGroup = styled.div`
   display: flex;
   flex-direction: column;
-  margin-bottom: 0.8rem;
+  margin-bottom: 1.8rem;
 `;
 
 export const Label = styled.label`
@@ -33,7 +33,7 @@ export const InputEmail = styled.input`
   border-bottom: 1px solid #ccc;
   background: transparent;
   font-size: 1.2rem;
-  margin-bottom: 1.8rem;
+  margin-bottom: 0.3rem;
   color: ${({ theme }) => theme.colors.black};
 
   &::placeholder {
