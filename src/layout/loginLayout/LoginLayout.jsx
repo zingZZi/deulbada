@@ -1,6 +1,7 @@
 import Login from '../../pages/login/Login';
 import { StyledLoginLayout } from './LoginLayout.style';
 
+
 function Content({ page }) {
   switch (page) {
     case 'login':
@@ -11,7 +12,7 @@ function Content({ page }) {
 const LoginLayout = ({ page }) => {
   return (
     <StyledLoginLayout>
-      <h1>페이지 제목</h1>
+      <h1 className="text-ir">들바다</h1>
       <Content page={page} />
     </StyledLoginLayout>
   );
