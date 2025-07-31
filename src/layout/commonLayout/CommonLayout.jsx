@@ -1,3 +1,4 @@
+import BottomNavBar from '../../components/bottomNavBar/BottomNavBar';
 import Header from '../../components/header/Header';
 import ChatList from '../../pages/chatList/ChatList';
 import Home from '../../pages/home/home';
@@ -19,6 +20,7 @@ const CommonLayout = ({ page }) => {
     <>
       <Header />
       <Content page={page} />
+      <BottomNavBar />
     </>
   );
 };
