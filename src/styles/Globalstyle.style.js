@@ -19,12 +19,16 @@ export const GlobalStyle = createGlobalStyle`
       background-color: transparent;
       border:none;
     }
+    img{
+      max-width: 100%;
+    }
     li{
       list-style: none;
     }
     a{
       text-decoration: none;
-      color:inherit
+      color:inherit;
+      font-family: ${({ theme }) => theme.fonts.base};
     }
     button{
       padding:0;
@@ -36,5 +40,11 @@ export const GlobalStyle = createGlobalStyle`
     .text-ir{
       font-size: 0%;
       text-indent:-99999px;
+    }
+
+    @media (min-width: 500px) {
+      html{
+        font-size:12px;
+      }
     }
 `;
