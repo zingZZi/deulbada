@@ -41,4 +41,10 @@ export const GlobalStyle = createGlobalStyle`
       font-size: 0%;
       text-indent:-99999px;
     }
+
+    @media (min-width: 500px) {
+      html{
+        font-size:12px;
+      }
+    }
 `;

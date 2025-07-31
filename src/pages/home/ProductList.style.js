@@ -1,13 +1,13 @@
 import styled from 'styled-components';
 
-export const ProductListWrap = styled.ul`
+export const ProductList = styled.ul`
   padding: 0 0.7rem;
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
   align-items: flex-start;
 `;
-export const ProductList = styled.li`
+export const ProductItem = styled.li`
   width: 47%;
 `;
 export const ImgWrap = styled.figure`
@@ -36,7 +36,7 @@ export const BadgeCertified = styled.li`
   color: ${({ theme }) => theme.colors.white100};
   border-radius: 0.9rem;
   font-size: ${({ theme }) => theme.fontSize.xSmall};
-  padding: 0.2rem 0.5rem;
+  padding: 0.35rem 0.5rem;
   font-weight: ${({ theme }) => theme.fonts.weights.bold};
 `;
 export const BadgeDirect = styled.li`
@@ -49,11 +49,16 @@ export const ProductTitle = styled.p`
   font-size: ${({ theme }) => theme.fontSize.small};
   font-weight: ${({ theme }) => theme.fonts.weights.bold};
   color: ${({ theme }) => theme.colors.primary};
+  line-height: 1.3em;
 `;
-export const Productbio = styled.p`
+export const ProductDesc = styled.p`
   margin: 0.4rem 0;
   font-size: ${({ theme }) => theme.fontSize.small};
   color: ${({ theme }) => theme.colors.white700};
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  line-height: 1.5rem;
 `;
 export const ProductPrice = styled.strong`
   font-weight: ${({ theme }) => theme.fonts.weights.bold};

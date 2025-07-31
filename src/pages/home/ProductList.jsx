@@ -4,8 +4,8 @@ import * as Styled from './ProductList.style';
 
 const ProductList = () => {
   return (
-    <Styled.ProductListWrap>
-      <Styled.ProductList>
+    <Styled.ProductList>
+      <Styled.ProductItem>
         <Link to="">
           <Styled.ImgWrap>
             <img src={sampleImage} alt="" />
@@ -16,12 +16,12 @@ const ProductList = () => {
               <Styled.BadgeDirect>산지직영</Styled.BadgeDirect>
             </Styled.ProductBadges>
             <Styled.ProductTitle>천하제일 귤농장</Styled.ProductTitle>
-            <Styled.Productbio>제주 감귤 고당도 진짜 진짜 짱 맛있어요</Styled.Productbio>
+            <Styled.ProductDesc>제주 감귤 고당도 진짜 진짜 짱 맛있어요</Styled.ProductDesc>
             <Styled.ProductPrice>36,900원</Styled.ProductPrice>
           </div>
         </Link>
-      </Styled.ProductList>
-    </Styled.ProductListWrap>
+      </Styled.ProductItem>
+    </Styled.ProductList>
   );
 };
 

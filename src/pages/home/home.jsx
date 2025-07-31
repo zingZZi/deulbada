@@ -45,6 +45,7 @@ const Home = () => {
         />
         <Styled.StyledContent>
           <h3 className="text-ir">{mainTitle}</h3>
+
           {/* 일반피드영역 */}
           <ul>
             <Styled.StyledContentList>
@@ -52,11 +53,12 @@ const Home = () => {
               <PostContent />
             </Styled.StyledContentList>
           </ul>
+
           {/* 상품리스트 */}
           <Styled.ProductListWrap>
-            <h4>
+            <Styled.ProductListTitle>
               지금 가장 <b>인기있는 상품!</b>
-            </h4>
+            </Styled.ProductListTitle>
             <ProductList />
           </Styled.ProductListWrap>
         </Styled.StyledContent>
