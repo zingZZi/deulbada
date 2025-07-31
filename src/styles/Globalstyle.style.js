@@ -12,6 +12,7 @@ export const GlobalStyle = createGlobalStyle`
       font-size: 10px;
     }
     body{
+      color: ${({ theme }) => theme.colors.black};
       font-size: ${({ theme }) => theme.fontSize.base};
       font-weight: ${({ theme }) => theme.fonts.weights.medium};
     }

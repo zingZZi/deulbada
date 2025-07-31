@@ -2,6 +2,7 @@ import styled from 'styled-components';
 export const ProfileInfo = styled.section`
   padding: 3rem 0 2.6rem;
   text-align: center;
+  background-color: ${({ theme }) => theme.colors.white100};
   border: 1px solid ${({ theme }) => theme.colors.white300};
   font-weight: ${({ theme }) => theme.fonts.weights.regular};
 `;

@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
 import * as Styled from './ProfileInfo.style';
+import { BasicBtn, LineBtn, LineLink } from '../../styles/Button.style';
 import { MessageCircleIcon, Share2Icon } from '../../components/icon/Icon.style';
 import sampleImage from './../../assets/images/sample.png'; //추후 개발붙으면 지워야함
-import { BasicBtn, LineBtn, LineLink } from '../../styles/Button.style';
 const ProfileInfo = () => {
   return (
     <Styled.ProfileInfo>
