@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { House, MessageCircle, SquarePlus, User, Heart } from 'lucide-react';
+import { House, MessageCircle, SquarePlus, User, Heart, Share2 } from 'lucide-react';
 
 const HouseIcon = styled(House)`
   color: ${({ theme }) => theme.colors.white700};
@@ -35,4 +35,10 @@ const HeartIcon = styled(Heart)`
     color: ${({ theme }) => theme.colors.primary};
   }
 `;
-export { HouseIcon, MessageCircleIcon, SquarePlusIcon, UserIcon, HeartIcon };
+const Share2Icon = styled(Share2)`
+  color: ${({ theme }) => theme.colors.white700};
+  &.primary {
+    color: ${({ theme }) => theme.colors.primary};
+  }
+`;
+export { HouseIcon, MessageCircleIcon, SquarePlusIcon, UserIcon, HeartIcon, Share2Icon };
