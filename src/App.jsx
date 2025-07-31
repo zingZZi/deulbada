@@ -12,7 +12,8 @@ function App() {
           {/* 샘플루트 */}
           <Route path="/guide" element={<Guide />} />
 
-          <Route path="/login" element={<LoginLayout page={'login'} />} />
+          <Route path="/login-email" element={<LoginLayout page={'login'} />} />
+          <Route path="/login" element={<LoginLayout page={'loginEmail'} />} />
           <Route path="/signup" element={<LoginLayout page={'signup '} />} />
           <Route path="/editProfile" element={<LoginLayout page={'editProfile'} />} />
 

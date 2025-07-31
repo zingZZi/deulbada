@@ -1,4 +1,5 @@
 import Login from '../../pages/login/Login';
+import LoginEmail from '../../pages/login-email/LoginEmail';
 import { StyledLoginLayout } from './LoginLayout.style';
 
 
@@ -6,6 +7,8 @@ function Content({ page }) {
   switch (page) {
     case 'login':
       return <Login />;
+    case 'loginEmail':
+      return <LoginEmail />;
   }
 }
 
