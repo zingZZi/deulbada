@@ -4,8 +4,23 @@ import SellProduct from './SellProduct';
 import { LayoutGridIcon, LayoutListIcon } from '../../components/icon/Icon.style';
 import ListView from './FeedList/ListView';
 import GalleryView from './FeedList/GalleryView';
+import { useEffect, useState } from 'react';
+import { fetchPosts } from '../../api/postApi';
 
 const Profile = () => {
+  const [postList, setPostList] = useState('');
+  useEffect(() => {
+    const getPost = async () => {
+      try {
+        const response = await fetchPosts();
+        setPostList(response.data);
+      } catch (error) {
+        console.error('Post를 불러오지 못했습니다.', error);
+      }
+    };
+    getPost();
+  }, []);
+  console.log(postList);
   return (
     <Styled.ProfileBg>
       {/* 상단프로필정보 */}
