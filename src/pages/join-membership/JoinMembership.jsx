@@ -19,12 +19,12 @@ const JoinMembership = () => {
 
     <Styled.InputGroup>
       <Styled.Label htmlFor="password">비밀번호 확인</Styled.Label>
-      <Styled.InputPassword id="password" type="password" placeholder="한 번 더 입력해주세요" />
+      <Styled.InputPassword id="re-password" type="password" placeholder="한 번 더 입력해주세요" />
     </Styled.InputGroup>
 
     <Styled.Button type="submit">다음</Styled.Button>
 
-    <Link to="/kakao-login">
+    <Link to="/join-producer">
       <Styled.Signup>생산자 인증 가입하기</Styled.Signup>
     </Link>
 

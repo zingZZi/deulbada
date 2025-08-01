@@ -19,7 +19,7 @@ const LoginEmail = () => {
 
     <Styled.Button type="submit">로그인</Styled.Button>
 
-    <Link to="/kakao-login">
+    <Link to="/join-membership">
       <Styled.Signup>이메일로 회원가입</Styled.Signup>
     </Link>
 
