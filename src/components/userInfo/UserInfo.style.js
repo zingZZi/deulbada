@@ -25,5 +25,6 @@ export const UserName = styled.p`
 `;
 export const UserId = styled.span`
   font-size: 1.2rem;
+  font-weight: ${({ theme }) => theme.fonts.weights.regular};
   color: ${({ theme }) => theme.colors.white700};
 `;
