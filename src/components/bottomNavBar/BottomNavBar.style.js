@@ -20,7 +20,7 @@ export const BottomLi = styled.li`
   width: calc((100% - 4.2rem) / 4);
 `;
 export const BottomLink = styled(NavLink)`
-  font-size: 10px;
+  font-size: ${({ theme }) => theme.fontSize.xSmall};
   font-weight: ${({ theme }) => theme.fonts.weights.regular};
   display: flex;
   flex-direction: column;

@@ -13,7 +13,7 @@ export const FeedTypeBtns = styled.ul`
   border-bottom: 1px solid ${({ theme }) => theme.colors.white300};
 `;
 export const FeedList = styled.ul`
-  padding: 1.6rem;
+  padding: 1.6rem 1.6rem 8rem;
   &.list-type {
   }
   &.gallery-type {

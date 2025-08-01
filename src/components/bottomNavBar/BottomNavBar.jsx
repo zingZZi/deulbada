@@ -6,24 +6,24 @@ const BottomNavBar = () => {
     <Styled.BottomNav>
       <Styled.BottomUl>
         <Styled.BottomLi>
-          <Styled.BottomLink to="/home" activeClassName="active">
+          <Styled.BottomLink to="/home">
             <HouseIcon />홈
           </Styled.BottomLink>
         </Styled.BottomLi>
         <Styled.BottomLi>
-          <Styled.BottomLink to="/chat" activeClassName="active">
+          <Styled.BottomLink to="/chat">
             <MessageCircleIcon />
             채팅
           </Styled.BottomLink>
         </Styled.BottomLi>
         <Styled.BottomLi>
-          <Styled.BottomLink to="/write" activeClassName="active">
+          <Styled.BottomLink to="/write">
             <SquarePlusIcon />
             게시물작성
           </Styled.BottomLink>
         </Styled.BottomLi>
         <Styled.BottomLi>
-          <Styled.BottomLink to="/myProfile" activeClassName="active">
+          <Styled.BottomLink to="/myProfile">
             <UserIcon />
             프로필
           </Styled.BottomLink>
