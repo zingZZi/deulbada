@@ -2,11 +2,19 @@ import * as Styled from './JoinProducer.style';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
+
 const JoinProducer = () => {
 
   const [postalCode] = useState('');
   const [address] = useState('');
   const [detailAddress, setDetailAddress] = useState('');
+  const [businessType, setBusinessType] = useState("");
+  const handleFileClear = () => {
+    const fileInput = document.getElementById("business-file");
+    if (fileInput) {
+      fileInput.value = "";
+    }
+  };
 
   const handleOpenPostcodeAPI = () => {
     // 주소 API 열기 로직 작성
@@ -54,40 +62,62 @@ const JoinProducer = () => {
     <Styled.InputGroup>
       <Styled.Label htmlFor="postal-code">사업장 소재지</Styled.Label>
 
-      <Styled.Input
-        id="postalCode"
-        type="text"
-        value={postalCode}
-        readOnly
-        onClick={handleOpenPostcodeAPI}
-        placeholder="우편번호"
-      />
+      <Styled.InputWrapper>
+        <Styled.InputPoscal
+          id="postalCode"
+          type="text"
+          value={postalCode}
+          readOnly
+          onClick={handleOpenPostcodeAPI}
+          placeholder="우편번호"
+        />
 
-      <Styled.Input
-        id="address"
-        type="text"
-        value={address}
-        readOnly
-        placeholder="주소"
-      />
+          <Styled.AddressButton type="button" 
+          onClick={handleOpenPostcodeAPI}>주소 찾기
+          </Styled.AddressButton>
 
-      <Styled.Input
-        id="detailAddress"
-        type="text"
-        value={detailAddress}
-        onChange={handleDetailAddressChange}
-        placeholder="상세주소"
-      />
+        </Styled.InputWrapper>
+
+        <Styled.FlexRow>
+          <Styled.Input
+            id="address"
+            type="text"
+            value={address}
+            readOnly
+            onClick={handleOpenPostcodeAPI}
+            placeholder="주소"
+          />
+
+          <Styled.Input
+            id="detailAddress"
+            type="text"
+            value={detailAddress}
+            onChange={handleDetailAddressChange}
+            placeholder="상세주소"
+          />
+        </Styled.FlexRow>
     </Styled.InputGroup>
 
-    <Styled.InputGroup>
-      <Styled.Label htmlFor="business-type">업태</Styled.Label>
-      <Styled.InputPassword id="business-type" type="number" />
-    </Styled.InputGroup>
+    <Styled.Select
+      id="business-type"
+      value={businessType}
+      onChange={(e) => setBusinessType(e.target.value)}
+    >
+      <option value="">업태를 선택해주세요</option>
+      <option value="retail">농업·임업</option>
+      <option value="wholesale">어업·양식업</option>
+    </Styled.Select>
 
     <Styled.InputGroup>
-      <Styled.Label htmlFor="business-file">사업자 등록증 업로드</Styled.Label>
-      <Styled.InputPassword id="business-file" type="file" />
+    <Styled.Label htmlFor="business-file">사업자 등록증 업로드</Styled.Label>
+
+    <Styled.FileInputWrapper>
+      <Styled.FileInput id="business-file" type="file" />
+      <Styled.FileButton type="button" onClick={handleFileClear}>
+        삭제
+      </Styled.FileButton>
+    </Styled.FileInputWrapper>
+
     </Styled.InputGroup>
 
 
