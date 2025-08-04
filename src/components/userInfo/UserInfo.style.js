@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { BasicBtn, LineBtn } from '../../styles/Button.style';
 export const UserInfoLayout = styled(Link)`
   display: flex;
   gap: 1.2rem;
@@ -33,4 +34,16 @@ export const Highlight = styled.span`
   color: #007aff;
   font-weight: bold;
   background: transparent; // mark 스타일 없애기
+`;
+export const FollwerBtn = styled(BasicBtn)`
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+`;
+export const FollwerLineBtn = styled(LineBtn)`
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
 `;

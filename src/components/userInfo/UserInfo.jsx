@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import * as Styled from './UserInfo.style';
 import sampleImage from './../../assets/images/sample.png'; //추후 개발붙으면 지워야함
+import { BasicBtn, LineBtn } from '../../styles/Button.style';
 
 const UserInfo = ({
   username,
@@ -8,6 +9,7 @@ const UserInfo = ({
   highlightQuery = '',
   withLink = false,
   to = '/profile',
+  btns,
 }) => {
   const highlightMatch = (text) => {
     if (!highlightQuery) return text;
@@ -29,13 +31,25 @@ const UserInfo = ({
   );
 
   return (
-    <Styled.UserInfoLayout to={to}>
-      <Styled.ProfileBox>
-        <img src={sampleImage} alt="프로필이미지" />
-      </Styled.ProfileBox>
+    <>
+      <Styled.UserInfoLayout to={to}>
+        <Styled.ProfileBox>
+          <img src={sampleImage} alt="프로필이미지" />
+        </Styled.ProfileBox>
 
-      {withLink ? <Link to={to}>{nameContent}</Link> : nameContent}
-    </Styled.UserInfoLayout>
+        {withLink ? <Link to={to}>{nameContent}</Link> : nameContent}
+      </Styled.UserInfoLayout>
+      {btns &&
+        (btns === 'followings' ? (
+          <Styled.FollwerBtn padding={'.7rem 1.1rem'} radius={'xsmall'} fontSize={'small'}>
+            팔로잉
+          </Styled.FollwerBtn>
+        ) : (
+          <Styled.FollwerLineBtn padding={'.7rem 1.1rem'} radius={'xsmall'} fontSize={'small'}>
+            취소
+          </Styled.FollwerLineBtn>
+        ))}
+    </>
   );
 };
 

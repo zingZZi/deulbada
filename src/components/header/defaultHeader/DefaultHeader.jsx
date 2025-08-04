@@ -2,6 +2,7 @@ import { BasicBtn, NolineIconBtn } from '../../../styles/Button.style';
 import { ArrowIcon } from '../../icon/Icons';
 import { EllipsisVerticalIcon } from '../../icon/Icons';
 import { defaultHeaderMap } from './headerConfigs';
+import * as Styled from './DefaultHeader.style';
 
 const DefaultHeader = ({ location }) => {
   const config = defaultHeaderMap[location.pathname] || {};
@@ -9,12 +10,13 @@ const DefaultHeader = ({ location }) => {
   console.log(leftText, rightButton);
   return (
     <>
-      <div>
+      <Styled.headerNav>
+        <h1 className="text-ir">들바다</h1>
         <NolineIconBtn onClick={() => window.history.back()}>
           <ArrowIcon />
         </NolineIconBtn>
-        {leftText ? leftText : null}
-      </div>
+        {leftText ? <Styled.headerTitle>{leftText}</Styled.headerTitle> : null}
+      </Styled.headerNav>
 
       {rightButton && (
         <>

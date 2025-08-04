@@ -6,6 +6,7 @@ import Home from '../../pages/home/home';
 import Profile from '../../pages/profile/Profile';
 import { useEffect, useState } from 'react';
 import Search from '../../pages/search/Search';
+import Followers from '../../pages/followers/Followers';
 
 function Content({ page, searchQuery }) {
   switch (page) {
@@ -17,6 +18,8 @@ function Content({ page, searchQuery }) {
       return <Search searchQuery={searchQuery} />;
     case 'chatList':
       return <ChatList />;
+    case 'followers':
+      return <Followers />;
   }
 }
 
