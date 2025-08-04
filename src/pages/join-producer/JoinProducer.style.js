@@ -180,7 +180,7 @@ export const InputWrapper = styled.div`
 
 export const AddressButton = styled.button`
   padding: 0.6rem 1.2rem;
-  background: #A2D098;
+  background: #5CA14E;
   color: white;
   border: none;
   font-size: 1.2rem;
@@ -229,38 +229,42 @@ export const Select = styled.select.attrs((props) => ({
 
 export const FileInputWrapper = styled.div`
   display: flex;
-  align-items: center;
-  gap: 1rem;
+  justify-content: flex-end; 
+  width: 100%;
+  gap: 1.0rem;
 `;
 
-export const FileInput = styled.input`
-  flex: 1;
-  font-size: 1rem;
-  color: ${({ theme }) => theme.colors.black};
-  background: transparent;
-  border: none;
+
+export const FileName = styled.span`
+  font-size: 1.2rem;
+  color: ${({ hasFile, theme }) =>
+    hasFile ? theme.colors.black : theme.colors.white300};
+  overflow: hidden;
+  text-overflow: ellipsis;
+  height: 2.2rem;
   border-bottom: 1px solid #ccc;
-  height: 2.8rem;
-  cursor: pointer;
+  white-space: nowrap;
+  flex: 1;
 
-  &::file-selector-button {
-    background-color: #A2D098;
-    color: white;
-    border: none;
-    padding: 0.4rem 1rem;
-    font-size: 1rem;
-    cursor: pointer;
-  }
-`;
+  `;
 
-export const FileButton = styled.button`
-  padding: 0.6rem 1.2rem;
-  background-color: #5CA14E;
-  color: white;
+export const CustomFileButton = styled.button`
+  font-size: 1.2rem;
+  color: ${({ theme }) => theme.colors.white100};
+  background: #5CA14E;
   border: none;
-  font-size: 1rem;
   cursor: pointer;
+  text-align: right;
+  width: auto;
+  flex-shrink: 0;
+  padding: 0.6rem 1.2rem;
+  white-space: nowrap;
 `;
+
+export const FileNameNotice = styled.button`
+`;
+
+
 
 export const Button = styled.button`
   padding: 1.1rem 0;

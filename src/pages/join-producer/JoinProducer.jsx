@@ -9,10 +9,14 @@ const JoinProducer = () => {
   const [address] = useState('');
   const [detailAddress, setDetailAddress] = useState('');
   const [businessType, setBusinessType] = useState("");
-  const handleFileClear = () => {
-    const fileInput = document.getElementById("business-file");
-    if (fileInput) {
-      fileInput.value = "";
+
+  const [fileName, setFileName] = useState('');
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0]; // 사용자가 고른 첫 번째 파일
+    if (file) {
+      setFileName(file.name);
+      console.log('선택된 파일:', file);
     }
   };
 
@@ -112,11 +116,26 @@ const JoinProducer = () => {
     <Styled.Label htmlFor="business-file">사업자 등록증 업로드</Styled.Label>
 
     <Styled.FileInputWrapper>
-      <Styled.FileInput id="business-file" type="file" />
-      <Styled.FileButton type="button" onClick={handleFileClear}>
-        삭제
-      </Styled.FileButton>
+      <Styled.FileName hasFile={!!fileName}>
+        {fileName || '파일이 선택되지 않았습니다'}
+      </Styled.FileName>
+
+      <label htmlFor="file-upload">
+        <Styled.CustomFileButton as="span">파일 선택</Styled.CustomFileButton>
+      </label>
+
+      <input
+        id="file-upload"
+        type="file"
+        style={{ display: 'none' }}
+        onChange={handleFileChange}
+      />
     </Styled.FileInputWrapper>
+
+    {/* 줄바꿈을 유발하지 않는 위치로 분리 */}
+    {fileName && (
+      <Styled.FileNameNotice></Styled.FileNameNotice>
+    )}
 
     </Styled.InputGroup>
 
