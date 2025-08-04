@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import PostContent from '../../components/postContent/PostContent';
 import UserInfo from '../../components/userInfo/UserInfo';
 import CategoryTab from './CategoryTab';
 import * as Styled from './Home.style.js';
 import { ThemeProvider } from 'styled-components';
 import theme from '../../styles/theme';
 import ProductList from './ProductList.jsx';
+import PostContent from '../../components/PostContent/PostContent.jsx';
 
 const Home = () => {
   const [categorySelected, setCategorySelected] = useState('default');
@@ -20,7 +20,6 @@ const Home = () => {
       primary: categorySelected === 'fishing' ? '#1B91EA' : theme.colors.primary,
     },
   };
-
   useEffect(() => {
     switch (categorySelected) {
       case 'agricultural':
@@ -49,7 +48,7 @@ const Home = () => {
           {/* 일반피드영역 */}
           <ul>
             <Styled.StyledContentList>
-              <UserInfo as="div" />
+              <UserInfo username="username" accountId="account_id" />
               <PostContent />
             </Styled.StyledContentList>
           </ul>

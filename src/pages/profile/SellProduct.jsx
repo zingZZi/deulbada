@@ -7,12 +7,7 @@ const SellProduct = () => {
     <Styled.SellProduct>
       <Styled.SellProductTitle>판매중인 상품</Styled.SellProductTitle>
 
-      <Swiper
-        slidesPerView={'auto'}
-        spaceBetween={0}
-        onSlideChange={() => console.log('slide change')}
-        onSwiper={(swiper) => console.log(swiper)}
-      >
+      <Swiper slidesPerView={'auto'} spaceBetween={0}>
         <Styled.AutoWidthSlide>
           <Styled.BoxImgWrap>
             <img src={sampleImage} alt="샘플이미지" />

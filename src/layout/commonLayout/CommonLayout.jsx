@@ -5,13 +5,16 @@ import ChatList from '../../pages/chatList/ChatList';
 import Home from '../../pages/home/home';
 import Profile from '../../pages/profile/Profile';
 import { useEffect, useState } from 'react';
+import Search from '../../pages/search/Search';
 
-function Content({ page }) {
+function Content({ page, searchQuery }) {
   switch (page) {
     case 'home':
       return <Home />;
     case 'profile':
       return <Profile />;
+    case 'search':
+      return <Search searchQuery={searchQuery} />;
     case 'chatList':
       return <ChatList />;
   }
@@ -20,6 +23,7 @@ function Content({ page }) {
 const CommonLayout = ({ page }) => {
   const location = useLocation();
   const [isNav, setIsNav] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     setIsNav(location.pathname);
@@ -29,8 +33,8 @@ const CommonLayout = ({ page }) => {
   const hiddenPaths = ['/post', '/chat'];
   return (
     <>
-      <Header />
-      <Content page={page} />
+      <Header location={location} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+      <Content page={page} searchQuery={searchQuery} />
       {!hiddenPaths.includes(isNav) && <BottomNavBar />}
     </>
   );

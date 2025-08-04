@@ -1,22 +1,22 @@
+import DefaultHeader from './defaultHeader/DefaultHeader';
 import * as Styled from './Header.style';
-import Logo from './../../assets/images/deulbadaLogo.svg';
-import { Link } from 'react-router-dom';
-import { SearchIcon } from '../icon/Icons';
+import MainHeader from './mainHeader/MainHeader';
+import SearchHeader from './searchHeader/SearchHeader';
 
-const Header = () => {
-  return (
-    <Styled.Header>
-      <Styled.Logo>
-        <Link to="/home">
-          <img src={Logo} alt="" />
-        </Link>
-      </Styled.Logo>
+const Header = ({ location, searchQuery, setSearchQuery }) => {
+  const renderHeaderContent = (location) => {
+    switch (location.pathname) {
+      case '/home':
+        return <MainHeader />;
 
-      <Link to="/search">
-        <span className="text-ir">검색창</span>
-        <SearchIcon size={'2.4rem'} />
-      </Link>
-    </Styled.Header>
-  );
+      case '/search':
+        return <SearchHeader searchQuery={searchQuery} setSearchQuery={setSearchQuery} />;
+
+      default:
+        return <DefaultHeader location={location} />;
+    }
+  };
+
+  return <Styled.Header>{renderHeaderContent(location)}</Styled.Header>;
 };
 export default Header;
