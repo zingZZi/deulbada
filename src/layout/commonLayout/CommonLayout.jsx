@@ -6,6 +6,7 @@ import Home from '../../pages/home/home';
 import Profile from '../../pages/profile/Profile';
 import { useEffect, useState } from 'react';
 import Search from '../../pages/search/Search';
+import ChatRoom from '../../pages/chatRoom/ChatRoom';
 
 function Content({ page, searchQuery }) {
   switch (page) {
@@ -17,6 +18,8 @@ function Content({ page, searchQuery }) {
       return <Search searchQuery={searchQuery} />;
     case 'chatList':
       return <ChatList />;
+    case 'chatRoom':
+      return <ChatRoom />;
   }
 }
 
@@ -30,7 +33,7 @@ const CommonLayout = ({ page }) => {
   }, [location.pathname]);
 
   //bottom이 안붙는 케이스엔 여기에 추가
-  const hiddenPaths = ['/post', '/chat'];
+  const hiddenPaths = ['/post', '/chatRoom'];
   return (
     <>
       <Header location={location} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />

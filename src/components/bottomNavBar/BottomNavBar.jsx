@@ -11,7 +11,7 @@ const BottomNavBar = () => {
           </Styled.BottomLink>
         </Styled.BottomLi>
         <Styled.BottomLi>
-          <Styled.BottomLink to="/chat">
+          <Styled.BottomLink to="/chatList">
             <MessageCircleIcon />
             채팅
           </Styled.BottomLink>
