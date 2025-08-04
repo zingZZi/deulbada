@@ -3,17 +3,17 @@ import * as Styled from './Header.style';
 import MainHeader from './mainHeader/MainHeader';
 import SearchHeader from './searchHeader/SearchHeader';
 
-const Header = ({ location }) => {
+const Header = ({ location, searchQuery, setSearchQuery }) => {
   const renderHeaderContent = (location) => {
     switch (location.pathname) {
       case '/home':
         return <MainHeader />;
 
       case '/search':
-        return <SearchHeader />;
+        return <SearchHeader searchQuery={searchQuery} setSearchQuery={setSearchQuery} />;
 
       default:
-        return <DefaultHeader />;
+        return <DefaultHeader location={location} />;
     }
   };
 

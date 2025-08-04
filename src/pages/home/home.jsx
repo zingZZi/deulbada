@@ -48,7 +48,7 @@ const Home = () => {
           {/* 일반피드영역 */}
           <ul>
             <Styled.StyledContentList>
-              <UserInfo as="div" />
+              <UserInfo username="username" accountId="account_id" />
               <PostContent />
             </Styled.StyledContentList>
           </ul>

@@ -56,3 +56,6 @@ export const LineBtn = styled.button`
 export const LineLink = styled(Link)`
   ${LineBtnStyle}
 `;
+export const NolineIconBtn = styled.button`
+  font-size: 0;
+`;
