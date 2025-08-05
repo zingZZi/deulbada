@@ -17,6 +17,7 @@ function App() {
           <Route path="/join-membership" element={<LoginLayout page={'join-membership'} />} />
           <Route path="/join-producer" element={<LoginLayout page={'join-producer'} />} />
           <Route path="/profile-settings" element={<LoginLayout page={'profile-settings'} />} />
+          <Route path="/product" element={<LoginLayout page={'product'} />} />
           <Route path="/signup" element={<LoginLayout page={'signup'} />} />
           <Route path="/editProfile" element={<LoginLayout page={'editProfile'} />} />
 
