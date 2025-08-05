@@ -1,13 +1,18 @@
 import { BasicBtn, NolineIconBtn } from '../../../styles/Button.style';
-import { ArrowIcon } from '../../icon/Icons';
-import { EllipsisVerticalIcon } from '../../icon/Icons';
+import { ArrowIcon, EllipsisVerticalIcon } from '../../icon/Icons';
 import { defaultHeaderMap } from './headerConfigs';
 import * as Styled from './DefaultHeader.style';
 
-const DefaultHeader = ({ location }) => {
+const DefaultHeader = ({ location, onAction }) => {
   const config = defaultHeaderMap[location.pathname] || {};
   const { leftText, rightButton } = config;
-  console.log(leftText, rightButton);
+
+  const handleClick = () => {
+    if (rightButton?.actionKey && typeof onAction === 'function') {
+      onAction(rightButton.actionKey);
+    }
+  };
+
   return (
     <>
       <Styled.headerNav>
@@ -21,12 +26,12 @@ const DefaultHeader = ({ location }) => {
       {rightButton && (
         <>
           {rightButton.type === 'icon' ? (
-            <NolineIconBtn onClick={rightButton.action}>
+            <NolineIconBtn onClick={handleClick}>
               <EllipsisVerticalIcon />
               <span className="text-ir">{rightButton.text}</span>
             </NolineIconBtn>
           ) : (
-            <BasicBtn onClick={rightButton.action}>{rightButton.text}</BasicBtn>
+            <BasicBtn onClick={handleClick}>{rightButton.text}</BasicBtn>
           )}
         </>
       )}

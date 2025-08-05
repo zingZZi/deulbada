@@ -6,6 +6,7 @@ import ListView from './FeedList/ListView';
 import GalleryView from './FeedList/GalleryView';
 import { useEffect, useState } from 'react';
 import { fetchPosts } from '../../api/postApi';
+import BottomSheet from '../../components/actionSheet/ActionSheet';
 
 const Profile = () => {
   const [postList, setPostList] = useState('');

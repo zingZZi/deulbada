@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import * as Styled from './UserInfo.style';
 import sampleImage from './../../assets/images/sample.png'; //추후 개발붙으면 지워야함
 import { BasicBtn, LineBtn } from '../../styles/Button.style';
+import Badge from '../badge/Badge';
 
 const UserInfo = ({
   username,
@@ -10,6 +11,7 @@ const UserInfo = ({
   withLink = false,
   to = '/profile',
   btns,
+  is_farm_verified = false,
 }) => {
   const highlightMatch = (text) => {
     if (!highlightQuery) return text;
@@ -25,7 +27,10 @@ const UserInfo = ({
 
   const nameContent = (
     <div>
-      <Styled.UserName>{highlightMatch(username)}</Styled.UserName>
+      <Styled.UserName>
+        {highlightMatch(username)}
+        {is_farm_verified ? <Badge is_farm_verified={is_farm_verified} /> : null}
+      </Styled.UserName>
       <Styled.UserId>@{highlightMatch(accountId)}</Styled.UserId>
     </div>
   );

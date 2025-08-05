@@ -7,12 +7,14 @@ const garaData = [
     username: '애월읍 위니브 감귤농장 ',
     useprofile_image:
       'https://pixabay.com/ko/photos/%EA%B3%A0%EC%96%91%EC%9D%B4-%EB%A3%A8-%EB%8A%99%EC%9D%80-%EB%B0%94%EB%9D%BC%EB%B3%B4%EB%8B%A4-5183427/',
+    is_farm_verified: false,
   },
   {
     account_id: 'test_Mandarin',
     username: '테스트 ',
     useprofile_image:
       'https://pixabay.com/ko/photos/%EA%B3%A0%EC%96%91%EC%9D%B4-%EB%A3%A8-%EB%8A%99%EC%9D%80-%EB%B0%94%EB%9D%BC%EB%B3%B4%EB%8B%A4-5183427/',
+    is_farm_verified: 'farmer',
   },
 ];
 
@@ -41,6 +43,7 @@ const Search = ({ searchQuery }) => {
                 key={e.account_id}
                 username={e.username}
                 accountId={e.account_id}
+                is_farm_verified={e.is_farm_verified}
                 highlightQuery={query}
               />
             </Styled.SearchItem>
