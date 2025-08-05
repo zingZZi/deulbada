@@ -2,6 +2,7 @@ import Login from '../../pages/login/Login';
 import LoginEmail from '../../pages/login-email/LoginEmail';
 import JoinMembership from '../../pages/join-membership/JoinMembership';
 import JoinProducer from '../../pages/join-producer/JoinProducer';
+import ProfileSettings from '../../pages/profile-settings/ProfileSettings';
 import { StyledLoginLayout } from './LoginLayout.style';
 
 
@@ -15,8 +16,12 @@ function Content({ page }) {
       return <JoinMembership />;
         case 'join-producer':
       return <JoinProducer />;
+        case 'profile-settings':
+      return <ProfileSettings />;
   }
 }
+
+
 
 const LoginLayout = ({ page }) => {
   return (
