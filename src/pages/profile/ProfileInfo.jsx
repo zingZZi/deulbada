@@ -9,8 +9,10 @@ const ProfileInfo = () => {
       <h2 className="text-ir">프로필 정보 영역입니다.</h2>
       <Styled.profileSmmary>
         <Styled.followInfo>
-          <b>2950</b>
-          followers
+          <Link to="/followers">
+            <b>2950</b>
+            followers
+          </Link>
         </Styled.followInfo>
         <li>
           <Styled.ProfileImgWrap>
@@ -18,8 +20,10 @@ const ProfileInfo = () => {
           </Styled.ProfileImgWrap>
         </li>
         <Styled.followInfo>
-          <b>2950</b>
-          followings
+          <Link to="/followings">
+            <b>2950</b>
+            followings
+          </Link>
         </Styled.followInfo>
       </Styled.profileSmmary>
       <Styled.UserName>

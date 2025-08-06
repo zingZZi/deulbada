@@ -4,7 +4,7 @@ export const defaultHeaderMap = {
     rightButton: {
       type: 'icon',
       text: '더보기',
-      action: () => console.log('더보기'),
+      actionKey: 'openProfileMenu',
     },
   },
   '/profile/edit': {
@@ -26,5 +26,17 @@ export const defaultHeaderMap = {
   '/followers': {
     leftText: 'Followers',
     rightButton: false,
+  },
+  '/followings': {
+    leftText: 'Followings',
+    rightButton: false,
+  },
+  '/myProfile': {
+    leftText: false,
+    rightButton: {
+      type: 'text',
+      text: '저장',
+      actionKey: 'saveProfile',
+    },
   },
 };

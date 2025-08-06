@@ -3,7 +3,7 @@ import * as Styled from './Header.style';
 import MainHeader from './mainHeader/MainHeader';
 import SearchHeader from './searchHeader/SearchHeader';
 
-const Header = ({ location, searchQuery, setSearchQuery }) => {
+const Header = ({ location, searchQuery, setSearchQuery, config, onAction }) => {
   const renderHeaderContent = (location) => {
     switch (location.pathname) {
       case '/home':
@@ -13,7 +13,7 @@ const Header = ({ location, searchQuery, setSearchQuery }) => {
         return <SearchHeader searchQuery={searchQuery} setSearchQuery={setSearchQuery} />;
 
       default:
-        return <DefaultHeader location={location} />;
+        return <DefaultHeader location={location} config={config} onAction={onAction} />;
     }
   };
 

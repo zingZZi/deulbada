@@ -4,7 +4,7 @@ import styled, { css } from 'styled-components';
 const radiusMap = {
   medium: '30px',
   small: '32px',
-  xsmall: '26',
+  xsmall: '26px',
   round: '50%',
 };
 
@@ -25,6 +25,7 @@ const sharedBaseStyle = css`
   cursor: pointer;
   display: inline-block;
   text-decoration: none;
+  font-weight: ${(props) => (props.fontWeight === 'bold' ? 500 : 400)};
   font-size: ${(props) => fontSize[props.fontSize] || '1.4rem'};
   &:disabled {
     cursor: not-allowed;
