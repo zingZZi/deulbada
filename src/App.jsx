@@ -35,6 +35,7 @@ function App() {
           {/*  404 페이지 */}
           <Route path="/404" element={<NotFound />} />
           <Route path="*" element={<Navigate to="/404" replace />} />
+          <Route path="/chatRoom" element={<CommonLayout page={'chatRoom'} />} />
         </Routes>
       </StyledContainer>
     </>

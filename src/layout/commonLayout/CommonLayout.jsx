@@ -15,6 +15,7 @@ import useHeaderActions from '../../hooks/useHeaderAction';
 import { PageActionsProvider } from '../../context/PageActionsContext';
 import { PopupProvider, usePopup } from '../../context/PopupContext';
 import MyProfile from '../../pages/myProfile/MyProfile';
+import ChatRoom from '../../pages/chatRoom/ChatRoom';
 
 function Content({ page, searchQuery }) {
   switch (page) {
@@ -32,6 +33,8 @@ function Content({ page, searchQuery }) {
       return <Followings />;
     case 'myprofile':
       return <MyProfile />;
+    case 'chatRoom':
+      return <ChatRoom />;
   }
 }
 
@@ -48,10 +51,13 @@ const CommonLayoutInner = ({ page }) => {
   useEffect(() => {
     setIsNav(location.pathname);
   }, [location.pathname]);
-
-  const hiddenPaths = ['/post', '/chat'];
+ //bottom이 안붙는 케이스엔 여기에 추가
+  const hiddenPaths = ['/post', '/chatRoom']
   const currentHeaderConfig = defaultHeaderMap[location.pathname] || {};
 
+
+  //bottom이 안붙는 케이스엔 여기에 추가
+  const hiddenPaths = ['/post', '/chatRoom'];
   return (
     <>
       <Header
