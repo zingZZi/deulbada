@@ -7,6 +7,7 @@ import Profile from '../../pages/profile/Profile';
 import { useEffect, useState } from 'react';
 import Search from '../../pages/search/Search';
 import ChatRoom from '../../pages/chatRoom/ChatRoom';
+import PostDetail from '../../pages/postDetail/PostDetail';
 
 function Content({ page, searchQuery }) {
   switch (page) {
@@ -20,6 +21,8 @@ function Content({ page, searchQuery }) {
       return <ChatList />;
     case 'chatRoom':
       return <ChatRoom />;
+    case 'post':
+      return <PostDetail />;
   }
 }
 

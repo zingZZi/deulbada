@@ -24,6 +24,7 @@ function App() {
           <Route path="/search" element={<CommonLayout page={'search'} />} />
           <Route path="/chatList" element={<CommonLayout page={'chatList'} />} />
           <Route path="/chatRoom" element={<CommonLayout page={'chatRoom'} />} />
+          <Route path="/post/:postId" element={<CommonLayout page={'post'} />} />
         </Routes>
       </StyledContainer>
     </>
