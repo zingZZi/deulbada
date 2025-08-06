@@ -36,6 +36,7 @@ function App() {
           <Route path="/404" element={<NotFound />} />
           <Route path="*" element={<Navigate to="/404" replace />} />
           <Route path="/chatRoom" element={<CommonLayout page={'chatRoom'} />} />
+          <Route path="/post/:postId" element={<CommonLayout page={'post'} />} />
         </Routes>
       </StyledContainer>
     </>
