@@ -3,7 +3,7 @@ import PostContent from '../../../components/PostContent/PostContent';
 const ListView = () => {
   return (
     <>
-      <UserInfo username="username" accountId="account_id" />
+      <UserInfo username={'username'} accountId={'account_id'} feedList={true} />
       <PostContent />
     </>
   );

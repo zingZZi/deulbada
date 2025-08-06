@@ -4,7 +4,7 @@ const ModalPopUp = ({ modalList, text }) => {
     <Styled.ModalPopup role="dialog">
       <Styled.Modal>
         <h2 className="text-ir">모달팝업영역입니다.</h2>
-        <Styled.Title>{text}하시겠어요?</Styled.Title>
+        <Styled.Title>{text}</Styled.Title>
         <Styled.ModalBtns>
           {modalList.map((e, i) => {
             return (

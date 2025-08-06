@@ -1,10 +1,11 @@
 import { Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
-import { BasicBtn, LineBtn } from '../../styles/Button.style';
+import { BasicBtn, LineBtn, NolineIconBtn } from '../../styles/Button.style';
 export const UserInfoLayout = styled(Link)`
   display: flex;
   gap: 1.2rem;
-  align-items: center;
+  align-items: flex-start;
+  position: relative;
 `;
 export const ProfileBox = styled.div`
   width: 12%;
@@ -20,7 +21,13 @@ export const ProfileBox = styled.div`
     transform: translate(-50%, -50%);
   }
 `;
+
+export const InfoBox = styled.div`
+  width: calc(88% - 1.2rem);
+  position: relative;
+`;
 export const UserName = styled.p`
+  grid-area: username;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -33,6 +40,12 @@ export const UserId = styled.p`
   font-weight: ${({ theme }) => theme.fonts.weights.regular};
   color: ${({ theme }) => theme.colors.white700};
 `;
+export const MoreBtn = styled(NolineIconBtn)`
+  position: absolute;
+  right: 0;
+  top: 0;
+`;
+
 export const Highlight = styled.span`
   color: ${({ theme }) => theme.colors.primary};
   font-weight: bold;

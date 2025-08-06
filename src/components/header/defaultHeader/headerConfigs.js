@@ -31,4 +31,12 @@ export const defaultHeaderMap = {
     leftText: 'Followings',
     rightButton: false,
   },
+  '/myProfile': {
+    leftText: false,
+    rightButton: {
+      type: 'text',
+      text: '저장',
+      actionKey: 'saveProfile',
+    },
+  },
 };

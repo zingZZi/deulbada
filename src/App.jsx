@@ -27,6 +27,7 @@ function App() {
           <Route path="/profile" element={<CommonLayout page={'profile'} />} />
           <Route path="/followers" element={<CommonLayout page={'followers'} />} />
           <Route path="/followings" element={<CommonLayout page={'followings'} />} />
+          <Route path="/myProfile" element={<CommonLayout page={'myprofile'} />} />
           <Route path="/search" element={<CommonLayout page={'search'} />} />
           <Route path="/chatList" element={<CommonLayout page={'chatList'} />} />
           <Route path="/chat" element={<CommonLayout page={'chat '} />} />

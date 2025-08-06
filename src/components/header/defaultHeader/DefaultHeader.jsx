@@ -15,13 +15,13 @@ const DefaultHeader = ({ location, onAction }) => {
 
   return (
     <>
-      <Styled.headerNav>
+      <Styled.HeaderNav>
         <h1 className="text-ir">들바다</h1>
         <NolineIconBtn onClick={() => window.history.back()}>
           <ArrowIcon />
         </NolineIconBtn>
-        {leftText ? <Styled.headerTitle>{leftText}</Styled.headerTitle> : null}
-      </Styled.headerNav>
+        {leftText ? <Styled.HeaderTitle>{leftText}</Styled.HeaderTitle> : null}
+      </Styled.HeaderNav>
 
       {rightButton && (
         <>
@@ -31,7 +31,7 @@ const DefaultHeader = ({ location, onAction }) => {
               <span className="text-ir">{rightButton.text}</span>
             </NolineIconBtn>
           ) : (
-            <BasicBtn onClick={handleClick}>{rightButton.text}</BasicBtn>
+            <Styled.TextBtn onClick={handleClick}>{rightButton.text}</Styled.TextBtn>
           )}
         </>
       )}
