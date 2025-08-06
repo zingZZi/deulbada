@@ -2,11 +2,17 @@ import { Link } from 'react-router-dom';
 import * as Styled from './PostContent.style';
 import { HeartIcon, MessageCircleIcon } from '../../components/icon/Icon.style';
 
-const PostContent = () => {
+const PostContent = ({ images, contet }) => {
   return (
     <Styled.PostContentLayout>
       <h3 className="text-ir">포스트컨텐츠 내용입니다</h3>
-      컨텐츠영역역역
+      <p>{contet}</p>
+      {images &&
+        images.length > 0 &&
+        images.map((e, i) => {
+          return <img key={i} src={e} alt="업로드이미지" />;
+        })}
+
       <Styled.PostActions>
         <Styled.PostLikeButton className="hart">
           <HeartIcon />

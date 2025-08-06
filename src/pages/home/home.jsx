@@ -6,11 +6,13 @@ import { ThemeProvider } from 'styled-components';
 import theme from '../../styles/theme';
 import ProductList from './ProductList.jsx';
 import PostContent from '../../components/PostContent/PostContent.jsx';
+import { fetchPosts } from '../../api/postApi';
 
 const Home = () => {
   const [categorySelected, setCategorySelected] = useState('default');
   const [mainTitle, setMainTitle] = useState('');
   const [subCategory, setSubCategory] = useState(null);
+  const [postList, setPostList] = useState([]);
 
   //primary 컬러변경건
   const customTheme = {
@@ -32,6 +34,21 @@ const Home = () => {
         setMainTitle('최신피드영역입니다.');
     }
   }, [categorySelected]);
+
+  useEffect(() => {
+    const getPost = async () => {
+      try {
+        const response = await fetchPosts();
+        setPostList(response.data);
+      } catch (error) {
+        console.error('Post를 불러오지 못했습니다.', error);
+      }
+    };
+    getPost();
+  }, []);
+
+  console.log(postList);
+
   return (
     <ThemeProvider theme={customTheme}>
       <Styled.StyledHome>
@@ -47,10 +64,19 @@ const Home = () => {
 
           {/* 일반피드영역 */}
           <ul>
-            <Styled.StyledContentList>
-              <UserInfo username={'username'} accountId={'account_id'} feedList={true} />
-              <PostContent />
-            </Styled.StyledContentList>
+            {postList.map((e) => {
+              return (
+                <Styled.StyledContentList key={e.id}>
+                  <UserInfo
+                    username={e.username}
+                    accountId={e.account_id}
+                    feedList={true}
+                    profileImg={e.profile_image}
+                  />
+                  <PostContent contet={e.content} images={e.image_urls} />
+                </Styled.StyledContentList>
+              );
+            })}
           </ul>
 
           {/* 상품리스트 */}

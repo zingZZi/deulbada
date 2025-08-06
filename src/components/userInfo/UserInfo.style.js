@@ -4,7 +4,7 @@ import { BasicBtn, LineBtn, NolineIconBtn } from '../../styles/Button.style';
 export const UserInfoLayout = styled(Link)`
   display: flex;
   gap: 1.2rem;
-  align-items: flex-start;
+  align-items: center;
   position: relative;
 `;
 export const ProfileBox = styled.div`
@@ -31,7 +31,8 @@ export const UserName = styled.p`
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  font-size: 1.4rem;
+  font-size: ${({ theme }) => theme.fontSize.base};
+  line-height: 1.8rem;
   margin-bottom: 2px;
   gap: 0.3rem;
 `;
