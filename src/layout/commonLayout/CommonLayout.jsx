@@ -51,10 +51,7 @@ const CommonLayoutInner = ({ page }) => {
   useEffect(() => {
     setIsNav(location.pathname);
   }, [location.pathname]);
- //bottom이 안붙는 케이스엔 여기에 추가
-  const hiddenPaths = ['/post', '/chatRoom']
   const currentHeaderConfig = defaultHeaderMap[location.pathname] || {};
-
 
   //bottom이 안붙는 케이스엔 여기에 추가
   const hiddenPaths = ['/post', '/chatRoom'];
