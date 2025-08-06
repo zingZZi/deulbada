@@ -20,6 +20,9 @@ export const FeedList = styled.ul`
     display: flex;
     gap: 0.8rem;
   }
+  > li {
+    position: relative;
+  }
 `;
 export const FeedListItem = styled.li`
   width: calc((100% - 1.6rem) / 3);

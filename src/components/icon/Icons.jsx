@@ -4,9 +4,9 @@ const ImagelIcon = () => {
   const theme = useTheme();
   return <ImagelIcon color={theme.colors.white100} size={24} />;
 };
-const EllipsisVerticalIcon = () => {
+const EllipsisVerticalIcon = (props) => {
   const theme = useTheme();
-  return <EllipsisVertical color={theme.colors.white700} size={24} />;
+  return <EllipsisVertical color={theme.colors.white700} {...props} />;
 };
 const ArrowIcon = (props) => {
   const theme = useTheme();
