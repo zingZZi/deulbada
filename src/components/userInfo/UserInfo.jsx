@@ -11,7 +11,7 @@ const UserInfo = ({
   accountId,
   highlightQuery = '',
   withLink = false,
-  to = '/profile',
+  to,
   btns,
   feedList = false,
   is_farm_verified = false,
@@ -27,7 +27,6 @@ const UserInfo = ({
         regex.test(part) ? <Styled.Highlight key={i}>{part}</Styled.Highlight> : part
       );
   };
-  console.log(profile_image);
   const nameContent = (
     <Styled.InfoBox>
       <Styled.UserName>
