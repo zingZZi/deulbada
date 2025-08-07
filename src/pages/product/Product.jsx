@@ -1,19 +1,65 @@
 import * as Styled from './product.style';
 import React, { useState } from 'react';
 import { ImageIcon } from '../../components/icon/Icons';
+import { createPost } from "../../api/productApi";
 
 const Product = () => {
   const [preview, setPreview] = useState(null);
   const [businessType, setBusinessType] = useState('');
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState([]);
+  const [name, setName] = useState('');
   const [price, setPrice] = useState('');
+  const [imageFile, setImageFile] = useState(null);
+  const [link, setLink] = useState('');
 
-  const handleSubmit = (e) => {
-    e.preventDefault(); 
-    console.log('폼 제출됨');
+  const uploadImage = async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await fetch('https://your-api.com/upload', {
+      method: 'POST',
+      body: formData,
+    });
+
+    const result = await response.json();
+    return result.imageUrl; 
   };
 
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+    if (!name || !price || !link || !businessType) {
+    alert('모든 필수 항목을 입력해 주세요.');
+    return;
+  }
+
+    try {
+      let imageUrl = null;
+
+      if (imageFile) {
+        imageUrl = await uploadImage(imageFile); // 이미지 먼저 업로드
+      }
+
+      const data = {
+        image_urls: imageUrl ? [imageUrl] : [],
+        name,
+        price: parseInt(price.replace(/,/g, '')),
+        description: link,
+        tags,
+        category: businessType,
+        
+      };
+
+      await createPost(data);
+      alert('상품이 등록되었습니다!');
+    } catch (error) {
+      console.error(error);
+      alert('상품 등록에 실패했습니다.');
+    }
+  };
+
+  
   const handleTagKeyDown = (e) => {
     if (e.key === ',' || e.key === 'Enter') {
       e.preventDefault();
@@ -33,6 +79,7 @@ const Product = () => {
     const file = e.target.files[0];
     if (file) {
       setPreview(URL.createObjectURL(file));
+      setImageFile(file);
     }
   };
 
@@ -77,7 +124,8 @@ const Product = () => {
         id="name" 
         type="text" 
         placeholder="2~15자 이내여야 합니다."
-        maxLength={15} />
+        maxLength={15}
+        onChange={(e) => setName(e.target.value)} />
     </Styled.InputGroup>
 
     <Styled.InputGroup>
@@ -85,6 +133,7 @@ const Product = () => {
       <Styled.InputText
         id="price"
         type="text"
+        inputMode="numeric"
         placeholder="숫자만 입력 가능합니다."
         value={price}
         onChange={handlePriceChange}
@@ -93,7 +142,13 @@ const Product = () => {
 
     <Styled.InputGroup>
       <Styled.Label htmlFor="link">판매링크</Styled.Label>
-      <Styled.InputText id="link" type="url" placeholder="URL을 입력해 주세요." />
+      <Styled.InputText 
+        id="link" 
+        type="url" 
+        placeholder="URL을 입력해 주세요."
+        value={link} 
+        onChange={(e) => setLink(e.target.value)}
+      />
     </Styled.InputGroup>
 
     <Styled.InputGroup>
