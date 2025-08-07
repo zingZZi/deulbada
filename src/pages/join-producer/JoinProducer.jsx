@@ -1,12 +1,12 @@
 import * as Styled from './JoinProducer.style';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 
 const JoinProducer = () => {
 
-  const [postalCode] = useState('');
-  const [address] = useState('');
+  const [postalCode, setPostalCode] = useState('');
+  const [address, setAddress] = useState('');
   const [detailAddress, setDetailAddress] = useState('');
   const [businessType, setBusinessType] = useState("");
 
@@ -20,8 +20,35 @@ const JoinProducer = () => {
     }
   };
 
+  useEffect(() => {
+      const script = document.createElement("script");
+      script.src = "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
+      script.async = true;
+      document.body.appendChild(script);
+
+      return () => {
+        document.body.removeChild(script);
+      };
+  }, []);
+
   const handleOpenPostcodeAPI = () => {
-    // 주소 API 열기 로직 작성
+    new window.daum.Postcode({
+      oncomplete: function (data) {
+        let fullAddress = data.address;
+        let extraAddress = '';
+
+        if (data.addressType === 'R') {
+          if (data.bname) extraAddress += data.bname;
+          if (data.buildingName)
+            extraAddress += (extraAddress ? ', ' + data.buildingName : data.buildingName);
+          fullAddress += extraAddress ? ` (${extraAddress})` : '';
+        }
+
+        // 상태 업데이트
+        setPostalCode(data.zonecode);     // 우편번호
+        setAddress(fullAddress);          // 도로명 주소
+      },
+    }).open();
   };
 
   const handleDetailAddressChange = (e) => {
