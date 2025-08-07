@@ -14,15 +14,12 @@ export const InputGroup = styled.div`
   display: flex;
   flex-direction: column;
   margin-bottom: 0.8rem;
-
-  
 `;
 
 export const ImageUploadWrapper = styled.label`
   position: relative;
   display: block;
   width: 100%;
-  max-width: 322px;
   aspect-ratio: 322 / 204;
   border: 1px solid ${({ theme }) => theme.colors.white300};
   border-radius: 8px;
