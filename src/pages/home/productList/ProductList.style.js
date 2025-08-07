@@ -6,6 +6,7 @@ export const ProductList = styled.ul`
   justify-content: space-between;
   flex-wrap: wrap;
   align-items: flex-start;
+  gap: 3rem 0;
 `;
 export const ProductItem = styled.li`
   width: 47%;

@@ -6,11 +6,12 @@ import Badge from '../badge/Badge';
 import useFeedActions from '../../hooks/useFeedActions';
 
 const UserInfo = ({
+  profile_image,
   username,
   accountId,
   highlightQuery = '',
   withLink = false,
-  to = '/profile',
+  to,
   btns,
   feedList = false,
   is_farm_verified = false,
@@ -26,7 +27,6 @@ const UserInfo = ({
         regex.test(part) ? <Styled.Highlight key={i}>{part}</Styled.Highlight> : part
       );
   };
-
   const nameContent = (
     <Styled.InfoBox>
       <Styled.UserName>
@@ -41,7 +41,11 @@ const UserInfo = ({
     <>
       <Styled.UserInfoLayout to={to}>
         <Styled.ProfileBox>
-          <img src={sampleImage} alt="프로필이미지" />
+          {profile_image ? (
+            <img src={profile_image} alt="프로필이미지" />
+          ) : (
+            <img src={sampleImage} alt="기본 프로필이미지" />
+          )}
         </Styled.ProfileBox>
 
         {withLink ? <Link to={to}>{nameContent}</Link> : nameContent}

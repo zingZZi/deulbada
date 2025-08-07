@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import BottomNavBar from '../../components/bottomNavBar/BottomNavBar';
 import Header from '../../components/header/Header';
 import ChatList from '../../pages/chatList/ChatList';
-import Home from '../../pages/home/home';
 import Profile from '../../pages/profile/Profile';
 import Search from '../../pages/search/Search';
 import Followers from '../../pages/followers/Followers';
@@ -11,6 +10,7 @@ import Followings from '../../pages/followings/Followings';
 import { defaultHeaderMap } from '../../components/header/defaultHeader/headerConfigs';
 import ActionSheet from '../../components/actionSheet/ActionSheet';
 import ModalPopUp from '../../components/modalPopup/ModalPopup';
+import Home from '../../pages/home/home';
 
 function Content({ page, searchQuery }) {
   switch (page) {

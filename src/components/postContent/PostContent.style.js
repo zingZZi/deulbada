@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { Link } from 'react-router-dom';
 
 export const PostContentLayout = styled.section`
@@ -23,10 +23,15 @@ export const CommnetButton = styled(Link)`
   display: flex;
   align-items: center;
 `;
-export const Count = styled.span`
+
+const commonCountStyle = css`
   font-weight: ${({ theme }) => theme.fonts.weights.regular};
   color: ${({ theme }) => theme.colors.white700};
   font-size: ${({ theme }) => theme.fontSize.small};
+`;
+
+export const Count = styled.span`
+  ${commonCountStyle}
 `;
 export const PostData = styled.p`
   margin-top: 1.6rem;
