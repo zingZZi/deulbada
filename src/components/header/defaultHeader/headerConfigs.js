@@ -39,4 +39,12 @@ export const defaultHeaderMap = {
       actionKey: 'saveProfile',
     },
   },
+  '/postUpload': {
+  leftText: '',
+  rightButton: {
+    type: 'text',
+    text: '업로드',
+    actionKey: 'submit-post',
+  },
+},
 };
