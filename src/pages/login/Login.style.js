@@ -26,7 +26,8 @@ export const SocialSection = styled.section`
   bottom: 0;
   background-color: #fff;
   border-radius: 16px 16px 0px 0px;
-  width: 100vw;
+  width: 100%;
+  max-width: 64rem; 
   height: 38%;
   padding: 50px;
   display: flex;
