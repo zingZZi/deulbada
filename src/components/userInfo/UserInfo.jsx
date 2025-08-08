@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import * as Styled from './UserInfo.style';
-import sampleImage from './../../assets/images/sample.png'; //추후 개발붙으면 지워야함
+import defaultProfileImg from './../../assets/images/defaultProfileImg.png'; //기본프로필이미지
 import { EllipsisVerticalIcon } from '../icon/Icons';
 import Badge from '../badge/Badge';
 import useFeedActions from '../../hooks/useFeedActions';
@@ -44,7 +44,7 @@ const UserInfo = ({
           {profile_image ? (
             <img src={profile_image} alt="프로필이미지" />
           ) : (
-            <img src={sampleImage} alt="기본 프로필이미지" />
+            <img src={defaultProfileImg} alt="기본 프로필이미지" />
           )}
         </Styled.ProfileBox>
 

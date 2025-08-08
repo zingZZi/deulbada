@@ -24,7 +24,7 @@ function App() {
           <Route path="/" element={<Navigate to="/home" replace />} />
 
           <Route path="/home" element={<CommonLayout page={'home'} />} />
-          <Route path="/profile/:account_id" element={<CommonLayout page={'profile'} />} />
+          <Route path="/profile/:user_name" element={<CommonLayout page={'profile'} />} />
           <Route path="/followers" element={<CommonLayout page={'followers'} />} />
           <Route path="/followings" element={<CommonLayout page={'followings'} />} />
           <Route path="/myProfile" element={<CommonLayout page={'myprofile'} />} />

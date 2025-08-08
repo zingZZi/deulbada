@@ -7,6 +7,7 @@ export const Header = styled.header`
   top: 0;
   width: 100%; */
   background-color: ${({ theme }) => theme.colors.white100};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.white500};
   display: flex;
   gap: 2rem;
   justify-content: space-between;

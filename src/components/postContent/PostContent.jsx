@@ -1,9 +1,8 @@
-/* eslint-disable no-unused-vars */
 import { Link } from 'react-router-dom';
 import * as Styled from './PostContent.style';
 import { HeartIcon, MessageCircleIcon } from '../../components/icon/Icon.style';
-import { fetchLike } from '../../api/postApi';
-import { useEffect, useState } from 'react';
+// import { fetchLike } from '../../api/postApi';
+// import { useEffect, useState } from 'react';
 
 const PostContent = ({ images, contet, date, id }) => {
   const dateChange = new Date(date);
@@ -14,14 +13,14 @@ const PostContent = ({ images, contet, date, id }) => {
     day: 'numeric',
   });
 
-  const [likeCount, setLikeCount] = useState(0);
+  // const [likeCount, setLikeCount] = useState(0);
 
   // useEffect(() => {
   //   const getLike = async () => {
   //     try {
   //       const response = await fetchLike(id);
   //       console.log(response);
-  //       setLikeCount(response.data);
+  //       setLikeCount(response.data.result);
   //     } catch (error) {
   //       console.error('좋아요 못불러옴', error);
   //     }
@@ -41,7 +40,7 @@ const PostContent = ({ images, contet, date, id }) => {
       <Styled.PostActions>
         <Styled.PostLikeButton className="hart">
           <HeartIcon />
-          <Styled.Count>{likeCount}</Styled.Count>
+          <Styled.Count>0</Styled.Count>
         </Styled.PostLikeButton>
         <Styled.CommnetButton to={`/posts/${id}`}>
           <MessageCircleIcon />

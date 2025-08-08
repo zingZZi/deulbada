@@ -10,30 +10,42 @@ const PostList = () => {
     const getPost = async () => {
       try {
         const response = await fetchPosts();
-        setPostList(response.data);
+        setPostList(response.data.results);
       } catch (error) {
         console.error('Post를 불러오지 못했습니다.', error);
       }
     };
     getPost();
   }, []);
+  console.log(postList);
   return (
-    <ul>
-      {postList.map((e) => {
-        return (
-          <Styled.StyledContentList key={e.id}>
-            <UserInfo
-              username={e.username}
-              accountId={e.account_id}
-              feedList={true}
-              profileImg={e.profile_image}
-              to={`/profile/${e.account_id}`}
-            />
-            <PostContent contet={e.content} images={e.image_urls} date={e.created_at} id={e.id} />
-          </Styled.StyledContentList>
-        );
-      })}
-    </ul>
+    <>
+      {postList && postList.length > 0 ? (
+        <ul>
+          {postList.map((e) => {
+            return (
+              <Styled.StyledContentList key={e.id}>
+                <UserInfo
+                  username={e.username}
+                  accountId={e.account_id}
+                  feedList={true}
+                  profileImg={e.profile_image}
+                  to={`/profile/${e.username}`}
+                />
+                <PostContent
+                  contet={e.content}
+                  images={e.image_urls}
+                  date={e.created_at}
+                  id={e.id}
+                />
+              </Styled.StyledContentList>
+            );
+          })}
+        </ul>
+      ) : (
+        <p>피드가 없습니다.</p>
+      )}
+    </>
   );
 };
 

@@ -59,7 +59,7 @@ export const CategorySubList = styled.ul`
     cursor: pointer;
     &.active {
       div {
-        box-shadow: 0 0 0 5px ${({ theme }) => theme.colors.primary};
+        box-shadow: 0 0 0 0.2rem ${({ theme }) => theme.colors.primary};
       }
       span {
         color: ${({ theme }) => theme.colors.primary};

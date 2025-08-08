@@ -53,7 +53,7 @@ const Home = () => {
                 <Styled.ProductListTitle>
                   지금 가장 <b>인기있는 상품!</b>
                 </Styled.ProductListTitle>
-                <ProductList category={subCategory} />
+                <ProductList subCategory={subCategory} />
               </Styled.ProductListWrap>
             </>
           )}

@@ -35,23 +35,24 @@ const Search = ({ searchQuery }) => {
 
   return (
     <>
-      <Styled.SearchList>
-        {searchList.map((e) => {
-          return (
-            <Styled.SearchItem key={e.account_id}>
-              <UserInfo
-                key={e.account_id}
-                username={e.username}
-                accountId={e.account_id}
-                is_farm_verified={e.is_farm_verified}
-                highlightQuery={query}
-              />
-            </Styled.SearchItem>
-          );
-        })}
-      </Styled.SearchList>
-      {searchQuery && searchList.length === 0 && (
+      {searchQuery && searchList.length === 0 ? (
         <Styled.NoResult>검색 결과가 없습니다.</Styled.NoResult>
+      ) : (
+        <Styled.SearchList>
+          {searchList.map((e) => {
+            return (
+              <Styled.SearchItem key={e.account_id}>
+                <UserInfo
+                  key={e.account_id}
+                  username={e.username}
+                  accountId={e.account_id}
+                  is_farm_verified={e.is_farm_verified}
+                  highlightQuery={query}
+                />
+              </Styled.SearchItem>
+            );
+          })}
+        </Styled.SearchList>
       )}
     </>
   );
