@@ -59,6 +59,10 @@ const useHeaderActions = () => {
       case 'deletePost':
         executeAction('deletePost');
         break;
+      case 'submit-post':
+        console.log('Executing submit-post action');
+        executeAction('submit-post');
+        break;
 
       default:
         console.warn('Unknown action:', actionKey);

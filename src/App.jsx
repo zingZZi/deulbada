@@ -30,13 +30,13 @@ function App() {
           <Route path="/myProfile" element={<CommonLayout page={'myprofile'} />} />
           <Route path="/search" element={<CommonLayout page={'search'} />} />
           <Route path="/chatList" element={<CommonLayout page={'chatList'} />} />
-          <Route path="/chat" element={<CommonLayout page={'chat '} />} />
 
           {/*  404 페이지 */}
           <Route path="/404" element={<NotFound />} />
           <Route path="*" element={<Navigate to="/404" replace />} />
           <Route path="/chatRoom" element={<CommonLayout page={'chatRoom'} />} />
-          <Route path="/post/:postId" element={<CommonLayout page={'post'} />} />
+          <Route path="/postDetail/:postId" element={<CommonLayout page={'postDetail'} />} />
+          <Route path="/postUpload" element={<CommonLayout page={'postUpload'} />} />
         </Routes>
       </StyledContainer>
     </>
