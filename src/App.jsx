@@ -17,6 +17,8 @@ function App() {
           <Route path="/login-email" element={<LoginLayout page={'loginEmail'} />} />
           <Route path="/join-membership" element={<LoginLayout page={'join-membership'} />} />
           <Route path="/join-producer" element={<LoginLayout page={'join-producer'} />} />
+          <Route path="/profile-settings" element={<LoginLayout page={'profile-settings'} />} />
+          <Route path="/product" element={<LoginLayout page={'product'} />} />
           <Route path="/signup" element={<LoginLayout page={'signup'} />} />
           <Route path="/editProfile" element={<LoginLayout page={'editProfile'} />} />
 
@@ -24,7 +26,7 @@ function App() {
           <Route path="/" element={<Navigate to="/home" replace />} />
 
           <Route path="/home" element={<CommonLayout page={'home'} />} />
-          <Route path="/profile" element={<CommonLayout page={'profile'} />} />
+          <Route path="/profile/:account_id" element={<CommonLayout page={'profile'} />} />
           <Route path="/followers" element={<CommonLayout page={'followers'} />} />
           <Route path="/followings" element={<CommonLayout page={'followings'} />} />
           <Route path="/myProfile" element={<CommonLayout page={'myprofile'} />} />

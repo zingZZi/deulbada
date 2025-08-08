@@ -13,7 +13,7 @@ const JoinProducer = () => {
   const [fileName, setFileName] = useState('');
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0]; // 사용자가 고른 첫 번째 파일
+    const file = e.target.files[0];
     if (file) {
       setFileName(file.name);
       console.log('선택된 파일:', file);

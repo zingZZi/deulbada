@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
-import UserInfo from '../../components/userInfo/UserInfo';
-import CategoryTab from './CategoryTab';
+import CategoryTab from './categoryTab/CategoryTab.jsx';
 import * as Styled from './Home.style.js';
 import { ThemeProvider } from 'styled-components';
-import theme from '../../styles/theme';
-import ProductList from './ProductList.jsx';
-import PostContent from '../../components/PostContent/PostContent.jsx';
+import theme from '../../styles/theme.js';
+import ProductList from './productList/ProductList.jsx';
+import PostList from './postList/PostList.jsx';
 
 const Home = () => {
   const [categorySelected, setCategorySelected] = useState('default');
@@ -32,6 +31,7 @@ const Home = () => {
         setMainTitle('최신피드영역입니다.');
     }
   }, [categorySelected]);
+
   return (
     <ThemeProvider theme={customTheme}>
       <Styled.StyledHome>
@@ -44,22 +44,19 @@ const Home = () => {
         />
         <Styled.StyledContent>
           <h3 className="text-ir">{mainTitle}</h3>
-
           {/* 일반피드영역 */}
-          <ul>
-            <Styled.StyledContentList>
-              <UserInfo username={'username'} accountId={'account_id'} feedList={true} />
-              <PostContent />
-            </Styled.StyledContentList>
-          </ul>
-
-          {/* 상품리스트 */}
-          <Styled.ProductListWrap>
-            <Styled.ProductListTitle>
-              지금 가장 <b>인기있는 상품!</b>
-            </Styled.ProductListTitle>
-            <ProductList />
-          </Styled.ProductListWrap>
+          {categorySelected === 'default' ? (
+            <PostList />
+          ) : (
+            <>
+              <Styled.ProductListWrap>
+                <Styled.ProductListTitle>
+                  지금 가장 <b>인기있는 상품!</b>
+                </Styled.ProductListTitle>
+                <ProductList category={subCategory} />
+              </Styled.ProductListWrap>
+            </>
+          )}
         </Styled.StyledContent>
       </Styled.StyledHome>
     </ThemeProvider>

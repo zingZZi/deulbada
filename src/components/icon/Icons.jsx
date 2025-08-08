@@ -1,8 +1,8 @@
 import { EllipsisVertical, ArrowLeft, Image, Copy, Search } from 'lucide-react';
 import { useTheme } from 'styled-components';
-const ImagelIcon = () => {
+const ImageIcon = () => {
   const theme = useTheme();
-  return <ImagelIcon color={theme.colors.white100} size={24} />;
+  return <Image color={theme.colors.white100} size={24} />;
 };
 const EllipsisVerticalIcon = (props) => {
   const theme = useTheme();
@@ -20,4 +20,4 @@ export const SearchIcon = (props) => {
   const theme = useTheme();
   return <Search color={theme.colors.white700} {...props} />;
 };
-export { ImagelIcon, EllipsisVerticalIcon, ArrowIcon };
+export { ImageIcon, EllipsisVerticalIcon, ArrowIcon };

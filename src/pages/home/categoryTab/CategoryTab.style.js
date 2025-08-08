@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { boxImgWrap } from '../../../styles/Common.style';
 
 export const CategoryLayout = styled.section`
   border-radius: 1.6rem 1.6rem 0 0;
@@ -67,18 +68,16 @@ export const CategorySubList = styled.ul`
   }
 `;
 export const CategorySubItem = styled.div`
-  background-color: pink;
+  ${boxImgWrap}
+  background-color: #d9d9d938;
   width: 100%;
   padding-top: 100%;
   border-radius: 10px;
-  position: relative;
-  overflow: hidden;
   margin-bottom: 0.5rem;
   img {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    max-width: inherit;
+    width: 100%;
+    height: 100%;
   }
 `;
 export const CategorySubTitle = styled.span`
