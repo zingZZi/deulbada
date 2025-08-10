@@ -1,6 +1,7 @@
 import * as Styled from './JoinMembership.style';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 
 const JoinMembership = () => {
@@ -9,13 +10,14 @@ const JoinMembership = () => {
   const [rePassword, setRePassword] = useState('');
   const [errors, setErrors] = useState({});
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
 
-    if (!email.includes('@')) {
-  newErrors.email = '이메일 형식이 올바르지 않습니다.';
-}
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+    newErrors.email = '올바른 이메일 주소를 입력해주세요.';
+  }
 
     if (password.length < 8) {
       newErrors.password = '비밀번호는 8자 이상이어야 합니다.';
@@ -26,18 +28,23 @@ const JoinMembership = () => {
     }
 
     setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
 
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    newErrors.email = '올바른 이메일 주소를 입력해주세요.';
+    try {
+      const res = await axios.post('http://43.201.70.73/api/users/signup/', {
+        account_id: email,
+        password,
+  });
+    
+    console.log('회원가입 성공:', res.data);
+    alert('회원가입이 완료되었습니다!');
+    // 필요하면 navigate('/welcome') 등으로 이동도 가능
+  } catch (error) {
+    console.error('회원가입 실패:', error);
+    setErrors({ general: '회원가입에 실패했습니다. 다시 시도해주세요.' });
   }
 
-    if (Object.keys(newErrors).length === 0) {
-      // 유효성 통과 → 다음 단계로 진행
-      alert('회원가입 가능!');
-    }
-  };
-
+};
 
   return (
   <Styled.Form onSubmit={handleSubmit}>
