@@ -27,14 +27,12 @@ export const InfoBox = styled.div`
   position: relative;
 `;
 export const UserName = styled.p`
-  grid-area: username;
   display: flex;
   align-items: center;
   justify-content: flex-start;
   font-size: ${({ theme }) => theme.fontSize.base};
   line-height: 1.8rem;
   margin-bottom: 2px;
-  gap: 0.3rem;
 `;
 export const UserId = styled.p`
   font-size: 1.2rem;

@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { usePageActions } from '../../context/PageActionsContext';
 
-const MyProfile = () => {
+const MyProfileEdit = () => {
   const [profileData, setProfileData] = useState({
     name: '',
     email: '',
@@ -170,4 +170,4 @@ const MyProfile = () => {
   );
 };
 
-export default MyProfile;
+export default MyProfileEdit;

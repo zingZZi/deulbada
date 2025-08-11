@@ -1,24 +1,33 @@
+// components/Home/Home.jsx
 import { useEffect, useState } from 'react';
 import CategoryTab from './categoryTab/CategoryTab.jsx';
 import * as Styled from './Home.style.js';
-import { ThemeProvider } from 'styled-components';
 import theme from '../../styles/theme.js';
 import ProductList from './productList/ProductList.jsx';
 import PostList from './postList/PostList.jsx';
+import { useTheme } from '../../context/ThemeContext';
 
 const Home = () => {
   const [categorySelected, setCategorySelected] = useState('default');
   const [mainTitle, setMainTitle] = useState('');
   const [subCategory, setSubCategory] = useState(null);
+  const { updateTheme, resetTheme } = useTheme();
 
-  //primary 컬러변경건
-  const customTheme = {
-    ...theme,
-    colors: {
-      ...theme.colors,
-      primary: categorySelected === 'fishing' ? '#1B91EA' : theme.colors.primary,
-    },
-  };
+  // 테마 업데이트 로직
+  useEffect(() => {
+    const customTheme = {
+      ...theme,
+      colors: {
+        ...theme.colors,
+        primary:
+          categorySelected === 'fishing' && subCategory !== null ? '#1B91EA' : theme.colors.primary,
+      },
+    };
+
+    updateTheme(customTheme);
+  }, [categorySelected, subCategory, updateTheme]);
+
+  // 메인 타이틀 설정
   useEffect(() => {
     switch (categorySelected) {
       case 'agricultural':
@@ -32,34 +41,27 @@ const Home = () => {
     }
   }, [categorySelected]);
 
+  // 컴포넌트 언마운트 시 기본 테마로 복원
+  useEffect(() => {
+    return () => {
+      resetTheme();
+    };
+  }, [resetTheme]);
+
   return (
-    <ThemeProvider theme={customTheme}>
-      <Styled.StyledHome>
-        <h2 className="text-ir">들바다 메인페이지</h2>
-        <CategoryTab
-          categorySelected={categorySelected}
-          setCategorySelected={setCategorySelected}
-          subCategory={subCategory}
-          setSubCategory={setSubCategory}
-        />
-        <Styled.StyledContent>
-          <h3 className="text-ir">{mainTitle}</h3>
-          {/* 일반피드영역 */}
-          {categorySelected === 'default' ? (
-            <PostList />
-          ) : (
-            <>
-              <Styled.ProductListWrap>
-                <Styled.ProductListTitle>
-                  지금 가장 <b>인기있는 상품!</b>
-                </Styled.ProductListTitle>
-                <ProductList subCategory={subCategory} />
-              </Styled.ProductListWrap>
-            </>
-          )}
-        </Styled.StyledContent>
-      </Styled.StyledHome>
-    </ThemeProvider>
+    <Styled.StyledHome>
+      <h2 className="text-ir">들바다 메인페이지</h2>
+      <CategoryTab
+        categorySelected={categorySelected}
+        setCategorySelected={setCategorySelected}
+        subCategory={subCategory}
+        setSubCategory={setSubCategory}
+      />
+      <Styled.StyledContent>
+        <h3 className="text-ir">{mainTitle}</h3>
+        {categorySelected === 'default' ? <PostList /> : <ProductList subCategory={subCategory} />}
+      </Styled.StyledContent>
+    </Styled.StyledHome>
   );
 };
 

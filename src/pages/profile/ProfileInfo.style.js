@@ -4,6 +4,7 @@ export const ProfileInfo = styled.section`
   text-align: center;
   background-color: ${({ theme }) => theme.colors.white100};
   border: 1px solid ${({ theme }) => theme.colors.white300};
+  border-top: none;
   font-weight: ${({ theme }) => theme.fonts.weights.regular};
 `;
 export const profileSmmary = styled.ul`

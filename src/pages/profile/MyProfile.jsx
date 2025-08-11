@@ -11,30 +11,47 @@ import LoadingComponent from '../../components/loding/Loding';
 import { fetchPosts } from '../../api/postApi';
 import useProfileRedirect from '../../hooks/useProfileRedirect';
 
-const Profile = () => {
+const MyProfile = () => {
   const { user_name } = useParams();
   const [loading, setLoading] = useState(true);
   const [userProduct, setUserProduct] = useState([]);
   const [userFeed, setUserFeed] = useState([]);
   const [feedType, setFeedType] = useState('list');
+
   useProfileRedirect(user_name);
+
   function feedTypeHandler(e) {
     setFeedType(e.currentTarget.dataset.type);
   }
 
+  // 현재 사용자 ID 가져오는 함수
+  const getCurrentUserId = () => {
+    return localStorage.getItem('user_name');
+  };
+
   useEffect(() => {
-    // user_name이 없으면 조기 반환
-    if (!user_name) {
-      setLoading(false);
-      return;
-    }
-    let isMounted = true; // cleanup을 위한 플래그
+    let isMounted = true;
+
     const getProfileData = async () => {
       try {
         setLoading(true);
-        const products = await getProductUser(user_name);
+        // 현재 사용자 정보 결정
+        // 1. URL 파라미터가 있으면 사용 (리다이렉트 전)
+        // 2. 없으면 localStorage에서 가져오기 (리다이렉트 후)
+        const targetUserId = user_name || getCurrentUserId();
+        console.log('프로필 데이터 로드:', {
+          url_user_name: user_name,
+          localStorage_id: getCurrentUserId(),
+          target: targetUserId,
+        });
+        if (!targetUserId) {
+          console.error('사용자 ID를 찾을 수 없습니다');
+          return;
+        }
+        // API 호출
+        const products = await getProductUser(targetUserId);
         const feedData = await fetchPosts();
-        // 컴포넌트가 언마운트되지 않았을 때만 상태 업데이트
+        console.log('API 응답:', { products, feedData });
         if (isMounted) {
           setUserProduct(products?.data?.results || []);
           setUserFeed(feedData?.data?.results || []);
@@ -51,23 +68,27 @@ const Profile = () => {
         }
       }
     };
-
     getProfileData();
-    // cleanup 함수 - 컴포넌트 언마운트나 의존성 변경 시 실행
     return () => {
       isMounted = false;
     };
-  }, [user_name]);
+  }, [user_name]); // user_name이 변경될 때마다 실행
+
   // 로딩 중일 때 로딩 메시지만 표시
   if (loading) {
     return <LoadingComponent />;
   }
+
+  // 현재 표시할 사용자 이름 결정
+  const displayUserName = user_name || getCurrentUserId();
   return (
     <Styled.ProfileBg>
       {/* 상단프로필정보 */}
-      <ProfileInfo user_name={user_name} isMyProfile={false} />
+      <ProfileInfo user_name={displayUserName} isMyProfile={true} />
+
       {/* 판매중인 상품영역 / 제품있을시에만 노출 */}
       {userProduct.length > 0 && <SellProduct userProduct={userProduct} />}
+
       {/* 피드영역 */}
       <Styled.FeedSection>
         <h2 className="text-ir">피드리스트 입니다.</h2>
@@ -90,4 +111,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default MyProfile;

@@ -1,13 +1,20 @@
 import * as Styled from './GalleryView.style';
-import sampleImage from './../../../assets/images/sample.png';
-const GalleryView = () => {
+const GalleryView = ({ userFeed }) => {
+  const filteredData = userFeed.filter((post) => post.image_urls && post.image_urls.length > 0);
+
   return (
-    <>
-      <Styled.GalleryImgWrap>
-        <img src={sampleImage} alt="샘플이미지" />
-        <Styled.StyledCopyIcon />
-      </Styled.GalleryImgWrap>
-    </>
+    <Styled.GalleryFeed>
+      {filteredData.map((e) => {
+        return (
+          <Styled.FeedListItem key={e.id}>
+            <Styled.GalleryImgWrap>
+              <img src={e.image_urls[0]} alt="샘플이미지" />
+              {e.image_urls.length > 1 && <Styled.StyledCopyIcon />}
+            </Styled.GalleryImgWrap>
+          </Styled.FeedListItem>
+        );
+      })}
+    </Styled.GalleryFeed>
   );
 };
 

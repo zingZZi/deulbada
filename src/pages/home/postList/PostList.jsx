@@ -17,7 +17,7 @@ const PostList = () => {
     };
     getPost();
   }, []);
-  console.log(postList);
+  //console.log(postList);
   return (
     <>
       {postList && postList.length > 0 ? (
@@ -31,6 +31,7 @@ const PostList = () => {
                   feedList={true}
                   profileImg={e.profile_image}
                   to={`/profile/${e.username}`}
+                  feedData={e}
                 />
                 <PostContent
                   contet={e.content}

@@ -11,6 +11,11 @@ export const NoResult = styled.p`
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
+  gap: 1.5rem;
   font-size: 2rem;
   color: ${({ theme }) => theme.colors.white500};
+  svg {
+    margin-top: -4vh;
+  }
 `;
