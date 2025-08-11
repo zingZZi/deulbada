@@ -16,23 +16,25 @@ import { setTokens, clearTokens, getAccessToken } from './tokenStore';
 export async function login(arg1, arg2) {
   // 1) 인자 유연 처리
   let account_id, password;
-  if (typeof arg1 === 'object' && arg1 !== null) {
+
+  if (typeof arg1 === 'object' && arg1 !== null && !Array.isArray(arg1)) {
+    // FormData 방지: 평범한 객체만 허용
     ({ account_id, password } = arg1);
   } else {
     account_id = arg1;
     password = arg2;
   }
 
-  // 2) 전처리(트림) 및 기본값
-  account_id = (account_id ?? '').trim();
-  password = (password ?? '');
+  // 2) 전처리(트림/정규화)
+  account_id = String(account_id ?? '').trim().toLowerCase();
+  password   = String(password ?? '').trim();
 
-  // 3) 테스트용 더미 로그인 (로컬에서 서버 없이 동작 확인)
+  // 3) 테스트용 더미 로그인
   if (account_id === 'test@example.com' && password === 'password123') {
     const access = 'dummy-access-token';
     const refresh = 'dummy-refresh-token';
     setTokens(access, refresh);
-    console.log('[AuthService] Dummy login successful. Access:', access, 'Refresh:', refresh);
+    console.log('[AuthService] Dummy login successful', { access, refresh });
     return { access, refresh };
   }
 
@@ -46,7 +48,7 @@ export async function login(arg1, arg2) {
   const { access, refresh } = data || {};
   if (!access || !refresh) throw new Error('토큰 없음');
   setTokens(access, refresh);
-  console.log('[AuthService] Login successful. Access:', access, 'Refresh:', refresh);
+  console.log('[AuthService] Login successful', { access, refresh });
   return { access, refresh };
 }
 

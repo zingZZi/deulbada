@@ -44,9 +44,8 @@ const JoinProducer = () => {
           fullAddress += extraAddress ? ` (${extraAddress})` : '';
         }
 
-        // 상태 업데이트
-        setPostalCode(data.zonecode);     // 우편번호
-        setAddress(fullAddress);          // 도로명 주소
+        setPostalCode(data.zonecode);   
+        setAddress(fullAddress);          
       },
     }).open();
   };

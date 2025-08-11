@@ -1,6 +1,6 @@
 // src/api/auth.js
-import api from './api'; // ✅ api.js의 default export
-import { setTokens } from '../auth/tokenStore'; // ✅ api.js가 사용하는 저장소와 동일한 유틸
+import api from './api'; // api.js의 default export
+import { setTokens } from '../auth/tokenStore'; // api.js가 사용하는 저장소와 동일한 유틸
 
 export const login = async (account_id, password) => {
   try {

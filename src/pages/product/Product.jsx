@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { ImageIcon } from '../../components/icon/Icons';
 import DefaultHeader from '../../components/header/defaultHeader/DefaultHeader';
 import { useLocation } from 'react-router-dom';
+import api from '../../api/api';
+import { getAccessToken } from '../../auth/tokenStore';
 
 const Product = () => {
   const location = useLocation();  
@@ -13,6 +15,7 @@ const Product = () => {
   const [price, setPrice] = useState('');
   const [name, setName] = useState('');            
   const [link, setLink] = useState('');  
+  const [imageInfo, setImageInfo] = useState(null);
 
   const onHeaderAction = (actionKey) => {
     if (actionKey === 'saveProfile') {
@@ -20,14 +23,53 @@ const Product = () => {
     }
   };
 
+  // 이미지 업로드 함수 (api 인스턴스 사용: JWT 자동 첨부)
+  const uploadImage = async (file) => {
+    const fd = new FormData();
+    fd.append('image', file);
+
+    const { data } = await api.post('/api/uploads/images/', fd, {
+      // ❗ Axios는 FormData면 Content-Type을 자동으로 boundary까지 맞춰줍니다.
+      // 오히려 수동으로 넣으면 boundary 빠져서 415/400 납니다.
+      headers: { 'Content-Type': undefined },
+      __skipAuthRedirect: true, // (디버그용) 401이어도 로그인페이지로 튕기지 않게
+    });
+    return Array.isArray(data.results) ? data.results[0] : data;
+  };
+
+  // 이미지 변경 이벤트 핸들러
+  const handleImageChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) return alert('이미지 파일만 업로드할 수 있어요.');
+    const MAX = 5 * 1024 * 1024; // 5MB
+    if (file.size > MAX) return alert('이미지 크기는 5MB 이하만 가능합니다.');
+
+  setPreview(URL.createObjectURL(file));
+
+  console.log('[UPLOAD] token now:', getAccessToken()); // 값이 보여야 정상
+
+    try {
+      // 이미지 업로드 API 호출
+      const info = await uploadImage(file);
+      setImageInfo(info); 
+      console.log('업로드 성공:', info);
+    } catch (err) {
+      console.error('업로드 실패:', err);
+      alert('이미지 업로드에 실패했습니다.');
+    }
+  };
+
   const saveProfileData = async () => {
     const payload = {
+      imageUrl: imageInfo?.image,
+      hasImage: !!imageInfo,
       name,
       price: price.replaceAll(',', ''),
       link,
       tags,
       category: businessType,
-      hasImage: !!preview,
     };
     if (!payload.name.trim()) return alert('상품명을 입력해 주세요.');
     if (!payload.price.trim()) return alert('가격을 입력해 주세요.');
@@ -60,13 +102,6 @@ const Product = () => {
   useEffect(() => {
     return () => { if (preview) URL.revokeObjectURL(preview); };
   }, [preview]);
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setPreview(URL.createObjectURL(file));
-    }
-  };
 
   const formatPrice = (value) => {
     const onlyNumber = value.replace(/[^0-9]/g, '');

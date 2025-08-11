@@ -3,7 +3,7 @@ import axios from 'axios';
 import { getAccessToken, getRefreshToken, setTokens, clearTokens } from '../auth/tokenStore';
 
 // 주소를 그냥 고정
-const BASE_URL = 'https://43.201.70.73';
+const BASE_URL = 'http://43.201.70.73';
 const LOGIN_PATH = '/login';
 let refreshPromise = null;
 
@@ -13,18 +13,20 @@ function redirectToLogin() {
 
 const api = axios.create({
   baseURL: BASE_URL,
-  headers: { 'Content-Type': 'application/json' },
   timeout: 15000,
 });
 
 // 요청 시 Access Token 붙이기
 api.interceptors.request.use((config) => {
-  const access = getAccessToken();
-  if (access) {
-    config.headers = { ...(config.headers || {}), Authorization: `Bearer ${access}` };
-    console.log('[API] Access token attached:', access);
+  const t = getAccessToken();
+  if (!config.headers) config.headers = {};
+  if (t) {
+    // 덮어쓰지 말고 직접 키만 세팅
+    config.headers.Authorization = `Bearer ${t}`;
+    const mask = s => (s?.length>12 ? `${s.slice(0,6)}...${s.slice(-6)}` : s);
+    console.log('[API] token attached:', mask(t));
   } else {
-    console.log('[API] No access token found');
+    console.log('[API] No access token');
   }
   return config;
 });
@@ -79,5 +81,7 @@ api.interceptors.response.use(
     throw error;
   }
 );
+
+if (typeof window !== 'undefined') window.apiTest = api;
 
 export default api;
