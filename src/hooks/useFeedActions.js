@@ -2,6 +2,7 @@
 /* eslint-disable no-unused-vars */
 import { usePopup } from '../context/PopupContext';
 import { usePageActions } from '../context/PageActionsContext';
+import { delePost } from '../api/postApi';
 
 const useFeedActions = () => {
   // 전역 팝업 컨텍스트 사용
@@ -31,6 +32,23 @@ const useFeedActions = () => {
     return currentUserId && feedData?.account_id === currentUserId;
   };
 
+  //게시물 삭제 API
+  const handleDeletePost = async (postId) => {
+    try {
+      await delePost(postId);
+      console.log('게시물 삭제 성공');
+      // 성공 시 추가 처리 (예: 피드 목록 업데이트, 페이지 이동 등)
+      // executeAction('refreshFeedList'); // 예시
+    } catch (error) {
+      console.error('게시물 삭제 실패:', error);
+      const errorModalData = {
+        modalList: [{ text: '확인', action: () => closeModal() }],
+        text: '게시물 삭제에 실패했습니다.',
+      };
+      openModal(errorModalData);
+    }
+  };
+
   const handleFeedAction = (actionKey, feedData) => {
     console.log('handleFeedAction called with:', actionKey, feedData);
 
@@ -46,11 +64,25 @@ const useFeedActions = () => {
             {
               label: '삭제',
               action: () => {
-                // 모달 설정을 먼저 저장한 후 팝업 닫고 모달 열기
+                // postId 확인
+                const postId = feedData?.id || feedData?.post_id;
+                if (!postId) {
+                  console.error('게시물 ID를 찾을 수 없습니다.');
+                  closePopup();
+                  return;
+                }
+
+                // 삭제 확인 모달 설정
                 const modalData = {
                   modalList: [
                     { text: '취소', action: () => closeModal() },
-                    { text: '삭제', action: () => console.log('삭제') },
+                    {
+                      text: '삭제',
+                      action: async () => {
+                        closeModal(); // 모달 먼저 닫기
+                        await handleDeletePost(postId); // API 호출
+                      },
+                    },
                   ],
                   text: '게시글을 삭제할까요?',
                 };

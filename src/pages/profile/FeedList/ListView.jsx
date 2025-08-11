@@ -1,8 +1,10 @@
 import * as Styled from './../Profille.style';
 import UserInfo from '../../../components/userInfo/UserInfo';
 import PostContent from '../../../components/PostContent/PostContent';
+import { useScrollObserver } from '../../../hooks/useScrollObserver';
 const ListView = ({ userFeed }) => {
-  console.log(userFeed);
+  const isBottom = useScrollObserver();
+  console.log(isBottom);
   return (
     <>
       <Styled.FeedList>

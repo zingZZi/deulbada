@@ -1,8 +1,7 @@
 import * as Styled from './SellProduct.style';
-import { Swiper, SwiperSlide } from 'swiper/react';
+import { Swiper } from 'swiper/react';
 import 'swiper/css';
 const SellProduct = ({ userProduct }) => {
-  console.log(userProduct);
   return (
     <Styled.SellProduct>
       <Styled.SellProductTitle>판매중인 상품</Styled.SellProductTitle>
@@ -15,7 +14,7 @@ const SellProduct = ({ userProduct }) => {
                 <img src={e.image_urls} alt="샘플이미지" />
               </Styled.BoxImgWrap>
               <Styled.ProductName>{e.name}</Styled.ProductName>
-              <Styled.ProductPrice>{e.price}원</Styled.ProductPrice>
+              <Styled.ProductPrice>{e.price.toLocaleString('ko-KR')}원</Styled.ProductPrice>
             </Styled.AutoWidthSlide>
           );
         })}

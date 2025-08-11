@@ -2,6 +2,7 @@ import styled, { css } from 'styled-components';
 import { Link } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules'; // Import modules
+import { boxImgWrap } from '../../styles/Common.style';
 
 export const PostContentLayout = styled.section`
   margin-top: 1.2rem;
@@ -47,18 +48,20 @@ export const CustomSwiper = styled(Swiper)`
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    bottom: 0.4rem;
+    bottom: 1.2rem;
     z-index: 1;
+    display: flex;
+    gap: 0.6rem;
   }
   .swiper-pagination-bullet {
     display: block;
     border-radius: 50%;
     width: 0.6rem;
     height: 0.6rem;
-    color: ${({ theme }) => theme.colors.white100};
+    background-color: ${({ theme }) => theme.colors.white100};
   }
   .swiper-pagination-bullet-active {
-    color: ${({ theme }) => theme.colors.primary};
+    background-color: ${({ theme }) => theme.colors.primary};
   }
 `;
 
@@ -68,6 +71,9 @@ const imgBox = css`
 `;
 export const CustomSwiperItem = styled(SwiperSlide)`
   ${imgBox}
+  ${boxImgWrap}
+  height: 0%;
+  padding-top: 75%;
 `;
 export const ImgBoxWrap = styled.figure`
   margin-top: 1.5rem;

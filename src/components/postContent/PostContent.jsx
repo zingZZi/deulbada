@@ -56,7 +56,7 @@ const PostContent = ({ images, contet, date, id, isLiked = false }) => {
       )}
 
       {images && images.length > 1 && (
-        <Styled.CustomSwiper pagination={true} modules={[Pagination]}>
+        <Styled.CustomSwiper autoHeight={true} pagination={true} modules={[Pagination]}>
           {images.map((e, i) => (
             <Styled.CustomSwiperItem key={i}>
               <img src={e} alt="업로드이미지" />

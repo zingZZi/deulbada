@@ -9,7 +9,7 @@ export const getPostDetail = (id) => axiosInstance.get(`/posts/${id}/`);
 // GET: user  postList조회
 export const getUserPost = (userId) => axiosInstance.get(`/posts/${userId}/`);
 // Delete: user  post 삭제
-export const getDelePost = (userId) => axiosInstance.delete(`/posts/${userId}/`);
+export const delePost = (postId) => axiosInstance.delete(`/posts/${postId}/`);
 
 //좋아요 상호작용
 export const togglePostLike = (id) => axiosInstance.post(`/posts/${id}/like/`);

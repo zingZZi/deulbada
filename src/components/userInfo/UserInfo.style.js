@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 import { BasicBtn, LineBtn, NolineIconBtn } from '../../styles/Button.style';
+import { boxImgWrap } from '../../styles/Common.style';
 export const UserInfoLayout = styled(Link)`
   display: flex;
   gap: 1.2rem;
@@ -12,14 +13,7 @@ export const ProfileBox = styled.div`
   height: 0;
   padding-top: 12%;
   border-radius: 50%;
-  overflow: hidden;
-  position: relative;
-  img {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
+  ${boxImgWrap}
 `;
 
 export const InfoBox = styled.div`

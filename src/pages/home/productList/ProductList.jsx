@@ -4,6 +4,7 @@ import { fetchProductFilter } from '../../../api/productApi';
 import ProductItem from './ProductItem';
 import { useScrollObserver } from '../../../hooks/useScrollObserver';
 import LoadingComponent from '../../../components/loding/Loding';
+import { PackageSearchIcon } from '../../../components/icon/Icons';
 
 const ProductList = ({ subCategory }) => {
   const [productList, setProductList] = useState([]);
@@ -36,18 +37,15 @@ const ProductList = ({ subCategory }) => {
   //데이터 불러오기
   useEffect(() => {
     if (!subCategory) return;
-
     const getProduct = async () => {
       setIsLoading(true);
       try {
         const response = await fetchProductFilter(subCategory, page);
         const data = response.data.results || response.data;
         const nextPage = response.data.next;
-
         if (nextPage === null) {
           setMorepage(false);
         }
-
         if (page === 1) {
           setProductList(data || []);
           setIsInitialLoad(false);
@@ -66,14 +64,27 @@ const ProductList = ({ subCategory }) => {
 
   return (
     <Styled.ProductListWrap>
-      <Styled.ProductListTitle>
-        지금 가장 <b>인기있는 상품!</b>
-      </Styled.ProductListTitle>
-      <Styled.ProductList>
-        {productList.map((e, i) => {
-          return <ProductItem data={e} key={i} />;
-        })}
-      </Styled.ProductList>
+      {/* 상품이 있을 때만 제목과 리스트 표시 */}
+      {productList.length > 0 && (
+        <>
+          <Styled.ProductListTitle>
+            지금 가장 <b>인기있는 상품!</b>
+          </Styled.ProductListTitle>
+          <Styled.ProductList>
+            {productList.map((e, i) => {
+              return <ProductItem data={e} key={i} />;
+            })}
+          </Styled.ProductList>
+        </>
+      )}
+
+      {/* 상품이 없고 로딩이 끝났을 때 메시지 표시 */}
+      {productList.length === 0 && !isLoading && !isInitialLoad && (
+        <Styled.NoList>
+          <PackageSearchIcon size={'6rem'} />
+          판매중인 상품이 없습니다!
+        </Styled.NoList>
+      )}
 
       {isLoading && (
         <div

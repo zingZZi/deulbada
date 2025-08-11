@@ -54,7 +54,12 @@ const ProfileInfo = ({ user_name, isMyProfile }) => {
       {isMyProfile ? (
         <Styled.ProfileActions>
           <li>
-            <LineLink radius={'medium'} padding={'.8rem 2.6rem'} fontSize={'base'}>
+            <LineLink
+              radius={'medium'}
+              padding={'.8rem 2.6rem'}
+              fontSize={'base'}
+              to="/profile/edit"
+            >
               프로필 수정
             </LineLink>
           </li>

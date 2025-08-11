@@ -98,6 +98,7 @@ const Search = ({ searchQuery }) => {
             return (
               <Styled.SearchItem key={user.id}>
                 <UserInfo
+                  to={`/profile/${user.username}`}
                   key={user.id}
                   username={user.username}
                   accountId={user.account_id}

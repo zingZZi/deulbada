@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 export const ProfileInfo = styled.section`
+  margin-bottom: 0.6rem;
   padding: 3rem 0 2.6rem;
   text-align: center;
   background-color: ${({ theme }) => theme.colors.white100};

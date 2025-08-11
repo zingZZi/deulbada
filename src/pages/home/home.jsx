@@ -1,16 +1,17 @@
-// components/Home/Home.jsx
 import { useEffect, useState } from 'react';
 import CategoryTab from './categoryTab/CategoryTab.jsx';
 import * as Styled from './Home.style.js';
 import theme from '../../styles/theme.js';
 import ProductList from './productList/ProductList.jsx';
 import PostList from './postList/PostList.jsx';
+import LoadingComponent from '../../components/loding/Loding';
 import { useTheme } from '../../context/ThemeContext';
 
 const Home = () => {
   const [categorySelected, setCategorySelected] = useState('default');
   const [mainTitle, setMainTitle] = useState('');
   const [subCategory, setSubCategory] = useState(null);
+  const [loading, setLoading] = useState(false);
   const { updateTheme, resetTheme } = useTheme();
 
   // 테마 업데이트 로직
@@ -41,6 +42,16 @@ const Home = () => {
     }
   }, [categorySelected]);
 
+  // 카테고리 변경 시 로딩 상태는 자식 컴포넌트에서 관리
+  // useEffect(() => {
+  //   setLoading(true);
+  // }, [categorySelected, subCategory]);
+
+  // 로딩 상태 업데이트 함수
+  const handleLoadingChange = (isLoading) => {
+    setLoading(isLoading);
+  };
+
   // 컴포넌트 언마운트 시 기본 테마로 복원
   useEffect(() => {
     return () => {
@@ -59,7 +70,17 @@ const Home = () => {
       />
       <Styled.StyledContent>
         <h3 className="text-ir">{mainTitle}</h3>
-        {categorySelected === 'default' ? <PostList /> : <ProductList subCategory={subCategory} />}
+        {loading ? (
+          <LoadingComponent />
+        ) : (
+          <>
+            {categorySelected === 'default' ? (
+              <PostList onLoadingChange={handleLoadingChange} />
+            ) : (
+              <ProductList subCategory={subCategory} onLoadingChange={handleLoadingChange} />
+            )}
+          </>
+        )}
       </Styled.StyledContent>
     </Styled.StyledHome>
   );
