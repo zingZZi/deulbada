@@ -3,9 +3,8 @@ import axios from 'axios';
 const getToken = async () => {
   try {
     const response = await axios.post('http://43.201.70.73/api/token/', {
-      account_id: 'admin1',
-      username: 'admin1',
-      password: 'admin1',
+      email: 'admin2@naver.com',
+      password: 'admin2',
     });
     return response.data.access;
   } catch (error) {

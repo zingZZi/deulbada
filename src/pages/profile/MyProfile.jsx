@@ -10,23 +10,27 @@ import { getProductUser } from '../../api/productApi';
 import LoadingComponent from '../../components/loding/Loding';
 import { fetchPosts } from '../../api/postApi';
 import useProfileRedirect from '../../hooks/useProfileRedirect';
+import { fetchUser } from '../../api/userApi';
 
 const MyProfile = () => {
-  const { user_name } = useParams();
+  const { user_name: paramUserName } = useParams();
   const [loading, setLoading] = useState(true);
+  const [userInfo, setUserInfo] = useState([]);
   const [userProduct, setUserProduct] = useState([]);
   const [userFeed, setUserFeed] = useState([]);
   const [feedType, setFeedType] = useState('list');
 
-  useProfileRedirect(user_name);
+  // URL 파라미터로부터 온 user_name 또는 로컬 스토리지에서 가져오기
+  const getTargetUserName = () => {
+    return paramUserName || localStorage.getItem('user_name');
+  };
 
-  function feedTypeHandler(e) {
+  const targetUserName = getTargetUserName();
+
+  useProfileRedirect(targetUserName);
+
+  const feedTypeHandler = (e) => {
     setFeedType(e.currentTarget.dataset.type);
-  }
-
-  // 현재 사용자 ID 가져오는 함수
-  const getCurrentUserId = () => {
-    return localStorage.getItem('user_name');
   };
 
   useEffect(() => {
@@ -35,30 +39,53 @@ const MyProfile = () => {
     const getProfileData = async () => {
       try {
         setLoading(true);
-        // 현재 사용자 정보 결정
-        // 1. URL 파라미터가 있으면 사용 (리다이렉트 전)
-        // 2. 없으면 localStorage에서 가져오기 (리다이렉트 후)
-        const targetUserId = user_name || getCurrentUserId();
-        console.log('프로필 데이터 로드:', {
-          url_user_name: user_name,
-          localStorage_id: getCurrentUserId(),
-          target: targetUserId,
-        });
-        if (!targetUserId) {
-          console.error('사용자 ID를 찾을 수 없습니다');
+
+        if (!targetUserName) {
+          console.error('사용자 이름을 찾을 수 없습니다.');
           return;
         }
-        // API 호출
-        const products = await getProductUser(targetUserId);
-        const feedData = await fetchPosts();
-        console.log('API 응답:', { products, feedData });
+
+        // 병렬로 API 호출
+        const [userResponse, productsResponse, feedResponse] = await Promise.allSettled([
+          fetchUser(targetUserName),
+          getProductUser(targetUserName),
+          fetchPosts(targetUserName), // 특정 사용자의 피드만 가져오기 (API에 따라 파라미터 추가 필요)
+        ]);
+
         if (isMounted) {
-          setUserProduct(products?.data?.results || []);
-          setUserFeed(feedData?.data?.results || []);
+          // 사용자 정보 처리
+          if (userResponse.status === 'fulfilled') {
+            setUserInfo(userResponse.value?.data?.results || userResponse.value?.data || []);
+          } else {
+            console.error('사용자 정보 로드 실패:', userResponse.reason);
+            setUserInfo([]);
+          }
+
+          // 상품 정보 처리
+          if (productsResponse.status === 'fulfilled') {
+            setUserProduct(productsResponse.value?.data?.results || []);
+          } else {
+            console.error('상품 정보 로드 실패:', productsResponse.reason);
+            setUserProduct([]);
+          }
+
+          // 피드 정보 처리
+          if (feedResponse.status === 'fulfilled') {
+            // 특정 사용자의 피드만 필터링 (API에서 직접 필터링되지 않는 경우)
+            const allFeeds = feedResponse.value?.data?.results || [];
+            const userSpecificFeeds = allFeeds.filter(
+              (feed) => feed.author === targetUserName || feed.user === targetUserName
+            );
+            setUserFeed(userSpecificFeeds);
+          } else {
+            console.error('피드 정보 로드 실패:', feedResponse.reason);
+            setUserFeed([]);
+          }
         }
       } catch (error) {
-        console.error('프로필페이지 정보를 불러오지 못했습니다.', error);
+        console.error('프로필 데이터를 불러오는 데 실패했습니다.', error);
         if (isMounted) {
+          setUserInfo([]);
           setUserProduct([]);
           setUserFeed([]);
         }
@@ -68,30 +95,37 @@ const MyProfile = () => {
         }
       }
     };
-    getProfileData();
+
+    if (targetUserName) {
+      getProfileData();
+    } else {
+      setLoading(false);
+    }
+
     return () => {
       isMounted = false;
     };
-  }, [user_name]); // user_name이 변경될 때마다 실행
+  }, [targetUserName]); // targetUserName을 의존성 배열에 추가
 
-  // 로딩 중일 때 로딩 메시지만 표시
   if (loading) {
     return <LoadingComponent />;
   }
 
-  // 현재 표시할 사용자 이름 결정
-  const displayUserName = user_name || getCurrentUserId();
+  if (!targetUserName) {
+    return <div>사용자를 찾을 수 없습니다.</div>;
+  }
+
   return (
     <Styled.ProfileBg>
-      {/* 상단프로필정보 */}
-      <ProfileInfo user_name={displayUserName} isMyProfile={true} />
+      {/* 상단 프로필 정보 */}
+      <ProfileInfo user_name={targetUserName} isMyProfile={true} userInfo={userInfo} />
 
-      {/* 판매중인 상품영역 / 제품있을시에만 노출 */}
+      {/* 판매 중인 상품 */}
       {userProduct.length > 0 && <SellProduct userProduct={userProduct} />}
 
-      {/* 피드영역 */}
+      {/* 피드 영역 */}
       <Styled.FeedSection>
-        <h2 className="text-ir">피드리스트 입니다.</h2>
+        <h2 className="text-ir">피드 리스트입니다.</h2>
         <Styled.FeedTypeBtns>
           <Styled.FeedTypeItems data-type="list" onClick={feedTypeHandler}>
             <LayoutListIcon size={26} className={feedType === 'list' ? 'active' : null} />
@@ -103,7 +137,6 @@ const MyProfile = () => {
           </Styled.FeedTypeItems>
         </Styled.FeedTypeBtns>
 
-        {/* 피드 리스트 영역 */}
         {feedType === 'list' && <ListView userFeed={userFeed} />}
         {feedType === 'gallery' && <GalleryView userFeed={userFeed} />}
       </Styled.FeedSection>

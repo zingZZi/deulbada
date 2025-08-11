@@ -1,8 +1,7 @@
 import axiosInstance from './axiosInstance';
 
 // GET: user 정보
-export const fetchUser = (accountId) => axiosInstance.get(`/users/${accountId}`);
-
+export const fetchUser = (accountId) => axiosInstance.get(`/api/users/profiles/${accountId}`);
 // GET: user 검색
 export const SearchUser = (searchString) => {
   console.log('🚀 API 호출 시작 - 검색어:', searchString);
@@ -20,7 +19,9 @@ export const SearchUser = (searchString) => {
 };
 
 // GET: 팔로워 정보
-export const fetchFollowers = (accountId) => axiosInstance.get(`/users/followers/${accountId}`);
+export const fetchFollowers = (accountId) =>
+  axiosInstance.get(`/api/users/profiles/${accountId}/followers/`);
 
 // GET: 팔로잉 정보
-export const fetchFollowing = (accountId) => axiosInstance.get(`/users/following/${accountId}`);
+export const fetchFollowing = (accountId) =>
+  axiosInstance.get(`/api/users/profiles/${accountId}/following/`);
