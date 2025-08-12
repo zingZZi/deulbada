@@ -23,23 +23,26 @@ const ChatList = () => {
         }
         const data = await res.json();
 
-        // 예시 매핑: 서버 스키마에 맞게 조정
-        // room.participants: [ {id, username, profile_image}, ... ]
-        // room.last_message: { content, created_at }
+        // 스키마: user1_info / user2_info / messages[]
         const normalized = data.map((room) => {
-          const participants = room.participants || room.members || [];
-          const partner = participants.find(p => (p.id ?? p.user_id) !== myUserId) || {};
-          const partnerId = partner.id ?? partner.user_id;
+          const u1 = room.user1_info;
+          const u2 = room.user2_info;
+          const meIsU1 = u1?.id === myUserId;
+          const partner = meIsU1 ? u2 : u1;               // 상대 유저
+
+          const msgs = Array.isArray(room.messages) ? room.messages : [];
+          const last = msgs.length ? msgs[msgs.length - 1] : null;  // 마지막 메시지
+
           return {
             roomId: room.id,
             roomName: room.room_name || room.name || String(room.id),
-            partnerId,
-            partnerName: partner.username || partner.account_id || '알 수 없는 사용자',
-            partnerImage: partner.profile_image || partner.avatar_url || '',
-            lastMessage: room.last_message?.content || '',
-            lastTime: room.last_message?.created_at || room.updated_at || room.created_at,
+            partnerId: partner?.id,
+            partnerName: partner?.username || partner?.account_id || '알 수 없는 사용자',
+            partnerImage: partner?.profile_image || partner?.avatar_url || '',
+            lastMessage: last?.content || '',
+            lastTime: last?.created_at || room.created_at,
           };
-        });
+        }).filter(r => !!r.partnerId); // partnerId 없는 방 제외
 
         setRooms(normalized);
       } catch (e) {
