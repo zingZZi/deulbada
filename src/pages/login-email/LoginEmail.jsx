@@ -1,7 +1,7 @@
 import * as Styled from './LoginEmail.style';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { login } from '../../api/auth';
+import { login } from '../../auth/authService';
 
 const LoginEmail = () => {
   const [email, setEmail] = useState('');
@@ -25,12 +25,14 @@ const LoginEmail = () => {
     if (Object.keys(newErrors).length > 0) return;
 
     try {
-      const { accessToken, refreshToken } = await login(email, password);
-      localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('refreshToken', refreshToken);
-      navigate('/dashboard');
+      // ✅ 수정: authService의 login 함수 사용 (토큰 자동 저장됨)
+      const result = await login(email, password);
+      console.log('[LoginEmail] Login successful:', result);
+      
+      // ✅ 수정: /home으로 이동 (실제 라우트에 맞춤)
+      navigate('/home');
     } catch (err) {
-      console.error(err);
+      console.error('[LoginEmail] Login failed:', err);
       setErrors({ general: '로그인에 실패했습니다.' });
     }
   };

@@ -141,3 +141,18 @@ export const Select = styled.select.attrs((props) => ({
     color: ${({ theme }) => theme.colors.black};
   }
 `;
+
+export const Button = styled.button`
+  padding: 12px 20px;
+  background-color: #A2D098;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 20px;
+  
+  &:hover {
+    background-color: #8BC085;
+  }
+`;

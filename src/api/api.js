@@ -2,6 +2,7 @@
 import axios from 'axios';
 import { getAccessToken, getRefreshToken, setTokens, clearTokens } from '../auth/tokenStore';
 
+
 // 주소를 그냥 고정
 const BASE_URL = 'http://43.201.70.73';
 const LOGIN_PATH = '/login';
