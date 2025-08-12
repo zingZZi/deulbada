@@ -105,7 +105,13 @@ const ChatRoom = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        const list = await res.json().catch(() => []);
+        const payload = await res.json().catch(() => []);
+        const list = Array.isArray(payload)
+          ? payload
+          : Array.isArray(payload?.results)
+          ? payload.results
+          : [];
+
         if (!res.ok) {
           if (res.status === 401) {
             // navigate('/login'); // ← 임시 비활성
@@ -210,7 +216,48 @@ const ChatRoom = () => {
         onSend={(msg) => {
           if (msg.type === 'text') {
             const ok = sendText(msg.content);
-            if (!ok) alert('연결 준비 중이에요. 잠시 후 다시 시도해주세요.');
+            if (!ok) {
+              // 낙관적 추가(테스트용) — 실제 연동 후엔 제거 가능
+              setChatMessages((prev) => prev.concat({
+                id: Date.now(),
+                sender: 'me',
+                type: 'text',
+                content: msg.content,
+                image: null,
+                createdTime: new Date().toISOString(),
+              }));
+            }
+            } else if (msg.type === 'image') {
+      // 1) 미리보기 URL 확보 (file, preview, image 중 사용 가능 한 걸 선택)
+      const previewUrl =
+        msg.preview || msg.image || (msg.file ? URL.createObjectURL(msg.file) : null);
+
+      // 2) 화면에 "먼저" 붙이기 (낙관적 추가)
+      const tempId = `tmp-${Date.now()}`;
+      setChatMessages((prev) =>
+        prev.concat({
+          id: tempId,
+          sender: 'me',
+          type: 'image',
+          content: '',
+          image: previewUrl,
+          createdTime: new Date().toISOString(),
+        })
+      );
+
+      // 3) (선택) 서버 업로드 or 업로드된 URL로 WS 전송
+      //    아직 업로드 API가 정해지지 않았으니, 업로드가 있다면 아래에 붙이면 됨.
+      //    예: const uploadedUrl = await uploadImageAndGetUrl(msg.file);
+      //    const ok = sendImage(uploadedUrl);
+      //
+      //    지금은 WS가 image_url만 받는 스펙이므로, 업로드 URL이 없으면
+      //    낙관 표시만 하고 끝낸다. (업로드/전송 연동되면 여기 채워넣기)
+      //
+      //    참고: ObjectURL 해제는 이미지가 실제로 DOM에 그려진 뒤가 안전.
+      //    잠깐 쓰는 프리뷰면 setTimeout으로 약간 뒤에 revoke해도 OK.
+      if (msg.file && previewUrl?.startsWith('blob:')) {
+        setTimeout(() => URL.revokeObjectURL(previewUrl), 20_000); // 20초 후 해제(임시)
+      }
           } else {
             alert('이미지 전송은 업로드 스펙 확정 후 연결할게요!');
           }
