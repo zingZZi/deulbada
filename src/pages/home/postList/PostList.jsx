@@ -78,7 +78,7 @@ const PostList = () => {
         </ul>
       ) : (
         <Styled.NoList>
-          <CameraIcon size={'6rem'} />
+          <CameraIcon size={'4rem'} />
           게시물 없음
         </Styled.NoList>
       )}

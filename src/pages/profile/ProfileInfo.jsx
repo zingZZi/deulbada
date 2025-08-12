@@ -56,9 +56,6 @@ const ProfileInfo = ({ user_name, isMyProfile, userInfo }) => {
       setIsLoading(false);
     }
   };
-
-  console.log(userInfo);
-
   return (
     <Styled.ProfileInfo>
       <h2 className="text-ir">프로필 정보 영역입니다.</h2>

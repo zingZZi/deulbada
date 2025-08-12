@@ -4,6 +4,8 @@ import defaultProfileImg from './../../assets/images/defaultProfileImg.png'; //�
 import { EllipsisVerticalIcon } from '../icon/Icons';
 import Badge from '../badge/Badge';
 import useFeedActions from '../../hooks/useFeedActions';
+import { useState } from 'react';
+import { toggleFollow } from '../../api/userApi';
 
 const UserInfo = ({
   profile_image,
@@ -16,15 +18,17 @@ const UserInfo = ({
   btns,
   feedList = false,
   is_farm_verified = false,
-  // 피드 데이터 관련 props 추가
+  onFollowToggle,
   feedData = null, // 전체 피드 데이터 객체
   userId = null, // 게시물 작성자 ID (대안으로 사용)
 }) => {
+  const [isLoading, setIsLoading] = useState(false);
+
   const highlightMatch = (text) => {
-    if (!highlightQuery) return text;
+    if (!text || !highlightQuery) return text || '';
+
     const regex = new RegExp(`(${highlightQuery})`, 'gi');
     console.log('highlight:', text.split(regex));
-
     return text
       .split(regex)
       .map((part, i) =>
@@ -61,6 +65,25 @@ const UserInfo = ({
     };
   };
 
+  const follwHandler = async () => {
+    if (isLoading) return;
+    try {
+      setIsLoading(true);
+      // API 호출
+      const result = await toggleFollow(accountId);
+
+      // 성공 시 부모 컴포넌트에 알림
+      if (onFollowToggle) {
+        onFollowToggle(accountId, result); // accountId와 결과를 전달
+      }
+    } catch (error) {
+      console.error('팔로우/언팔로우 처리 중 오류:', error);
+      alert('팔로우 처리 중 오류가 발생했습니다.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <>
       <Styled.UserInfoLayout to={to}>
@@ -88,7 +111,12 @@ const UserInfo = ({
             팔로잉
           </Styled.FollwerBtn>
         ) : (
-          <Styled.FollwerLineBtn padding={'.7rem 1.1rem'} radius={'xsmall'} fontSize={'small'}>
+          <Styled.FollwerLineBtn
+            padding={'.7rem 1.1rem'}
+            radius={'xsmall'}
+            fontSize={'small'}
+            onClick={follwHandler}
+          >
             취소
           </Styled.FollwerLineBtn>
         ))}

@@ -21,12 +21,18 @@ const Followers = () => {
   console.log(followers);
   return (
     <Styled.List>
-      <Styled.Item>
-        <UserInfo username="test" accountId="testest" btns="followings" />
-      </Styled.Item>
-      <Styled.Item>
-        <UserInfo username="test" accountId="testest" btns="follower" />
-      </Styled.Item>
+      {followers.map((e) => {
+        return (
+          <Styled.Item key={e.id}>
+            <UserInfo
+              username={e.username}
+              accountId={e.account_id}
+              btns="followings"
+              profile_image={e.profile_image}
+            />
+          </Styled.Item>
+        );
+      })}
     </Styled.List>
   );
 };
