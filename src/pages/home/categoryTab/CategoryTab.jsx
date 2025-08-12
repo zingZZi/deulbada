@@ -58,16 +58,20 @@ const category = [
 ];
 
 const CategoryTab = ({ setCategorySelected, categorySelected, setSubCategory, subCategory }) => {
-  console.log(subCategory);
-
   function categoryChange(e) {
     const clickedCategory = e.target.dataset.id;
+
     // 이미 활성화된 카테고리를 다시 클릭하면 default로 변경하고 서브카테고리도 초기화
     if (categorySelected === clickedCategory) {
       setCategorySelected('default');
-      setSubCategory(null); // 또는 setSubCategory('') - 초기값에 따라 조정
+      setSubCategory(null);
     } else {
+      // 새로운 카테고리 선택 시 해당 카테고리의 첫 번째 서브카테고리 자동 선택
       setCategorySelected(clickedCategory);
+      const selectedCategoryData = category.find((cat) => cat.type === clickedCategory);
+      if (selectedCategoryData && selectedCategoryData.categories.length > 0) {
+        setSubCategory(selectedCategoryData.categories[0]);
+      }
     }
   }
 

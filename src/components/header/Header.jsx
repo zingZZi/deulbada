@@ -17,6 +17,10 @@ const Header = ({ location, searchQuery, setSearchQuery, config, onAction, right
     }
   };
 
-  return <Styled.Header>{renderHeaderContent(location)}</Styled.Header>;
+  return (
+    <Styled.Header $isMainHeader={location.pathname === '/home'}>
+      {renderHeaderContent(location)}
+    </Styled.Header>
+  );
 };
 export default Header;

@@ -32,10 +32,11 @@ export default function App() {
         {/* 보호 라우트 묶음: 로그인 필요 */}
         <Route element={<RequireAuth />}>
           <Route path="/home" element={<CommonLayout page={'home'} />} />
-          <Route path="/profile/:account_id" element={<CommonLayout page={'profile'} />} />
-          <Route path="/followers" element={<CommonLayout page={'followers'} />} />
-          <Route path="/followings" element={<CommonLayout page={'followings'} />} />
-          <Route path="/myProfile" element={<CommonLayout page={'myprofile'} />} />
+          <Route path="/profile/:user_name" element={<CommonLayout page={'profile'} />} />
+          <Route path="/followers/:user_name" element={<CommonLayout page={'followers'} />} />
+          <Route path="/followings/:user_name" element={<CommonLayout page={'followings'} />} />
+          <Route path="/profile/edit" element={<CommonLayout page={'myprofileEdit'} />} />
+          <Route path="/myprofile" element={<CommonLayout page={'myprofile'} />} />
           <Route path="/search" element={<CommonLayout page={'search'} />} />
           <Route path="/chatList" element={<CommonLayout page={'chatList'} />} />
           <Route path="/chat" element={<CommonLayout page={'chat'} />} />

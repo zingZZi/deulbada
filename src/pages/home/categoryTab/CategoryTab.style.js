@@ -12,6 +12,14 @@ export const CategoryMainTabs = styled.ul`
 export const CategoryMainItem = styled.li`
   width: 50%;
   text-align: center;
+  &:nth-child(2) {
+    button.active {
+      color: ${({ theme }) => theme.colors.subPrimary};
+      &::after {
+        background-color: ${({ theme }) => theme.colors.subPrimary};
+      }
+    }
+  }
 `;
 export const CategoryMainButton = styled.button`
   font-size: 1.6rem;
@@ -59,7 +67,7 @@ export const CategorySubList = styled.ul`
     cursor: pointer;
     &.active {
       div {
-        box-shadow: 0 0 0 5px ${({ theme }) => theme.colors.primary};
+        box-shadow: 0 0 0 0.2rem ${({ theme }) => theme.colors.primary};
       }
       span {
         color: ${({ theme }) => theme.colors.primary};

@@ -3,7 +3,7 @@ import { SwiperSlide } from 'swiper/react';
 import { boxImgWrap } from '../../styles/Common.style';
 export const SellProduct = styled.section`
   padding: 2rem 0 2rem 1.6rem;
-  margin: 0.6rem 0;
+  margin: 0 0 0.6rem;
   background-color: ${({ theme }) => theme.colors.white100};
 `;
 export const SellProductTitle = styled.h2`

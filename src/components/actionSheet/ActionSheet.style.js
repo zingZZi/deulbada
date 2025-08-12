@@ -7,7 +7,7 @@ export const ActionSheetBg = styled.div`
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.4);
-  z-index: 99;
+  z-index: 9;
 `;
 
 export const ActionSheet = styled.ul`

@@ -23,7 +23,7 @@ const BottomNavBar = () => {
           </Styled.BottomLink>
         </Styled.BottomLi>
         <Styled.BottomLi>
-          <Styled.BottomLink to="/myProfile">
+          <Styled.BottomLink to="/myprofile">
             <UserIcon />
             프로필
           </Styled.BottomLink>

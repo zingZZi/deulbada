@@ -1,7 +1,10 @@
 import styled from 'styled-components';
 
 export const Header = styled.header`
+  border-bottom: ${(props) =>
+    props.$isMainHeader ? 'none' : `1px solid ${props.theme.colors.white300}`};
   padding: 0.8rem 1.6rem;
+  //position: sticky;
   /* position: fixed;
   left: 0;
   top: 0;
