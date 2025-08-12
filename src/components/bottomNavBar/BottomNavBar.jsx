@@ -3,7 +3,7 @@ import * as Styled from './BottomNavBar.style';
 
 const BottomNavBar = () => {
   return (
-    <Styled.BottomNav>
+    <Styled.BottomNav data-bottom-nav>
       <Styled.BottomUl>
         <Styled.BottomLi>
           <Styled.BottomLink to="/home">

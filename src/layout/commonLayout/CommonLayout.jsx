@@ -17,6 +17,9 @@ import { PopupProvider, usePopup } from '../../context/PopupContext';
 import MyProfile from '../../pages/profile/MyProfile';
 import ChatRoom from '../../pages/chatRoom/ChatRoom';
 import PostDetail from '../../pages/postDetail/PostDetail';
+import Product from '../../pages/product/Product';
+import PostUpload from '../../pages/postUpload/PostUpload';
+
 import LoadingComponent from '../../components/loding/Loding';
 import { LoadingProvider, useLoading } from '../../context/LoadingContext';
 import MyProfileEdit from '../../pages/myProfileEdit/MyProfileEdit';
@@ -40,10 +43,8 @@ function Content({ page, searchQuery }) {
       return <MyProfile />;
     case 'chatRoom':
       return <ChatRoom />;
-    case 'post':
+    case 'postDetail':
       return <PostDetail />;
-    case 'myprofileEdit':
-      return <MyProfileEdit />;
   }
 }
 

@@ -34,6 +34,7 @@ export const defaultHeaderMap = (pathname) => {
         actionKey: 'openProfileMenu',
       },
     },
+<<<<<<< HEAD
   };
 
   // 정확히 일치하는 경로가 있으면 반환
@@ -64,4 +65,23 @@ export const defaultHeaderMap = (pathname) => {
   }
 
   return {};
+=======
+  },
+    '/product': {
+    leftText: false,
+    rightButton: {
+      type: 'text',
+      text: '저장',
+      actionKey: 'saveProfile',
+    },
+  },
+  '/postUpload': {
+  leftText: '',
+  rightButton: {
+    type: 'text',
+    text: '업로드',
+    actionKey: 'submit-post',
+  },
+},
+>>>>>>> 5aba4e4974e47b7d7b8d4b38ee0b748eb6368298
 };
