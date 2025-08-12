@@ -75,3 +75,12 @@ export function logout() {
   console.log('[AuthService] Logging out');
   clearTokens();
 }
+
+if (typeof window !== 'undefined') {
+  window.authTest = {
+    login,
+    verifyToken,
+    logout
+  };
+  console.log('[AuthService] window.authTest 등록됨');
+}
