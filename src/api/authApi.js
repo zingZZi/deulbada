@@ -4,7 +4,7 @@ import api from './api';
 /**
  * 일반 사용자 회원가입
  * @param {Object} userData - 회원가입 데이터
- * @param {string} userData.username - 사용자명
+ * @param {string} userData.account_id - 계정 ID (영문으로만 구성)
  * @param {string} userData.email - 이메일
  * @param {string} userData.password - 비밀번호
  * @param {string} userData.name - 이름
@@ -24,7 +24,7 @@ export async function registerUser(userData) {
 /**
  * 프로듀서 회원가입
  * @param {Object} userData - 프로듀서 회원가입 데이터
- * @param {string} userData.username - 사용자명
+ * @param {string} userData.account_id - 계정 ID (영문으로만 구성)
  * @param {string} userData.nickname - 닉네임
  * @param {string} userData.email - 이메일
  * @param {string} userData.password - 비밀번호
@@ -64,16 +64,11 @@ export async function isEmailAvailable(email) {
 }
 
 /**
- * 사용자명 중복 확인
- * @param {string} username - 확인할 사용자명
- * @returns {Promise<boolean>} true: 사용 가능, false: 이미 사용중
- */
-/**
- * 계정 ID 중복 확인 (실제로는 username 확인)
+ * 계정 ID 중복 확인
  * @param {string} accountId - 확인할 계정 ID
  * @returns {Promise<boolean>} true: 사용 가능, false: 이미 사용중
  */
-export async function isUsernameAvailable(accountId) {
+export async function isAccountIdAvailable(accountId) {
   try {
     const response = await api.get(`/api/users/check-account-id/?account_id=${encodeURIComponent(accountId)}`);
     const isAvailable = !response.data?.exists; // exists가 false면 사용 가능
@@ -159,7 +154,7 @@ if (typeof window !== 'undefined') {
     registerUser,
     registerProducer,
     isEmailAvailable,
-    isUsernameAvailable,
+    isAccountIdAvailable,
     verifyTokenAPI,
     refreshToken,
     requestPasswordReset,

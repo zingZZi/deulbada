@@ -1,13 +1,13 @@
 import * as Styled from './JoinProducer.style';
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { registerProducer, isEmailAvailable, isUsernameAvailable } from '../../api/authAPI';
+import { registerProducer, isEmailAvailable, isAccountIdAvailable } from '../../api/authAPI';
 import { login } from '../../auth/authService';
 
 const JoinProducer = () => {
   // 기본 회원가입 정보
   const [formData, setFormData] = useState({
-    username: '',
+    account_id: '',
     nickname: '',
     email: '',
     password: '',
@@ -28,7 +28,7 @@ const JoinProducer = () => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [emailStatus, setEmailStatus] = useState(null);
-  const [usernameStatus, setUsernameStatus] = useState(null);
+  const [accountIdStatus, setAccountIdStatus] = useState(null);
   const [nicknameStatus, setNicknameStatus] = useState(null);
 
   const navigate = useNavigate();
@@ -52,7 +52,7 @@ const JoinProducer = () => {
     setNicknameStatus('checking');
     
     try {
-      const available = await isUsernameAvailable(nickname);
+      const available = await isAccountIdAvailable(nickname);
       setNicknameStatus(available ? 'available' : 'taken');
       
       if (!available) {
@@ -64,21 +64,21 @@ const JoinProducer = () => {
     }
   };
 
-  const checkUsername = async (username) => {
-    if (!username || username.length < 2) return;
+  const checkAccountId = async (accountId) => {
+    if (!accountId || accountId.length < 2) return;
     
-    setUsernameStatus('checking');
+    setAccountIdStatus('checking');
     
     try {
-      const available = await isUsernameAvailable(username);
-      setUsernameStatus(available ? 'available' : 'taken');
+      const available = await isAccountIdAvailable(accountId);
+      setAccountIdStatus(available ? 'available' : 'taken');
       
       if (!available) {
-        setErrors(prev => ({ ...prev, username: '이미 사용중인 계정ID입니다.' }));
+        setErrors(prev => ({ ...prev, account_id: '이미 사용중인 계정ID입니다.' }));
       }
     } catch (error) {
       console.error('계정ID 확인 실패:', error);
-      setUsernameStatus(null);
+      setAccountIdStatus(null);
     }
   };
 
@@ -110,23 +110,23 @@ const JoinProducer = () => {
   };
 
   // 계정ID 입력 처리
-  const handleUsernameChange = (value) => {
+  const handleAccountIdChange = (value) => {
     const filteredValue = value.replace(/[^a-zA-Z0-9._-]/g, '');
     
-    setFormData(prev => ({ ...prev, username: filteredValue }));
+    setFormData(prev => ({ ...prev, account_id: filteredValue }));
     
-    if (errors.username) {
-      setErrors(prev => ({ ...prev, username: '' }));
+    if (errors.account_id) {
+      setErrors(prev => ({ ...prev, account_id: '' }));
     }
     
-    if (usernameStatus === 'available') {
-      setUsernameStatus(null);
+    if (accountIdStatus === 'available') {
+      setAccountIdStatus(null);
     }
     
-    clearTimeout(window.usernameCheckTimer);
+    clearTimeout(window.accountIdCheckTimer);
     if (filteredValue.length >= 2) {
-      window.usernameCheckTimer = setTimeout(() => {
-        checkUsername(filteredValue);
+      window.accountIdCheckTimer = setTimeout(() => {
+        checkAccountId(filteredValue);
       }, 500);
     }
   };
@@ -248,10 +248,10 @@ const JoinProducer = () => {
     const newErrors = {};
 
     // 기본 정보 유효성 검사
-    if (!formData.username.trim()) {
-      newErrors.username = '계정ID를 입력해주세요.';
-    } else if (usernameStatus === 'taken') {
-      newErrors.username = '이미 사용중인 계정ID입니다.';
+    if (!formData.account_id.trim()) {
+      newErrors.account_id = '계정ID를 입력해주세요.';
+    } else if (accountIdStatus === 'taken') {
+      newErrors.account_id = '이미 사용중인 계정ID입니다.';
     }
 
     if (!formData.nickname.trim()) {
@@ -312,7 +312,7 @@ const JoinProducer = () => {
     if (Object.keys(newErrors).length > 0) return;
 
     // 중복 확인 대기 중이면 에러
-    if (emailStatus === 'checking' || usernameStatus === 'checking' || nicknameStatus === 'checking') {
+    if (emailStatus === 'checking' || accountIdStatus === 'checking' || nicknameStatus === 'checking') {
       setErrors({ general: '중복 확인을 완료해주세요.' });
       return;
     }
@@ -323,7 +323,7 @@ const JoinProducer = () => {
       const fullAddress = detailAddress ? `${address} ${detailAddress}` : address;
       
       const result = await registerProducer({
-        username: formData.username,
+        account_id: formData.account_id,
         nickname: formData.nickname,
         email: formData.email,
         password: formData.password,
@@ -398,20 +398,20 @@ const JoinProducer = () => {
       </Styled.InputGroup>
 
       <Styled.InputGroup>
-        <Styled.Label htmlFor="username">계정ID</Styled.Label>
+        <Styled.Label htmlFor="account_id">계정ID</Styled.Label>
         <Styled.InputEmail
-          id="username"
+          id="account_id"
           type="text"
           placeholder="영문, 숫자, 특수문자(.),(_)만 사용 가능합니다."
-          value={formData.username}
-          onChange={(e) => handleUsernameChange(e.target.value)}
+          value={formData.account_id}
+          onChange={(e) => handleAccountIdChange(e.target.value)}
         />
-        {usernameStatus === 'available' && (
+        {accountIdStatus === 'available' && (
           <div style={{ fontSize: '12px', marginTop: '4px', color: 'green' }}>
             ✓ 사용 가능한 계정ID입니다
           </div>
         )}
-        {errors.username && <Styled.Error>{errors.username}</Styled.Error>}
+        {errors.account_id && <Styled.Error>{errors.account_id}</Styled.Error>}
       </Styled.InputGroup>
 
       <Styled.InputGroup>
