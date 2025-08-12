@@ -1,6 +1,6 @@
 // src/auth/authService.js
 import api from '../api/api';
-import { setTokens, clearTokens, getAccessToken } from './tokenStore';
+import { setTokens, clearTokens, getAccessToken, setAccountId } from './tokenStore';
 
 /**
  * 로그인 (JWT 발급)
@@ -10,7 +10,7 @@ import { setTokens, clearTokens, getAccessToken } from './tokenStore';
  * 서버 스펙:
  *  - POST http://43.201.70.73/api/token/
  *  - body: { email, password }
- *  - res: { access, refresh }
+ *  - res: { access, refresh, user?: { username, nickname, ... } }
  */
 export async function login(arg1, arg2) {
   // 1) 인자 유연 처리
@@ -32,9 +32,12 @@ export async function login(arg1, arg2) {
   if (email === 'test@example.com' && password === 'password123') {
     const access = 'dummy-access-token';
     const refresh = 'dummy-refresh-token';
-    setTokens(access, refresh);
-    console.log('[AuthService] Dummy login successful', { access, refresh });
-    return { access, refresh };
+
+    const accountId = 'test_account_id';
+    
+    setTokens(access, refresh, accountId); // account_id 저장
+    console.log('[AuthService] Dummy login successful', { access, refresh, accountId });
+    return { access, refresh, user: { account_id: accountId } };
   }
 
   // 4) 기본 검증
@@ -44,11 +47,29 @@ export async function login(arg1, arg2) {
 
   // 5) 실제 서버 로그인
   const { data } = await api.post('/api/token/', { email, password });
-  const { access, refresh } = data || {};
+
+  const { access, refresh, user } = data || {};
+  
   if (!access || !refresh) throw new Error('토큰 없음');
-  setTokens(access, refresh);
-  console.log('[AuthService] Login successful', { access, refresh });
-  return { access, refresh };
+  
+  // 사용자 정보에서 account_id 추출하여 저장
+  const accountId = user?.account_id || user?.username || null;
+  setTokens(access, refresh, accountId);
+  
+  console.log('[AuthService] Login successful', { access, refresh, accountId });
+  return { access, refresh, user };
+}
+
+/**
+ * 사용자 정보 업데이트 (로그인 후 프로필 정보를 받았을 때)
+ * @param {object} userInfo - 사용자 정보
+ * @param {string} userInfo.account_id - 계정 ID
+ */
+export function updateUserInfo(userInfo) {
+  if (userInfo?.account_id) {
+    setAccountId(userInfo.account_id);
+    console.log('[AuthService] User info updated', userInfo);
+  }
 }
 
 /**
@@ -71,11 +92,12 @@ export async function verifyToken() {
 }
 
 /**
- * 로그아웃 (클라이언트 토큰 제거)
+
+ * 로그아웃 (클라이언트 토큰 및 사용자 정보 제거)
  */
 export function logout() {
   console.log('[AuthService] Logging out');
-  clearTokens();
+  clearTokens(); 
 }
 
 /**
@@ -86,11 +108,11 @@ export function isLoggedIn() {
 }
 
 
-
 // 개발환경에서 테스트용
 if (typeof window !== 'undefined') {
   window.authTest = {
     login,
+    updateUserInfo,
     verifyToken,
     logout,
     isLoggedIn
