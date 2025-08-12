@@ -1,6 +1,6 @@
 // src/auth/authService.js
 import api from '../api/api';
-import { setTokens, clearTokens, getAccessToken, setUsername } from './tokenStore';
+import { setTokens, clearTokens, getAccessToken, setAccountId } from './tokenStore';
 
 /**
  * 로그인 (JWT 발급)
@@ -32,11 +32,11 @@ export async function login(arg1, arg2) {
   if (email === 'test@example.com' && password === 'password123') {
     const access = 'dummy-access-token';
     const refresh = 'dummy-refresh-token';
-    const username = 'testuser';
+    const accountId = 'test_account_id';
     
-    setTokens(access, refresh, username); // username도 함께 저장
-    console.log('[AuthService] Dummy login successful', { access, refresh, username });
-    return { access, refresh, user: { username } };
+    setTokens(access, refresh, accountId); // account_id 저장
+    console.log('[AuthService] Dummy login successful', { access, refresh, accountId });
+    return { access, refresh, user: { account_id: accountId } };
   }
 
   // 4) 기본 검증
@@ -50,22 +50,22 @@ export async function login(arg1, arg2) {
   
   if (!access || !refresh) throw new Error('토큰 없음');
   
-  // 사용자 정보에서 username 추출하여 저장
-  const username = user?.username || user?.account_id || null;
-  setTokens(access, refresh, username);
+  // 사용자 정보에서 account_id 추출하여 저장
+  const accountId = user?.account_id || user?.username || null;
+  setTokens(access, refresh, accountId);
   
-  console.log('[AuthService] Login successful', { access, refresh, username });
+  console.log('[AuthService] Login successful', { access, refresh, accountId });
   return { access, refresh, user };
 }
 
 /**
  * 사용자 정보 업데이트 (로그인 후 프로필 정보를 받았을 때)
  * @param {object} userInfo - 사용자 정보
- * @param {string} userInfo.username - 사용자명
+ * @param {string} userInfo.account_id - 계정 ID
  */
 export function updateUserInfo(userInfo) {
-  if (userInfo?.username) {
-    setUsername(userInfo.username);
+  if (userInfo?.account_id) {
+    setAccountId(userInfo.account_id);
     console.log('[AuthService] User info updated', userInfo);
   }
 }
