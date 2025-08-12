@@ -7,8 +7,7 @@ import { setAccountId } from '../../auth/tokenStore';
 
 const JoinMembership = () => {
   const [formData, setFormData] = useState({
-    account_id: '',     // username → account_id로 변경
-
+    account_id: '',   
     nickname: '',
     email: '',
     password: '',
@@ -17,7 +16,7 @@ const JoinMembership = () => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [emailStatus, setEmailStatus] = useState(null);
-  const [accountIdStatus, setAccountIdStatus] = useState(null);  // usernameStatus → accountIdStatus
+  const [accountIdStatus, setAccountIdStatus] = useState(null); 
   const [nicknameStatus, setNicknameStatus] = useState(null);
   
   const navigate = useNavigate();
@@ -227,7 +226,7 @@ const JoinMembership = () => {
 
     try {
       const result = await registerUser({
-        username: formData.account_id,  // API는 여전히 username 필드를 받지만 account_id 값 전달
+        username: formData.account_id, 
         nickname: formData.nickname,
         email: formData.email,
         password: formData.password
