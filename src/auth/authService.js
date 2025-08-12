@@ -32,6 +32,7 @@ export async function login(arg1, arg2) {
   if (email === 'test@example.com' && password === 'password123') {
     const access = 'dummy-access-token';
     const refresh = 'dummy-refresh-token';
+
     const accountId = 'test_account_id';
     
     setTokens(access, refresh, accountId); // account_id 저장
@@ -46,6 +47,7 @@ export async function login(arg1, arg2) {
 
   // 5) 실제 서버 로그인
   const { data } = await api.post('/api/token/', { email, password });
+
   const { access, refresh, user } = data || {};
   
   if (!access || !refresh) throw new Error('토큰 없음');
@@ -90,11 +92,12 @@ export async function verifyToken() {
 }
 
 /**
+
  * 로그아웃 (클라이언트 토큰 및 사용자 정보 제거)
  */
 export function logout() {
   console.log('[AuthService] Logging out');
-  clearTokens(); // username도 함께 삭제됨
+  clearTokens(); 
 }
 
 /**
@@ -103,6 +106,7 @@ export function logout() {
 export function isLoggedIn() {
   return !!getAccessToken();
 }
+
 
 // 개발환경에서 테스트용
 if (typeof window !== 'undefined') {

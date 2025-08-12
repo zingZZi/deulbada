@@ -101,6 +101,7 @@ const Product = () => {
     setTagInput('');
     setImageFile(null);
     setPreview(null);
+
   };
 
   // 태그 입력 처리
@@ -162,6 +163,7 @@ const Product = () => {
       {/* 이미지 업로드 */}
       <Styled.InputGroup>
         <Styled.Label>이미지 등록</Styled.Label>
+
         <Styled.ImageUploadWrapper htmlFor="image-upload">
           <input
             id="image-upload"
@@ -179,6 +181,7 @@ const Product = () => {
         </Styled.ImageUploadWrapper>
       </Styled.InputGroup>
       
+
       {/* 상품명 */}
       <Styled.InputGroup>
         <Styled.Label htmlFor="name">상품명</Styled.Label>
@@ -204,6 +207,7 @@ const Product = () => {
           onChange={handlePriceChange}
         />
       </Styled.InputGroup>
+
 
       {/* 판매링크 */}
       <Styled.InputGroup>
@@ -239,6 +243,7 @@ const Product = () => {
         </Styled.TagList>
       </Styled.InputGroup>
 
+
       {/* 카테고리 */}
       <Styled.InputGroup>
         <Styled.Label htmlFor="business-type">카테고리</Styled.Label>
@@ -254,6 +259,7 @@ const Product = () => {
       </Styled.InputGroup>
 
       <Styled.Button type="submit">상품 등록</Styled.Button>
+
     </Styled.Form>
   );
 };

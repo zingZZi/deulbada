@@ -8,6 +8,7 @@ import { setAccountId } from '../../auth/tokenStore';
 const JoinMembership = () => {
   const [formData, setFormData] = useState({
     account_id: '',     // username → account_id로 변경
+
     nickname: '',
     email: '',
     password: '',
@@ -40,6 +41,7 @@ const JoinMembership = () => {
     }
   };
 
+
   // 계정ID 중복 확인 (함수명 변경)
   const checkAccountId = async (accountId) => {
     if (!accountId || accountId.length < 2) return;
@@ -56,6 +58,7 @@ const JoinMembership = () => {
     } catch (error) {
       console.error('계정ID 확인 실패:', error);
       setAccountIdStatus(null);
+
     }
   };
 
@@ -110,6 +113,7 @@ const JoinMembership = () => {
     if (filteredValue.length >= 2) {
       window.accountIdCheckTimer = setTimeout(() => {
         checkAccountId(filteredValue);
+
       }, 500);
     }
   };
@@ -170,6 +174,7 @@ const JoinMembership = () => {
       newErrors.account_id = '계정ID는 2자 이상이어야 합니다.';
     } else if (accountIdStatus === 'taken') {
       newErrors.account_id = '이미 사용중인 계정ID입니다.';
+
     }
 
     // 닉네임 유효성 검사
@@ -211,7 +216,9 @@ const JoinMembership = () => {
     if (Object.keys(newErrors).length > 0) return;
 
     // 중복 확인 대기 중이면 에러
+
     if (emailStatus === 'checking' || accountIdStatus === 'checking' || nicknameStatus === 'checking') {
+
       setErrors({ general: '중복 확인을 완료해주세요.' });
       return;
     }
@@ -231,6 +238,7 @@ const JoinMembership = () => {
       // account_id를 localStorage에 저장
       setAccountId(formData.account_id);
       
+
       // 회원가입 성공 후 자동 로그인
       const loginResult = await login(formData.email, formData.password);
       console.log('자동 로그인 성공:', loginResult);
@@ -301,11 +309,13 @@ const JoinMembership = () => {
           onChange={(e) => handleAccountIdChange(e.target.value)}
         />
         {accountIdStatus === 'available' && (
+
           <div style={{ fontSize: '12px', marginTop: '4px', color: 'green' }}>
             ✓ 사용 가능한 계정ID입니다
           </div>
         )}
         {errors.account_id && <Styled.Error>{errors.account_id}</Styled.Error>}
+
       </Styled.InputGroup>
 
       <Styled.InputGroup>

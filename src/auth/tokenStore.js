@@ -1,4 +1,5 @@
 // src/auth/tokenStore.js
+
 let memory = { access: null, refresh: null, accountId: null };
 
 // 앱 시작 시 localStorage에서 토큰과 사용자 정보 복구
@@ -38,6 +39,7 @@ export function setTokens(access, refresh, accountId = null) {
     } else {
       localStorage.removeItem('refresh_token');
     }
+
     
     if (accountId) {
       localStorage.setItem('account_id', accountId); // account_id 키로 저장
@@ -64,6 +66,7 @@ export function setAccountId(accountId) {
   }
   
   console.log('[tokenStore] setAccountId called:', accountId);
+
 }
 
 export function getAccessToken() {
@@ -74,12 +77,14 @@ export function getRefreshToken() {
   return memory.refresh; 
 }
 
+
 export function getAccountId() {
   return memory.accountId; // account_id를 반환
 }
 
 export function clearTokens() {
   memory = { access: null, refresh: null, accountId: null };
+
   
   // localStorage에서도 제거
   if (typeof window !== 'undefined') {
@@ -89,6 +94,7 @@ export function clearTokens() {
   }
   
   console.log('[tokenStore] All tokens and user info cleared');
+
 }
 
 export function isAuthenticated() {
@@ -115,6 +121,7 @@ if (typeof window !== 'undefined') {
     setAccountId: (id) => setAccountId(id),
     getAccountId: () => getAccountId(),
     getUserInfo: () => getUserInfo(),
+
     clear: () => clearTokens(),
   };
 }
