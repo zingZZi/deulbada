@@ -44,6 +44,8 @@ export default function App() {
           <Route path="/editProfile" element={<CommonLayout page={'editProfile'} />} />
           <Route path="/post/:postId" element={<CommonLayout page={'post'} />} />
           <Route path="/profile-settings" element={<CommonLayout page={'profile-settings'} />} />
+          <Route path="/postDetail/:postId" element={<CommonLayout page={'postDetail'} />} />
+          <Route path="/postUpload" element={<CommonLayout page={'postUpload'} />} />
         </Route>
 
         {/* 404 */}
