@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { registerProducer, isEmailAvailable, isAccountIdAvailable } from '../../api/authAPI';
 import { login } from '../../auth/authService';
+import { setAccountId } from '../../auth/tokenStore';
 
 const JoinProducer = () => {
   // 기본 회원가입 정보
@@ -57,6 +58,8 @@ const JoinProducer = () => {
       
       if (!available) {
         setErrors(prev => ({ ...prev, nickname: '이미 사용중인 닉네임입니다.' }));
+      } else {
+        setErrors(prev => ({ ...prev, nickname: '' }));
       }
     } catch (error) {
       console.error('닉네임 확인 실패:', error);
@@ -75,6 +78,8 @@ const JoinProducer = () => {
       
       if (!available) {
         setErrors(prev => ({ ...prev, account_id: '이미 사용중인 계정ID입니다.' }));
+      } else {
+        setErrors(prev => ({ ...prev, account_id: '' }));
       }
     } catch (error) {
       console.error('계정ID 확인 실패:', error);
@@ -93,6 +98,8 @@ const JoinProducer = () => {
       
       if (!available) {
         setErrors(prev => ({ ...prev, email: '이미 사용중인 이메일입니다.' }));
+      } else {
+        setErrors(prev => ({ ...prev, email: '' }));
       }
     } catch (error) {
       console.error('이메일 확인 실패:', error);
@@ -250,14 +257,22 @@ const JoinProducer = () => {
     // 기본 정보 유효성 검사
     if (!formData.account_id.trim()) {
       newErrors.account_id = '계정ID를 입력해주세요.';
+    } else if (formData.account_id.length < 2) {
+      newErrors.account_id = '계정ID는 2자 이상이어야 합니다.';
     } else if (accountIdStatus === 'taken') {
       newErrors.account_id = '이미 사용중인 계정ID입니다.';
+    } else if (accountIdStatus !== 'available') {
+      newErrors.account_id = '계정ID 중복 확인을 완료해주세요.';
     }
 
     if (!formData.nickname.trim()) {
       newErrors.nickname = '닉네임을 입력해주세요.';
+    } else if (formData.nickname.length < 2) {
+      newErrors.nickname = '닉네임은 2자 이상이어야 합니다.';
     } else if (nicknameStatus === 'taken') {
       newErrors.nickname = '이미 사용중인 닉네임입니다.';
+    } else if (nicknameStatus !== 'available') {
+      newErrors.nickname = '닉네임 중복 확인을 완료해주세요.';
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -265,8 +280,11 @@ const JoinProducer = () => {
       newErrors.email = '올바른 이메일 주소를 입력해주세요.';
     } else if (emailStatus === 'taken') {
       newErrors.email = '이미 사용중인 이메일입니다.';
+    } else if (emailStatus !== 'available') {
+      newErrors.email = '이메일 중복 확인을 완료해주세요.';
     }
 
+    // 비밀번호 유효성 검사
     if (formData.password.length < 8) {
       newErrors.password = '영문자, 숫자, 특수문자를 포함해 8자 이상 입력해주세요.';
     } else {
@@ -329,12 +347,15 @@ const JoinProducer = () => {
         password: formData.password,
         ceo_name: ceoName,
         phone: phone,
-        business_number: businessNumber.replace(/-/g, ''), // 하이픈 제거
+        business_number: businessNumber.replace(/-/g, ''),
         address_postcode: postalCode,
         address_line1: fullAddress
       });
       
       console.log('프로듀서 회원가입 성공:', result);
+
+      // account_id를 localStorage에 저장 (회원가입 성공 시)
+      setAccountId(formData.account_id);
       
       // 회원가입 성공 후 자동 로그인
       const loginResult = await login(formData.email, formData.password);

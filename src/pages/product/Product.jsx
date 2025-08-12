@@ -4,15 +4,46 @@ import { Camera } from 'lucide-react';
 import { createPost } from "../../api/productApi";
 
 const Product = () => {
-  // 상태 관리 (중복 제거)
+  // 상태 관리
   const [preview, setPreview] = useState(null);
   const [imageFile, setImageFile] = useState(null);
-  const [businessType, setBusinessType] = useState('');
+  const [businessType, setBusinessType] = useState(''); // 1차 카테고리 (농산물/수산물)
+  const [businessName, setBusinessName] = useState(''); // 2차 카테고리 (세부 분류)
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState([]);
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
   const [link, setLink] = useState('');
+
+  // 카테고리 데이터
+  const categories = {
+    농산물: [
+      '잎채소류',
+      '열매채소류', 
+      '뿌리채소류',
+      '과일류',
+      '곡류·잡곡',
+      '버섯류',
+      '견과류',
+      '기타농산물'
+    ],
+    수산물: [
+      '생선류',
+      '갑각류',
+      '조개류',
+      '연체류',
+      '건어물류',
+      '젓갈류',
+      '어패가공품',
+      '기타수산물'
+    ]
+  };
+
+  // 1차 카테고리 변경 시 2차 카테고리 초기화
+  const handleBusinessTypeChange = (e) => {
+    setBusinessType(e.target.value);
+    setBusinessName(''); // 2차 카테고리 초기화
+  };
 
   // 이미지 업로드 함수
   const uploadImage = async (file) => {
@@ -20,20 +51,30 @@ const Product = () => {
     formData.append('file', file);
 
     try {
-      const response = await fetch('https://your-api.com/upload', {
+      // 백엔드 이미지 업로드 엔드포인트
+      const response = await fetch('http://43.201.70.73/api/uploads/images/', {
         method: 'POST',
         body: formData,
+        // 인증 헤더는 api.js에서 전역 설정되어 있다면 여기서는 제외
+        // headers: {
+        //   'Authorization': `Bearer ${token}` // 필요 시 추가
+        // }
       });
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const result = await response.json();
-      return result.imageUrl;
+      console.log('이미지 업로드 응답:', result);
+      return result.imageUrl || result.url || result.file_url; // 백엔드 응답 구조에 맞게 조정
     } catch (error) {
       console.error('이미지 업로드 실패:', error);
       throw error;
     }
   };
 
-  // 폼 제출 처리 (통합된 버전)
+  // 폼 제출 처리
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -54,7 +95,12 @@ const Product = () => {
     }
     
     if (!businessType) {
-      alert('카테고리를 선택해 주세요.');
+      alert('1차 카테고리를 선택해 주세요.');
+      return;
+    }
+
+    if (!businessName) {
+      alert('2차 카테고리를 선택해 주세요.');
       return;
     }
 
@@ -63,23 +109,31 @@ const Product = () => {
 
       // 이미지가 있으면 먼저 업로드
       if (imageFile) {
+        console.log('이미지 업로드 시작...');
         imageUrl = await uploadImage(imageFile);
+        console.log('이미지 업로드 완료:', imageUrl);
       }
 
-      // 상품 데이터 준비
+      // 상품 데이터 준비 (백엔드 스펙 추정)
       const productData = {
-        image_urls: imageUrl ? [imageUrl] : [],
-        name: name.trim(),
-        price: parseInt(price.replace(/,/g, '')),
-        description: link.trim(), // link를 description으로 사용
-        tags,
-        category: businessType,
+        name: name.trim(), // 상품명
+        price: parseInt(price.replace(/,/g, '')), // 가격 (숫자)
+        description: link.trim(), // 설명 (판매링크)
+        image_urls: imageUrl ? [imageUrl] : [], // 이미지 URL 배열
+        tags: tags, // 태그 배열
+        category_type: businessType, // 1차 카테고리 (농산물/수산물)
+        category_name: businessName, // 2차 카테고리 (잎채소류 등)
+        // 또는 백엔드가 다른 필드명을 원한다면:
+        // type: businessType,
+        // category: businessName,
       };
 
-      console.log('상품 저장 요청:', productData);
+      console.log('상품 저장 요청 데이터:', productData);
       
       // API 호출
-      await createPost(productData);
+      const result = await createPost(productData);
+      console.log('API 응답:', result);
+      
       alert('상품이 등록되었습니다!');
       
       // 폼 초기화
@@ -87,7 +141,17 @@ const Product = () => {
       
     } catch (error) {
       console.error('상품 등록 실패:', error);
-      alert('상품 등록에 실패했습니다.');
+      
+      // 더 자세한 에러 정보 표시
+      if (error.response) {
+        console.error('API 에러 응답:', error.response.data);
+        alert(`상품 등록에 실패했습니다: ${error.response.data.message || error.message}`);
+      } else if (error.request) {
+        console.error('네트워크 에러:', error.request);
+        alert('네트워크 연결을 확인해주세요.');
+      } else {
+        alert(`상품 등록에 실패했습니다: ${error.message}`);
+      }
     }
   };
 
@@ -97,11 +161,11 @@ const Product = () => {
     setPrice('');
     setLink('');
     setBusinessType('');
+    setBusinessName('');
     setTags([]);
     setTagInput('');
     setImageFile(null);
     setPreview(null);
-
   };
 
   // 태그 입력 처리
@@ -208,7 +272,6 @@ const Product = () => {
         />
       </Styled.InputGroup>
 
-
       {/* 판매링크 */}
       <Styled.InputGroup>
         <Styled.Label htmlFor="link">판매링크</Styled.Label>
@@ -243,20 +306,38 @@ const Product = () => {
         </Styled.TagList>
       </Styled.InputGroup>
 
-
-      {/* 카테고리 */}
+      {/* 1차 카테고리 */}
       <Styled.InputGroup>
-        <Styled.Label htmlFor="business-type">카테고리</Styled.Label>
+        <Styled.Label htmlFor="business-type">1차 카테고리</Styled.Label>
         <Styled.Select
           id="business-type"
           value={businessType}
-          onChange={(e) => setBusinessType(e.target.value)}
+          onChange={handleBusinessTypeChange}
         >
           <option value="">카테고리를 선택해주세요</option>
-          <option value="retail">농산물</option>
-          <option value="wholesale">수산물</option>
+          <option value="농산물">농산물</option>
+          <option value="수산물">수산물</option>
         </Styled.Select>
       </Styled.InputGroup>
+
+      {/* 2차 카테고리 */}
+      {businessType && (
+        <Styled.InputGroup>
+          <Styled.Label htmlFor="business-name">2차 카테고리</Styled.Label>
+          <Styled.Select
+            id="business-name"
+            value={businessName}
+            onChange={(e) => setBusinessName(e.target.value)}
+          >
+            <option value="">세부 카테고리를 선택해주세요</option>
+            {categories[businessType]?.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </Styled.Select>
+        </Styled.InputGroup>
+      )}
 
       <Styled.Button type="submit">상품 등록</Styled.Button>
 

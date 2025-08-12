@@ -1,6 +1,6 @@
 import * as Styled from './ProfileSettings.style';
 import React, { useState } from 'react';
-import { ImageIcon } from '../../components/icon/Icons';
+import { Camera } from 'lucide-react';
 import ImagePreview from '../../assets/images/image-preview.png';
 
 const ProfileSettings = () => {
@@ -46,73 +46,71 @@ const ProfileSettings = () => {
   };
 
   return (
-  <Styled.Form onSubmit={(e) => {
-    e.preventDefault(); 
-    handleSubmit();
-  }}>
+    <Styled.Form onSubmit={(e) => {
+      e.preventDefault(); 
+      handleSubmit();
+    }}>
 
-    <Styled.H2>프로필설정</Styled.H2>
-    <Styled.Message>나중에 언제든지 변경할 수 있습니다</Styled.Message>
+      <Styled.H2>프로필설정</Styled.H2>
+      <Styled.Message>나중에 언제든지 변경할 수 있습니다</Styled.Message>
 
-    <Styled.ImageWrapper>
-      <Styled.ImagePreview
-        src={image || ImagePreview}
-        alt="프로필 이미지"
-      />
-      <Styled.FileInputLabel htmlFor="profile-upload">
-        <ImageIcon color="#fff" size={22} />
-      </Styled.FileInputLabel>
-      <input
-        id="profile-upload"
-        type="file"
-        accept="image/*"
-        style={{ display: 'none' }}
-        onChange={handleImageChange}
-      />
-    </Styled.ImageWrapper>
+      <Styled.ImageWrapper>
+        <Styled.ImagePreview
+          src={image || ImagePreview}
+          alt="프로필 이미지"
+        />
+        <Styled.FileInputLabel htmlFor="profile-upload">
+          <Camera color="#fff" size={22} />
+        </Styled.FileInputLabel>
+        <input
+          id="profile-upload"
+          type="file"
+          accept="image/*"
+          style={{ display: 'none' }}
+          onChange={handleImageChange}
+        />
+      </Styled.ImageWrapper>
 
-    <Styled.InputGroup>
-      <Styled.Label htmlFor="name">사용자 이름</Styled.Label>
-      <Styled.InputEmail 
-        id="name" 
+      <Styled.InputGroup>
+        <Styled.Label htmlFor="name">사용자 이름</Styled.Label>
+        <Styled.InputEmail 
+          id="name" 
+          type="text" 
+          placeholder="2~10자 이내여야 합니다."
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+        {nameError && <Styled.ErrorMessage>{nameError}</Styled.ErrorMessage>}
+      </Styled.InputGroup>
+
+      <Styled.InputGroup>
+        <Styled.Label htmlFor="id">계정 ID</Styled.Label>
+        <Styled.InputPassword 
+          id="id" 
+          type="text" 
+          placeholder="영문, 숫자, 특수문자(.),(_)만 사용 가능합니다." 
+          value={userId}
+          onChange={(e) => setUserId(e.target.value)}
+        />
+        {userIdError && <Styled.ErrorMessage>{userIdError}</Styled.ErrorMessage>}
+      </Styled.InputGroup>
+
+      <Styled.InputGroup>
+        <Styled.Label htmlFor="info">소개</Styled.Label>
+        <Styled.InputPassword 
+        id="info" 
         type="text" 
-        placeholder="2~10자 이내여야 합니다."
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
-      {nameError && <Styled.ErrorMessage>{nameError}</Styled.ErrorMessage>}
-    </Styled.InputGroup>
+        placeholder="자신과 판매할 상품에 대해 소개해 주세요!" 
+        value={info}
+        onChange={(e) => setInfo(e.target.value)}
+        />
+      </Styled.InputGroup>
 
-    <Styled.InputGroup>
-      <Styled.Label htmlFor="id">계정 ID</Styled.Label>
-      <Styled.InputPassword 
-        id="id" 
-        type="text" 
-        placeholder="영문, 숫자, 특수문자(.),(_)만 사용 가능합니다." 
-        value={userId}
-        onChange={(e) => setUserId(e.target.value)}
-      />
-      {userIdError && <Styled.ErrorMessage>{userIdError}</Styled.ErrorMessage>}
-    </Styled.InputGroup>
+      <Styled.Button type="submit" disabled={!isFormValid}>
+        들바다 시작하기
+      </Styled.Button>
 
-    <Styled.InputGroup>
-      <Styled.Label htmlFor="info">소개</Styled.Label>
-      <Styled.InputPassword 
-      id="info" 
-      type="text" 
-      placeholder="자신과 판매할 상품에 대해 소개해 주세요!" 
-      value={info}
-      onChange={(e) => setInfo(e.target.value)}
-      />
-    </Styled.InputGroup>
-
-
-    <Styled.Button type="submit" disabled={!isFormValid}>
-      들바다 시작하기
-    </Styled.Button>
-
-  </Styled.Form>
-
+    </Styled.Form>
   );
 };
 

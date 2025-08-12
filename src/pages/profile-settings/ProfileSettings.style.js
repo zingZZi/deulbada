@@ -95,12 +95,12 @@ export const InputPassword = styled.input`
   color: ${({ theme }) => theme.colors.black};
 
   &::placeholder {
-  color: ${({ theme }) => theme.colors.white300};
-}
+    color: ${({ theme }) => theme.colors.white300};
+  }
 
   &:focus {
-  outline: none;
-  border-bottom: 1px solid #5CA14E;
+    outline: none;
+    border-bottom: 1px solid #5CA14E;
   }
 `;
 
