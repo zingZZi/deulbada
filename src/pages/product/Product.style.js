@@ -7,6 +7,23 @@ export const Form = styled.form`
   padding: 0 3.4rem;
 `;
 
+export const ProductHeaderWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.8rem 0 0 0;
+  & button:last-child {
+    margin-left: auto;
+  }
+`;
+
+export const Border = styled.div`
+  border-bottom: 1px solid #e5e5e5;
+  margin-left: -3.4rem;
+  margin-right: -3.4rem;
+  margin-bottom: 1.05rem;
+`;
+
 export const H2 = styled.h2`
 `;
 
@@ -14,20 +31,18 @@ export const InputGroup = styled.div`
   display: flex;
   flex-direction: column;
   margin-bottom: 0.8rem;
-
-  
 `;
 
 export const ImageUploadWrapper = styled.label`
   position: relative;
   display: block;
   width: 100%;
-  max-width: 322px;
   aspect-ratio: 322 / 204;
   border: 1px solid ${({ theme }) => theme.colors.white300};
   border-radius: 8px;
   cursor: pointer;
   overflow: hidden;
+  margin-bottom: 2.0rem;
   background-color: ${({ theme }) => theme.colors.white200};
 
   img {
@@ -127,3 +142,17 @@ export const Select = styled.select.attrs((props) => ({
   }
 `;
 
+export const Button = styled.button`
+  padding: 12px 20px;
+  background-color: #A2D098;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 20px;
+  
+  &:hover {
+    background-color: #8BC085;
+  }
+`;

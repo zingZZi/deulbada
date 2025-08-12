@@ -39,6 +39,14 @@ export const defaultHeaderMap = {
       actionKey: 'saveProfile',
     },
   },
+    '/product': {
+    leftText: false,
+    rightButton: {
+      type: 'text',
+      text: '저장',
+      actionKey: 'saveProfile',
+    },
+  },
   '/postUpload': {
   leftText: '',
   rightButton: {

@@ -63,6 +63,12 @@ export const InputPassword = styled.input`
   }
 `;
 
+export const Error = styled.p`
+  margin-top: 0.4rem;
+  font-size: 1.2rem;
+  color: #e74c3c; /* 빨간색 */
+`;
+
 export const Button = styled.button`
   padding: 1.1rem 0;
   background: #A2D098;

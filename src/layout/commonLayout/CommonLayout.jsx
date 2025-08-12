@@ -17,7 +17,9 @@ import { PopupProvider, usePopup } from '../../context/PopupContext';
 import MyProfile from '../../pages/myProfile/MyProfile';
 import ChatRoom from '../../pages/chatRoom/ChatRoom';
 import PostDetail from '../../pages/postDetail/PostDetail';
+import Product from '../../pages/product/Product';
 import PostUpload from '../../pages/postUpload/PostUpload';
+
 
 function Content({ page, searchQuery }) {
   switch (page) {
@@ -39,6 +41,8 @@ function Content({ page, searchQuery }) {
       return <ChatRoom />;
     case 'postDetail':
       return <PostDetail />;
+    case 'product':             
+      return <Product />;       
     case 'postUpload':
       return <PostUpload />;
   }

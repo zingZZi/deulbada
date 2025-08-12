@@ -1,11 +1,11 @@
-import axiosInstance from './axiosInstance';
+import api from '../api/api';
 
 // GET: 전체 게시물 조회
-export const fetchPosts = () => axiosInstance.get('/posts');
+export const fetchPosts = () => api.get('/posts');
 // POST: 게시물 작성
-export const createPost = (postData) => axiosInstance.post('/posts/', postData);
+export const createPost = (postData) => api.post('/posts/', postData);
 // GET: 게시물 상세 조회
-export const getPostDetail = (id) => axiosInstance.get(`/posts/${id}/`);
+export const getPostDetail = (id) => api.get(`/posts/${id}/`);
 
 //좋아요수
-export const fetchLike = (id) => axiosInstance.get(`/posts/${id}/like/`);
+export const fetchLike = (id) => api.get(`/posts/${id}/like/`);
