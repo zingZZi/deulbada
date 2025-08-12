@@ -19,7 +19,6 @@ import ChatRoom from '../../pages/chatRoom/ChatRoom';
 import PostDetail from '../../pages/postDetail/PostDetail';
 import Product from '../../pages/product/Product';
 import PostUpload from '../../pages/postUpload/PostUpload';
-
 import LoadingComponent from '../../components/loding/Loding';
 import { LoadingProvider, useLoading } from '../../context/LoadingContext';
 import MyProfileEdit from '../../pages/myProfileEdit/MyProfileEdit';
@@ -45,6 +44,12 @@ function Content({ page, searchQuery }) {
       return <ChatRoom />;
     case 'postDetail':
       return <PostDetail />;
+    case 'product':
+      return <Product />;
+    case 'postUpload':
+      return <PostUpload />;
+    case 'myprofileEdit':
+      return <MyProfileEdit />;
   }
 }
 

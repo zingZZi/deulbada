@@ -14,8 +14,8 @@ export const defaultHeaderMap = (pathname) => {
       leftText: false,
       rightButton: {
         type: 'text',
-        text: '저장',
-        actionKey: 'saveProfile',
+        text: '수정',
+        action: () => console.log('수정'),
       },
     },
     '/post': {
@@ -26,15 +26,38 @@ export const defaultHeaderMap = (pathname) => {
         action: () => console.log('더보기'),
       },
     },
-    '/myprofile': {
+    '/followers': {
+      leftText: 'Followers',
+      rightButton: false,
+    },
+    '/followings': {
+      leftText: 'Followings',
+      rightButton: false,
+    },
+    '/myProfile': {
       leftText: false,
       rightButton: {
-        type: 'icon',
-        text: '더보기',
-        actionKey: 'openProfileMenu',
+        type: 'text',
+        text: '저장',
+        actionKey: 'saveProfile',
       },
     },
-<<<<<<< HEAD
+    '/product': {
+      leftText: false,
+      rightButton: {
+        type: 'text',
+        text: '저장',
+        actionKey: 'saveProfile',
+      },
+    },
+    '/postUpload': {
+      leftText: '',
+      rightButton: {
+        type: 'text',
+        text: '업로드',
+        actionKey: 'submit-post',
+      },
+    },
   };
 
   // 정확히 일치하는 경로가 있으면 반환
@@ -65,23 +88,4 @@ export const defaultHeaderMap = (pathname) => {
   }
 
   return {};
-=======
-  },
-    '/product': {
-    leftText: false,
-    rightButton: {
-      type: 'text',
-      text: '저장',
-      actionKey: 'saveProfile',
-    },
-  },
-  '/postUpload': {
-  leftText: '',
-  rightButton: {
-    type: 'text',
-    text: '업로드',
-    actionKey: 'submit-post',
-  },
-},
->>>>>>> 5aba4e4974e47b7d7b8d4b38ee0b748eb6368298
 };
