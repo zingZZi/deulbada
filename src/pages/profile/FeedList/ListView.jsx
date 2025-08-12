@@ -1,10 +1,7 @@
 import * as Styled from './../Profille.style';
 import UserInfo from '../../../components/userInfo/UserInfo';
 import PostContent from '../../../components/PostContent/PostContent';
-import { useScrollObserver } from '../../../hooks/useScrollObserver';
 const ListView = ({ userFeed }) => {
-  const isBottom = useScrollObserver();
-  console.log(isBottom);
   return (
     <>
       <Styled.FeedList>
@@ -12,14 +9,24 @@ const ListView = ({ userFeed }) => {
           return (
             <li key={e.id}>
               <UserInfo
-                username={e.username}
-                accountId={e.account_id}
+                id={e.id}
+                username={e.author.username}
+                accountId={e.author.account_id}
                 feedList={true}
-                profileImg={e.profile_image}
+                profileImg={e.author.profile_image}
                 to={`/profile/${e.username}`}
                 feedData={e}
+                is_farm_verified={e.author_is_farm_verified}
               />
-              <PostContent contet={e.content} images={e.image_urls} date={e.created_at} id={e.id} />
+              <PostContent
+                content={e.content}
+                images={e.image_urls}
+                date={e.created_at}
+                id={e.id}
+                like={e.like_count}
+                isLiked={e.is_liked}
+                comment={e.comment_count}
+              />
             </li>
           );
         })}

@@ -16,6 +16,7 @@ const UserInfo = ({
   withLink = false,
   to,
   btns,
+  followState,
   feedList = false,
   is_farm_verified = false,
   onFollowToggle,
@@ -26,9 +27,7 @@ const UserInfo = ({
 
   const highlightMatch = (text) => {
     if (!text || !highlightQuery) return text || '';
-
     const regex = new RegExp(`(${highlightQuery})`, 'gi');
-    console.log('highlight:', text.split(regex));
     return text
       .split(regex)
       .map((part, i) =>
@@ -106,11 +105,7 @@ const UserInfo = ({
       ) : null}
 
       {btns &&
-        (btns === 'followings' ? (
-          <Styled.FollwerBtn padding={'.7rem 1.1rem'} radius={'xsmall'} fontSize={'small'}>
-            팔로잉
-          </Styled.FollwerBtn>
-        ) : (
+        (followState ? (
           <Styled.FollwerLineBtn
             padding={'.7rem 1.1rem'}
             radius={'xsmall'}
@@ -119,6 +114,10 @@ const UserInfo = ({
           >
             취소
           </Styled.FollwerLineBtn>
+        ) : (
+          <Styled.FollwerBtn padding={'.7rem 1.1rem'} radius={'xsmall'} fontSize={'small'}>
+            팔로잉
+          </Styled.FollwerBtn>
         ))}
     </>
   );

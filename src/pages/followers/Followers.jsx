@@ -21,18 +21,26 @@ const Followers = () => {
   console.log(followers);
   return (
     <Styled.List>
-      {followers.map((e) => {
-        return (
-          <Styled.Item key={e.id}>
-            <UserInfo
-              username={e.username}
-              accountId={e.account_id}
-              btns="followings"
-              profile_image={e.profile_image}
-            />
-          </Styled.Item>
-        );
-      })}
+      {followers.length === 0 ? (
+        <>갯수없다잉</>
+      ) : (
+        <>
+          {followers.map((e) => {
+            return (
+              <Styled.Item key={e.id}>
+                <UserInfo
+                  username={e.username}
+                  accountId={e.account_id}
+                  btns={true}
+                  followState={e.is_following}
+                  profile_image={e.profile_image}
+                  to={`/profile/${e.account_id}`}
+                />
+              </Styled.Item>
+            );
+          })}
+        </>
+      )}
     </Styled.List>
   );
 };
