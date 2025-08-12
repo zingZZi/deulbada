@@ -14,9 +14,15 @@ import ModalPopUp from '../../components/modalPopup/ModalPopup';
 import useHeaderActions from '../../hooks/useHeaderAction';
 import { PageActionsProvider } from '../../context/PageActionsContext';
 import { PopupProvider, usePopup } from '../../context/PopupContext';
-import MyProfile from '../../pages/myProfile/MyProfile';
+import MyProfile from '../../pages/profile/MyProfile';
 import ChatRoom from '../../pages/chatRoom/ChatRoom';
 import PostDetail from '../../pages/postDetail/PostDetail';
+import Product from '../../pages/product/Product';
+import PostUpload from '../../pages/postUpload/PostUpload';
+import LoadingComponent from '../../components/loding/Loding';
+import { LoadingProvider, useLoading } from '../../context/LoadingContext';
+import MyProfileEdit from '../../pages/myProfileEdit/MyProfileEdit';
+import { CustomThemeProvider } from '../../context/ThemeContext';
 
 function Content({ page, searchQuery }) {
   switch (page) {
@@ -36,8 +42,14 @@ function Content({ page, searchQuery }) {
       return <MyProfile />;
     case 'chatRoom':
       return <ChatRoom />;
-    case 'post':
+    case 'postDetail':
       return <PostDetail />;
+    case 'product':
+      return <Product />;
+    case 'postUpload':
+      return <PostUpload />;
+    case 'myprofileEdit':
+      return <MyProfileEdit />;
   }
 }
 
@@ -58,6 +70,22 @@ const CommonLayoutInner = ({ page }) => {
 
   //bottom이 안붙는 케이스엔 여기에 추가
   const hiddenPaths = ['/post', '/chatRoom'];
+  // 전역 로딩 상태 사용
+  const { isLoading } = useLoading(); // 전역 로딩 중일 때 로딩 컴포넌트 표시
+  if (isLoading) {
+    return (
+      <>
+        <Header
+          location={location}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          config={currentHeaderConfig}
+          onAction={handleHeaderAction}
+        />
+        <LoadingComponent />
+      </>
+    );
+  }
   return (
     <>
       <Header
@@ -85,11 +113,15 @@ const CommonLayoutInner = ({ page }) => {
 
 const CommonLayout = ({ page }) => {
   return (
-    <PageActionsProvider>
-      <PopupProvider>
-        <CommonLayoutInner page={page} />
-      </PopupProvider>
-    </PageActionsProvider>
+    <CustomThemeProvider>
+      <PageActionsProvider>
+        <PopupProvider>
+          <LoadingProvider>
+            <CommonLayoutInner page={page} />
+          </LoadingProvider>
+        </PopupProvider>
+      </PageActionsProvider>
+    </CustomThemeProvider>
   );
 };
 

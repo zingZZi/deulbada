@@ -8,6 +8,7 @@ import {
   Share2,
   LayoutGrid,
   LayoutList,
+  UserSearch,
 } from 'lucide-react';
 
 const HouseIcon = styled(House)`
@@ -36,14 +37,14 @@ const UserIcon = styled(User)`
     color: ${({ theme }) => theme.colors.primary};
   }
 `;
+
 const HeartIcon = styled(Heart)`
   width: 2rem;
   height: 2rem;
-  color: ${({ theme }) => theme.colors.white700};
-  &.primary {
-    color: ${({ theme }) => theme.colors.primary};
-  }
+  color: ${({ $liked, theme }) => ($liked ? theme.colors.primary : theme.colors.white700)};
+  fill: ${({ $liked }) => ($liked ? 'currentColor' : 'none')};
 `;
+
 const Share2Icon = styled(Share2)`
   color: ${({ theme }) => theme.colors.white700};
   &.primary {
@@ -57,6 +58,12 @@ export const LayoutGridIcon = styled(LayoutGrid)`
   }
 `;
 export const LayoutListIcon = styled(LayoutList)`
+  color: ${({ theme }) => theme.colors.white300};
+  &.active {
+    color: ${({ theme }) => theme.colors.white700};
+  }
+`;
+export const UserSearchIcon = styled(UserSearch)`
   color: ${({ theme }) => theme.colors.white300};
   &.active {
     color: ${({ theme }) => theme.colors.white700};

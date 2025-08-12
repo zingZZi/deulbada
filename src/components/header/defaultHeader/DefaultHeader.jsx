@@ -4,7 +4,7 @@ import { defaultHeaderMap } from './headerConfigs';
 import * as Styled from './DefaultHeader.style';
 
 const DefaultHeader = ({ location, onAction }) => {
-  const config = defaultHeaderMap[location.pathname] || {};
+  const config = defaultHeaderMap(location.pathname);
   const { leftText, rightButton } = config;
 
   const handleClick = () => {
