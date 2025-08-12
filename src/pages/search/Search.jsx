@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import * as Styled from './Search.style';
 import UserInfo from '../../components/userInfo/UserInfo';
 import { UserSearchIcon } from '../../components/icon/Icon.style';
@@ -49,22 +49,6 @@ const Search = ({ searchQuery }) => {
 
   const query = searchQuery.toLowerCase();
 
-  // API에서 받은 데이터를 검색어로 추가 필터링
-  const searchList = useMemo(() => {
-    if (!Array.isArray(lists)) {
-      return [];
-    }
-    // 검색어가 없으면 빈 배열 반환
-    if (!searchQuery.trim()) {
-      return [];
-    }
-    // 클라이언트 측에서 추가 필터링 (API가 완전히 필터링하지 않는 경우를 대비)
-    return lists.filter(
-      (user) =>
-        user.account_id.toLowerCase().includes(query) || user.username.toLowerCase().includes(query)
-    );
-  }, [lists, query, searchQuery]);
-
   // 로딩 상태
   if (loading) {
     return (
@@ -87,14 +71,14 @@ const Search = ({ searchQuery }) => {
 
   return (
     <>
-      {searchQuery && searchList.length === 0 ? (
+      {searchQuery && lists.length === 0 ? (
         <Styled.NoResult>
           <UserSearchIcon size={'6rem'} />
           검색 결과가 없습니다.
         </Styled.NoResult>
       ) : (
         <Styled.SearchList>
-          {searchList.map((user) => {
+          {lists.map((user) => {
             return (
               <Styled.SearchItem key={user.id}>
                 <UserInfo

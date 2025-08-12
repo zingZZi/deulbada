@@ -20,15 +20,15 @@ const MyProfile = () => {
   const [userFeed, setUserFeed] = useState([]);
   const [feedType, setFeedType] = useState('list');
 
+  console.log(userProduct);
+
   // URL 파라미터로부터 온 user_name 또는 로컬 스토리지에서 가져오기
   const getTargetUserName = () => {
     return paramUserName || localStorage.getItem('user_name');
   };
 
   const targetUserName = getTargetUserName();
-
   useProfileRedirect(targetUserName);
-
   const feedTypeHandler = (e) => {
     setFeedType(e.currentTarget.dataset.type);
   };

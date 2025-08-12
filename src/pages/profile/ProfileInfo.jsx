@@ -1,14 +1,22 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import * as Styled from './ProfileInfo.style';
 import { BasicBtn, LineBtn, LineLink } from '../../styles/Button.style';
 import { MessageCircleIcon, Share2Icon } from '../../components/icon/Icon.style';
+import { toggleFollow } from '../../api/userApi'; // API 파일 경로에 맞게 수정
 import defaultProfileImg from './../../assets/images/defaultProfileImg.png';
+
 const ProfileInfo = ({ user_name, isMyProfile, userInfo }) => {
+  // 팔로우 상태와 팔로워 수를 로컬 상태로 관리
+  const [isFollowing, setIsFollowing] = useState(userInfo.is_following);
+  const [followerCount, setFollowerCount] = useState(userInfo.follower_count);
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleShare = async () => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: '{username}',
+          title: userInfo.user_name,
           text: '{한줄말}',
           url: window.location.href,
         });
@@ -20,14 +28,44 @@ const ProfileInfo = ({ user_name, isMyProfile, userInfo }) => {
       alert('이 브라우저는 공유 기능을 지원하지 않습니다');
     }
   };
+
+  const followHandler = async () => {
+    if (isLoading) return; // 중복 요청 방지
+
+    try {
+      setIsLoading(true);
+
+      // API 호출
+      await toggleFollow(userInfo.account_id);
+
+      // 상태 업데이트
+      if (isFollowing) {
+        // 언팔로우인 경우
+        setIsFollowing(false);
+        setFollowerCount((prev) => prev - 1);
+      } else {
+        // 팔로우인 경우
+        setIsFollowing(true);
+        setFollowerCount((prev) => prev + 1);
+      }
+    } catch (error) {
+      console.error('팔로우/언팔로우 처리 중 오류:', error);
+      // 에러 처리 (토스트나 알럿 등)
+      alert('팔로우 처리 중 오류가 발생했습니다.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   console.log(userInfo);
+
   return (
     <Styled.ProfileInfo>
       <h2 className="text-ir">프로필 정보 영역입니다.</h2>
       <Styled.profileSmmary>
         <Styled.followInfo>
           <Link to={`/followers/${user_name}`}>
-            <b>{userInfo.follower_count}</b>
+            <b>{followerCount}</b>
             followers
           </Link>
         </Styled.followInfo>
@@ -49,9 +87,11 @@ const ProfileInfo = ({ user_name, isMyProfile, userInfo }) => {
       </Styled.profileSmmary>
       <Styled.UserName>
         {userInfo.username}
-        <i>
-          <span className="text-ir">인증받은 유저입니다</span>
-        </i>
+        {userInfo.is_farm_owner && (
+          <Styled.OwnerMark>
+            <span className="text-ir">인증받은 유저입니다</span>
+          </Styled.OwnerMark>
+        )}
       </Styled.UserName>
       <Styled.UserId>@ {userInfo.account_id}</Styled.UserId>
       {userInfo.introduction ? <Styled.UserBio>{userInfo.introduction}</Styled.UserBio> : null}
@@ -83,9 +123,27 @@ const ProfileInfo = ({ user_name, isMyProfile, userInfo }) => {
             </LineLink>
           </li>
           <li>
-            <BasicBtn radius={'medium'} padding={'.7rem 4rem'} fontSize={'base'}>
-              팔로우
-            </BasicBtn>
+            {isFollowing ? (
+              <LineBtn
+                radius={'medium'}
+                padding={'.7rem 4rem'}
+                fontSize={'base'}
+                onClick={followHandler}
+                disabled={isLoading}
+              >
+                {isLoading ? '처리중...' : '언팔로우'}
+              </LineBtn>
+            ) : (
+              <BasicBtn
+                radius={'medium'}
+                padding={'.7rem 4rem'}
+                fontSize={'base'}
+                onClick={followHandler}
+                disabled={isLoading}
+              >
+                {isLoading ? '처리중...' : '팔로우'}
+              </BasicBtn>
+            )}
           </li>
           <li>
             <LineBtn radius={'round'} padding={'.7rem'} fontSize={'icon'} onClick={handleShare}>
