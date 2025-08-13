@@ -1,6 +1,6 @@
 import * as Styled from './../Profille.style';
 import UserInfo from '../../../components/userInfo/UserInfo';
-import PostContent from '../../../components/PostContent/PostContent';
+import PostContent from '../../../components/postContent/PostContent';
 import { useState } from 'react';
 const ListView = ({ userFeed: initialUserFeed }) => {
   // 🔥 userFeed를 state로 관리
