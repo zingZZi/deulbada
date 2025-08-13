@@ -1,7 +1,7 @@
 import * as Styled from './JoinProducer.style';
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { registerProducer, isEmailAvailable, isAccountIdAvailable } from '../../api/authAPI';
+import { registerProducer, isEmailAvailable, isAccountIdAvailable } from '../../api/authApi';
 import { login } from '../../auth/authService';
 import { setAccountId } from '../../auth/tokenStore';
 
@@ -12,7 +12,7 @@ const JoinProducer = () => {
     nickname: '',
     email: '',
     password: '',
-    rePassword: ''
+    rePassword: '',
   });
 
   // 프로듀서 전용 정보
@@ -36,8 +36,8 @@ const JoinProducer = () => {
 
   // 다음 주소 API 스크립트 로드
   useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
+    const script = document.createElement('script');
+    script.src = 'https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
     script.async = true;
     document.body.appendChild(script);
 
@@ -49,17 +49,17 @@ const JoinProducer = () => {
   // 중복 확인 함수들
   const checkNickname = async (nickname) => {
     if (!nickname || nickname.length < 2) return;
-    
+
     setNicknameStatus('checking');
-    
+
     try {
       const available = await isAccountIdAvailable(nickname);
       setNicknameStatus(available ? 'available' : 'taken');
-      
+
       if (!available) {
-        setErrors(prev => ({ ...prev, nickname: '이미 사용중인 닉네임입니다.' }));
+        setErrors((prev) => ({ ...prev, nickname: '이미 사용중인 닉네임입니다.' }));
       } else {
-        setErrors(prev => ({ ...prev, nickname: '' }));
+        setErrors((prev) => ({ ...prev, nickname: '' }));
       }
     } catch (error) {
       console.error('닉네임 확인 실패:', error);
@@ -69,17 +69,17 @@ const JoinProducer = () => {
 
   const checkAccountId = async (accountId) => {
     if (!accountId || accountId.length < 2) return;
-    
+
     setAccountIdStatus('checking');
-    
+
     try {
       const available = await isAccountIdAvailable(accountId);
       setAccountIdStatus(available ? 'available' : 'taken');
-      
+
       if (!available) {
-        setErrors(prev => ({ ...prev, account_id: '이미 사용중인 계정ID입니다.' }));
+        setErrors((prev) => ({ ...prev, account_id: '이미 사용중인 계정ID입니다.' }));
       } else {
-        setErrors(prev => ({ ...prev, account_id: '' }));
+        setErrors((prev) => ({ ...prev, account_id: '' }));
       }
     } catch (error) {
       console.error('계정ID 확인 실패:', error);
@@ -89,17 +89,17 @@ const JoinProducer = () => {
 
   const checkEmail = async (email) => {
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return;
-    
+
     setEmailStatus('checking');
-    
+
     try {
       const available = await isEmailAvailable(email);
       setEmailStatus(available ? 'available' : 'taken');
-      
+
       if (!available) {
-        setErrors(prev => ({ ...prev, email: '이미 사용중인 이메일입니다.' }));
+        setErrors((prev) => ({ ...prev, email: '이미 사용중인 이메일입니다.' }));
       } else {
-        setErrors(prev => ({ ...prev, email: '' }));
+        setErrors((prev) => ({ ...prev, email: '' }));
       }
     } catch (error) {
       console.error('이메일 확인 실패:', error);
@@ -109,27 +109,27 @@ const JoinProducer = () => {
 
   // 입력값 변경 처리
   const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    
+    setFormData((prev) => ({ ...prev, [field]: value }));
+
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
+      setErrors((prev) => ({ ...prev, [field]: '' }));
     }
   };
 
   // 계정ID 입력 처리
   const handleAccountIdChange = (value) => {
     const filteredValue = value.replace(/[^a-zA-Z0-9._-]/g, '');
-    
-    setFormData(prev => ({ ...prev, account_id: filteredValue }));
-    
+
+    setFormData((prev) => ({ ...prev, account_id: filteredValue }));
+
     if (errors.account_id) {
-      setErrors(prev => ({ ...prev, account_id: '' }));
+      setErrors((prev) => ({ ...prev, account_id: '' }));
     }
-    
+
     if (accountIdStatus === 'available') {
       setAccountIdStatus(null);
     }
-    
+
     clearTimeout(window.accountIdCheckTimer);
     if (filteredValue.length >= 2) {
       window.accountIdCheckTimer = setTimeout(() => {
@@ -141,17 +141,17 @@ const JoinProducer = () => {
   // 닉네임 입력 처리
   const handleNicknameChange = (value) => {
     const filteredValue = value.replace(/[^가-힣ㄱ-ㅎㅏ-ㅣ0-9]/g, '');
-    
-    setFormData(prev => ({ ...prev, nickname: filteredValue }));
-    
+
+    setFormData((prev) => ({ ...prev, nickname: filteredValue }));
+
     if (errors.nickname) {
-      setErrors(prev => ({ ...prev, nickname: '' }));
+      setErrors((prev) => ({ ...prev, nickname: '' }));
     }
-    
+
     if (nicknameStatus === 'available') {
       setNicknameStatus(null);
     }
-    
+
     clearTimeout(window.nicknameCheckTimer);
     if (filteredValue.length >= 2) {
       window.nicknameCheckTimer = setTimeout(() => {
@@ -163,13 +163,13 @@ const JoinProducer = () => {
   // 이메일 입력 처리
   const handleEmailChange = (value) => {
     const filteredValue = value.replace(/[^a-zA-Z0-9@._+-]/g, '');
-    
+
     handleInputChange('email', filteredValue);
-    
+
     if (emailStatus === 'available') {
       setEmailStatus(null);
     }
-    
+
     clearTimeout(window.emailCheckTimer);
     window.emailCheckTimer = setTimeout(() => {
       checkEmail(filteredValue);
@@ -180,7 +180,7 @@ const JoinProducer = () => {
   const handlePhoneChange = (value) => {
     const filteredValue = value.replace(/[^0-9]/g, '');
     let formattedValue = filteredValue;
-    
+
     if (filteredValue.length >= 11) {
       formattedValue = filteredValue.replace(/^(\d{3})(\d{4})(\d{4})$/, '$1-$2-$3');
     } else if (filteredValue.length >= 7) {
@@ -188,11 +188,11 @@ const JoinProducer = () => {
     } else if (filteredValue.length >= 3) {
       formattedValue = filteredValue.replace(/^(\d{3})(\d{0,4})$/, '$1-$2');
     }
-    
+
     setPhone(formattedValue);
-    
+
     if (errors.phone) {
-      setErrors(prev => ({ ...prev, phone: '' }));
+      setErrors((prev) => ({ ...prev, phone: '' }));
     }
   };
 
@@ -200,7 +200,7 @@ const JoinProducer = () => {
   const handleBusinessNumberChange = (value) => {
     const filteredValue = value.replace(/[^0-9]/g, '');
     let formattedValue = filteredValue;
-    
+
     if (filteredValue.length >= 10) {
       formattedValue = filteredValue.replace(/^(\d{3})(\d{2})(\d{5})$/, '$1-$2-$3');
     } else if (filteredValue.length >= 5) {
@@ -208,11 +208,11 @@ const JoinProducer = () => {
     } else if (filteredValue.length >= 3) {
       formattedValue = filteredValue.replace(/^(\d{3})(\d{0,2})$/, '$1-$2');
     }
-    
+
     setBusinessNumber(formattedValue);
-    
+
     if (errors.businessNumber) {
-      setErrors(prev => ({ ...prev, businessNumber: '' }));
+      setErrors((prev) => ({ ...prev, businessNumber: '' }));
     }
   };
 
@@ -235,12 +235,12 @@ const JoinProducer = () => {
         if (data.addressType === 'R') {
           if (data.bname) extraAddress += data.bname;
           if (data.buildingName)
-            extraAddress += (extraAddress ? ', ' + data.buildingName : data.buildingName);
+            extraAddress += extraAddress ? ', ' + data.buildingName : data.buildingName;
           fullAddress += extraAddress ? ` (${extraAddress})` : '';
         }
 
-        setPostalCode(data.zonecode);   
-        setAddress(fullAddress);          
+        setPostalCode(data.zonecode);
+        setAddress(fullAddress);
       },
     }).open();
   };
@@ -291,7 +291,7 @@ const JoinProducer = () => {
       const hasLetter = /[a-zA-Z]/.test(formData.password);
       const hasNumber = /[0-9]/.test(formData.password);
       const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(formData.password);
-      
+
       if (!hasLetter || !hasNumber || !hasSpecial) {
         newErrors.password = '영문자, 숫자, 특수문자를 포함해 8자 이상 입력해주세요.';
       }
@@ -330,7 +330,11 @@ const JoinProducer = () => {
     if (Object.keys(newErrors).length > 0) return;
 
     // 중복 확인 대기 중이면 에러
-    if (emailStatus === 'checking' || accountIdStatus === 'checking' || nicknameStatus === 'checking') {
+    if (
+      emailStatus === 'checking' ||
+      accountIdStatus === 'checking' ||
+      nicknameStatus === 'checking'
+    ) {
       setErrors({ general: '중복 확인을 완료해주세요.' });
       return;
     }
@@ -339,7 +343,7 @@ const JoinProducer = () => {
 
     try {
       const fullAddress = detailAddress ? `${address} ${detailAddress}` : address;
-      
+
       const result = await registerProducer({
         account_id: formData.account_id,
         nickname: formData.nickname,
@@ -349,21 +353,20 @@ const JoinProducer = () => {
         phone: phone,
         business_number: businessNumber.replace(/-/g, ''),
         address_postcode: postalCode,
-        address_line1: fullAddress
+        address_line1: fullAddress,
       });
-      
+
       console.log('프로듀서 회원가입 성공:', result);
 
       // account_id를 localStorage에 저장 (회원가입 성공 시)
       setAccountId(formData.account_id);
-      
+
       // 회원가입 성공 후 자동 로그인
       const loginResult = await login(formData.email, formData.password);
       console.log('자동 로그인 성공:', loginResult);
-      
+
       alert('프로듀서 회원가입이 완료되었습니다!');
       navigate('/home');
-      
     } catch (error) {
       console.error('프로듀서 회원가입 실패:', error);
       setErrors({ general: '회원가입에 실패했습니다. 다시 시도해주세요.' });
@@ -379,10 +382,10 @@ const JoinProducer = () => {
       {/* 기본 회원 정보 */}
       <Styled.InputGroup>
         <Styled.Label htmlFor="email">이메일</Styled.Label>
-        <Styled.InputEmail 
-          id="email" 
-          type="email" 
-          placeholder="이메일 주소를 입력해주세요" 
+        <Styled.InputEmail
+          id="email"
+          type="email"
+          placeholder="이메일 주소를 입력해주세요"
           value={formData.email}
           onChange={(e) => handleEmailChange(e.target.value)}
         />
@@ -393,12 +396,12 @@ const JoinProducer = () => {
         )}
         {errors.email && <Styled.Error>{errors.email}</Styled.Error>}
       </Styled.InputGroup>
-      
+
       <Styled.InputGroup>
         <Styled.Label htmlFor="password">비밀번호</Styled.Label>
-        <Styled.InputPassword 
-          id="password" 
-          type="password" 
+        <Styled.InputPassword
+          id="password"
+          type="password"
           placeholder="영문자, 숫자, 특수문자를 포함해 8자 이상"
           value={formData.password}
           onChange={(e) => handleInputChange('password', e.target.value)}
@@ -408,9 +411,9 @@ const JoinProducer = () => {
 
       <Styled.InputGroup>
         <Styled.Label htmlFor="re-password">비밀번호 확인</Styled.Label>
-        <Styled.InputRePassword 
-          id="re-password" 
-          type="password" 
+        <Styled.InputRePassword
+          id="re-password"
+          type="password"
           placeholder="한번 더 입력해주세요"
           value={formData.rePassword}
           onChange={(e) => handleInputChange('rePassword', e.target.value)}
@@ -455,9 +458,9 @@ const JoinProducer = () => {
       {/* 프로듀서 전용 정보 */}
       <Styled.InputGroup>
         <Styled.Label htmlFor="name">대표자 실명</Styled.Label>
-        <Styled.InputName 
-          id="name" 
-          type="text" 
+        <Styled.InputName
+          id="name"
+          type="text"
           placeholder="사업자 등록증 내용과 동일하게 작성해주세요"
           value={ceoName}
           onChange={(e) => setCeoName(e.target.value)}
@@ -467,9 +470,9 @@ const JoinProducer = () => {
 
       <Styled.InputGroup>
         <Styled.Label htmlFor="number">연락처</Styled.Label>
-        <Styled.InputNumber 
-          id="number" 
-          type="text" 
+        <Styled.InputNumber
+          id="number"
+          type="text"
           placeholder="010-1234-5678"
           value={phone}
           onChange={(e) => handlePhoneChange(e.target.value)}
@@ -479,9 +482,9 @@ const JoinProducer = () => {
 
       <Styled.InputGroup>
         <Styled.Label htmlFor="business-number">사업자 번호</Styled.Label>
-        <Styled.InputBusiness 
-          id="business-number" 
-          type="text" 
+        <Styled.InputBusiness
+          id="business-number"
+          type="text"
           placeholder="123-45-67890"
           value={businessNumber}
           onChange={(e) => handleBusinessNumberChange(e.target.value)}
@@ -501,8 +504,8 @@ const JoinProducer = () => {
             onClick={handleOpenPostcodeAPI}
             placeholder="우편번호"
           />
-          <Styled.AddressButton type="button" 
-            onClick={handleOpenPostcodeAPI}>주소 찾기
+          <Styled.AddressButton type="button" onClick={handleOpenPostcodeAPI}>
+            주소 찾기
           </Styled.AddressButton>
         </Styled.InputWrapper>
 
@@ -558,9 +561,7 @@ const JoinProducer = () => {
           />
         </Styled.FileInputWrapper>
 
-        {fileName && (
-          <Styled.FileNameNotice></Styled.FileNameNotice>
-        )}
+        {fileName && <Styled.FileNameNotice></Styled.FileNameNotice>}
       </Styled.InputGroup>
 
       {errors.general && <Styled.Error>{errors.general}</Styled.Error>}
@@ -572,8 +573,7 @@ const JoinProducer = () => {
       <Link to="/join-membership">
         <Styled.Signup>일반 회원 가입하기</Styled.Signup>
       </Link>
-
-    </Styled.Form> 
+    </Styled.Form>
   );
 };
 
