@@ -70,6 +70,7 @@ export default function useChatWS({
     ws.onmessage = (e) => {
       try {
         const d = JSON.parse(e.data);
+        console.log('[WS] 받은 메시지:', d);
         setMessages((prev) =>
           prev.concat({
             id: d.id ?? (self.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`),

@@ -132,20 +132,23 @@ const ChatRoom = () => {
   }, [roomId, token, myUserId, navigate]);
 
   // 3) 실시간 메시지(WS) 원본을 받아서 화면 스키마로 변환
-  const { status, messages: liveRaw, sendText } =
+  const { status, messages: liveRaw, sendText, sendImage } =
     useChatWS({ roomId, token, withToken: true });
 
   const liveMessages = useMemo(() => {
+    console.log('[ChatRoom] liveRaw 메시지들:', liveRaw);
     return liveRaw.map((d) => {
-      return {
-        id: d.id,
-        sender: d.sender === myUsername ? 'me' : 'other',
-        type: d.image_url ? 'image' : 'text',
-        content: d.content || '',
-        image: d.image_url || null,
-        createdTime: d.created_at,
-      };
-    });
+      const converted = {
+      id: d.id,
+      sender: d.sender === myUsername ? 'me' : 'other',
+      type: d.image_url ? 'image' : 'text',
+      content: d.content || '',
+      image: d.image_url || null,
+      createdTime: d.created_at,
+    };
+    console.log('[ChatRoom] 변환된 메시지:', converted);
+    return converted;
+  });
   }, [liveRaw, myUsername]);
 
   // 4) 과거(낙관적 포함) + 실시간을 합치고, 중복 제거 + 시간순 정렬
@@ -169,6 +172,32 @@ const ChatRoom = () => {
 
   // 이미지 확대 모달
   const [selectedImage, setSelectedImage] = useState(null);
+
+  const uploadImage = async (file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    const response = await fetch(`${BASE_HTTP}/api/uploads/images/`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+      body: formData
+    });
+
+    if (!response.ok) {
+      throw new Error(`이미지 업로드 실패: ${response.status}`);
+    }
+
+    const result = await response.json();
+     const imageUrl = result.image;
+
+    if (imageUrl && imageUrl.startsWith('/')) {
+      return `${BASE_HTTP}${imageUrl}`;
+    }
+
+    return result.image;
+  };
 
   return (
     <Styled.ChatRoom>
@@ -200,36 +229,77 @@ const ChatRoom = () => {
       )}
 
       <ChatInput
-        onSend={(msg) => {
+        onSend={ async (msg) => {
           if (msg.type === 'text') {
             // 낙관적 반영 + WS 전송
             sendText(msg.content);
           } else if (msg.type === 'image') {
-            // 이미지 프리뷰를 먼저 붙임(업로드 연동 전)
-            const previewUrl =
-              msg.preview || msg.image || (msg.file ? URL.createObjectURL(msg.file) : null);
-
+            // 이미지 업로드 및 전송
             const tempId = `tmp-${Date.now()}`;
-            setChatMessages((prev) =>
-              prev.concat({
-                id: tempId,
-                sender: 'me',
-                type: 'image',
-                content: '',
-                image: previewUrl,
-                createdTime: new Date().toISOString(),
-              })
-            );
+      try {
+        const previewUrl = msg.preview || msg.image || (msg.file ? URL.createObjectURL(msg.file) : null);
+        
+        setChatMessages((prev) =>
+          prev.concat({
+            id: tempId,
+            sender: 'me',
+            type: 'image',
+            content: '',
+            image: previewUrl,
+            createdTime: new Date().toISOString(),
+            isUploading: true,
+          })
+        );
 
-            // TODO: 업로드 → 업로드된 URL을 WS로 전송
-            if (msg.file && previewUrl?.startsWith('blob:')) {
-              setTimeout(() => URL.revokeObjectURL(previewUrl), 20_000);
-            }
-          } else {
-            alert('이미지 전송은 업로드 스펙 확정 후 연결할게요!');
-          }
-        }}
-      />
+        if (!msg.file) {
+          throw new Error('업로드할 파일이 없습니다.');
+        }
+
+        const uploadedUrl = await uploadImage(msg.file);
+
+        const messageData = {
+          content: msg.content && msg.content.trim().length > 0 ? msg.content : '(사진)',
+          image_url: uploadedUrl,
+        };
+
+        const res = await fetch(`${BASE_HTTP}/chat/chatrooms/${roomId}/messages/`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(messageData)
+        });
+
+        if (!res.ok) {
+          // 에러 상세를 콘솔로 확인 (무엇이 invalid인지 바로 알 수 있음)
+          const errBody = await res.json().catch(() => ({}));
+          console.error('메시지 생성 실패 상세:', errBody);
+          throw new Error(`메시지 전송 실패: ${res.status}`);
+        }
+
+        // 성공 → 임시 메시지 제거 (실제 메시지는 WS로 들어옴)
+        setChatMessages((prev) => prev.filter(m => m.id !== tempId));
+
+        sendImage(uploadedUrl);
+        console.log('WebSocket으로 이미지 전송:', uploadedUrl);
+
+        
+        if (previewUrl?.startsWith('blob:')) {
+          URL.revokeObjectURL(previewUrl);
+        }
+
+      } catch (error) {
+        console.error('이미지 전송 실패:', error);
+        alert(`이미지 전송에 실패했습니다: ${error.message}`);
+        
+        // 실패 시 임시 메시지 제거
+        setChatMessages((prev) => prev.filter(m => m.id !== tempId));
+      }
+    }
+  }}
+/>
+
     </Styled.ChatRoom>
   );
 };
