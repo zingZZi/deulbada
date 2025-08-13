@@ -6,6 +6,9 @@ import * as Styled from './DefaultHeader.style';
 const DefaultHeader = ({ location, onAction }) => {
   const config = defaultHeaderMap(location.pathname);
   const { leftText, rightButton } = config;
+  // ChatRoom에서 navigate('', { state: { headerTitle: '상대닉네임' } })로 넣은 값
+  const headerTitleFromState = location?.state?.headerTitle;
+  const title = headerTitleFromState ?? leftText;
 
   const handleClick = () => {
     if (rightButton?.actionKey && typeof onAction === 'function') {
@@ -20,7 +23,8 @@ const DefaultHeader = ({ location, onAction }) => {
         <NolineIconBtn onClick={() => window.history.back()}>
           <ArrowIcon />
         </NolineIconBtn>
-        {leftText ? <Styled.HeaderTitle>{leftText}</Styled.HeaderTitle> : null}
+        {/* {leftText ? <Styled.HeaderTitle>{leftText}</Styled.HeaderTitle> : null} */}
+        {title ? <Styled.HeaderTitle>{title}</Styled.HeaderTitle> : null}
       </Styled.HeaderNav>
 
       {rightButton && (

@@ -43,7 +43,7 @@ export default function App() {
           {/*  404 페이지 */}
           <Route path="/404" element={<NotFound />} />
           <Route path="*" element={<Navigate to="/404" replace />} />
-        <Route path="/chatRoom/:userId" element={<CommonLayout page={'chatRoom'} />} />
+        <Route path="/chatRoom/:roomId" element={<CommonLayout page={'chatRoom'} />} />
           <Route path="/postDetail/:postId" element={<CommonLayout page={'postDetail'} />} />
           <Route path="/postUpload" element={<CommonLayout page={'postUpload'} />} />
         </Route>

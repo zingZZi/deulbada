@@ -1,19 +1,42 @@
 import * as Styled from './ChatList.style.js';
 import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getAccessToken } from '../../auth/tokenStore.js';
 
 const BASE_HTTP = 'http://43.201.70.73';
 
 const ChatList = () => {
   const [rooms, setRooms] = useState([]);
   const navigate = useNavigate();
-  const token = localStorage.getItem('accessToken');
+  const token = getAccessToken();
   const myUserId = Number(localStorage.getItem('userId'));
 
   useEffect(() => {
-    if (!token) { navigate('/login'); return; }
+    if (!token) { 
+      navigate('/login');
+      return;
+    }
+
+    // 내 userId 보장 (없으면 /mypage 로딩 후 저장)
+    const ensureUserId = async () => {
+      if (!myUserId) {
+        const res = await fetch(`${BASE_HTTP}/api/users/mypage/`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) {
+          const me = await res.json();
+          if (me?.id) localStorage.setItem('userId', String(me.id));
+        }
+      }
+    };
+
     (async () => {
+      await ensureUserId();
+
+      const effectiveUserId = Number(localStorage.getItem('userId'));
+
       try {
+        // 채팅방 목록 불러오기
         const res = await fetch(`${BASE_HTTP}/chat/chatrooms/`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -22,19 +45,23 @@ const ChatList = () => {
           return;
         }
 
-        const payload = await res.json(); // { count, next, previous, results: [...] }
-        const list = Array.isArray(payload.results) ? payload.results : [];
+        const payload = await res.json();
+        const list = Array.isArray(payload?.results) ? payload.results
+          : Array.isArray(payload) ? payload
+          : [];
 
-        // 스키마: user1_info / user2_info / messages[]
+        // 백엔드 데이터 → UI 전용 스키마 변환
         const normalized = list
           .map((room) => {
             const u1 = room.user1_info;
             const u2 = room.user2_info;
-            const meIsU1 = u1?.id === myUserId;
-            const partner = meIsU1 ? u2 : u1;  // 상대 유저
+            const meIsU1 = room.user1 === effectiveUserId || u1?.id === effectiveUserId;
+            const meIsU2 = room.user2 === effectiveUserId || u2?.id === effectiveUserId;
+            if (!meIsU1 && !meIsU2) return null; // 내가 속한 방만
 
+            const partner = meIsU1 ? u2 : u1;
             const msgs = Array.isArray(room.messages) ? room.messages : [];
-            const last = msgs.length ? msgs[msgs.length - 1] : null; // 마지막 메시지
+            const last = msgs.length ? msgs[msgs.length - 1] : null;
 
             return {
               roomId: room.id,
@@ -46,7 +73,7 @@ const ChatList = () => {
               lastTime: last?.created_at || room.created_at,
             };
           })
-          .filter(r => !!r.partnerId);
+          .filter(r => r && !!r.partnerId);
 
         setRooms(normalized);
       } catch (e) {
@@ -55,7 +82,7 @@ const ChatList = () => {
     })();
   }, [token, myUserId, navigate]);
 
-  // 최근 대화순으로 정렬(옵션)
+  // 최근 대화순 정렬
   const ordered = useMemo(() => {
     return [...rooms].sort((a, b) => {
       const ta = a.lastTime ? +new Date(a.lastTime) : 0;
@@ -69,13 +96,16 @@ const ChatList = () => {
       {ordered.map((r) => (
         <Styled.ChatItem
           key={r.roomId}
-          onClick={() => navigate(`/chatRoom/${r.partnerId}`)}
+          onClick={() =>
+            navigate(`/chatRoom/${r.roomId}`, {
+              state: { headerTitle: r.partnerName }
+            })
+          }
           role="button"
           tabIndex={0}
         >
           <Styled.ProfileWrapper>
             <Styled.ProfileImg src={r.partnerImage || '/fallback.png'} alt={r.partnerName} />
-            {/* online 여부는 별도 필드 있으면 표시 */}
           </Styled.ProfileWrapper>
 
           <Styled.TextBox>

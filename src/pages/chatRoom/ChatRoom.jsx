@@ -1,153 +1,112 @@
-// ChatRoom.jsx
 import * as Styled from './ChatRoom.style.js';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
 import useChatWS from '../../hooks/useChatWS';
 import { useParams, useNavigate } from 'react-router-dom';
+import { getAccessToken } from '../../auth/tokenStore';
 
 const BASE_HTTP = 'http://43.201.70.73';
 
-/** 날짜 구분 라벨 포맷터 */
+// 날짜 라벨 포맷
 function formatDate(dateString) {
   const date = new Date(dateString);
   return date.toLocaleDateString('ko-KR', {
     year: 'numeric', month: 'long', day: 'numeric', weekday: 'short',
   });
 }
-/** 서로 다른 날짜인지 비교 (날짜 구분선 표시용) */
+// 두 메시지가 서로 다른 날짜인지
 function isDifferentDay(date1, date2) {
   return new Date(date1).toDateString() !== new Date(date2).toDateString();
 }
 
 const ChatRoom = () => {
-  /** 과거 메시지(UI 스키마) */
+  // 화면에 그릴 메시지들(정규화된 형태)
   const [chatMessages, setChatMessages] = useState([]);
-  /** 방 기본 정보 */
+  // 현재 방의 id / 표시용 이름
   const [roomId, setRoomId] = useState(null);
   const [roomName, setRoomName] = useState(null);
-  /** 메시지 리스트 맨 아래 스크롤 타겟 */
+  // 리스트 하단 스크롤용 ref
   const messagesEndRef = useRef(null);
 
-  /** 인증/아이디/파라미터 */
-  const token = localStorage.getItem('accessToken');
-  const myUserId = Number(localStorage.getItem('userId'));
-  const { userId } = useParams();                    // 상대 userId (url 파라미터)
+  // 인증 정보
+  const token = getAccessToken();
+  const [myUserId, setMyUserId] = useState(Number(localStorage.getItem('userId')) || null);
+
+  // 내 userId 없으면 한 번 조회해서 저장
+  useEffect(() => {
+    if (!token || myUserId) return;
+    (async () => {
+      try {
+        const meRes = await fetch(`${BASE_HTTP}/api/users/mypage/`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (meRes.ok) {
+          const me = await meRes.json();
+          if (me?.id) {
+            localStorage.setItem('userId', String(me.id));
+            setMyUserId(me.id);
+          }
+        } else {
+          console.warn('[ChatRoom] /mypage 실패', meRes.status);
+        }
+      } catch (err) {
+        console.error('[ChatRoom] /mypage 에러', err);
+      }
+    })();
+  }, [token, myUserId]);
+
+  // 주소의 /chatRoom/:roomId
+  const { roomId: roomIdParam } = useParams();
   const navigate = useNavigate();
 
-  /** 하단으로 스크롤 */
+  // 하단으로 스크롤
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // ---------------------------------------------
-  // 1) 방 생성/조회 → roomId, roomName 확보
-  //    - 401이면 로그인으로
-  //    - room_name이 없으면 상세 재조회로 보완
-  // ---------------------------------------------
+  // 1) URL에서 방 번호 가져오기 + 없으면 로그인 창으로
   useEffect(() => {
-    if (!userId || !token) return;
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+    if (!roomIdParam) {
+      navigate('/chatList');
+      return;
+    }
+    setRoomId(Number(roomIdParam));
+  }, [roomIdParam, token, navigate]);
 
-    (async () => {
-      try {
-        const res = await fetch(`${BASE_HTTP}/chat/chatrooms/`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ partner_id: Number(userId) }),
-        });
-
-        const room = await res.json().catch(() => ({}));
-        if (!res.ok) {
-          if (res.status === 401) {
-            // navigate('/login'); // ← 임시 비활성
-            console.warn('401 Unauthorized (room create/find) — 리다이렉트 임시 차단');
-          }
-          console.error('room create/find failed', res.status, room);
-          return;
-        }
-
-        setRoomId(room.id);
-        // 1차: 응답에 room_name/name이 있으면 사용
-        if (room.room_name || room.name) {
-          setRoomName(room.room_name || room.name);
-        } else {
-          // 2차: 상세 재조회로 보완 (백엔드에서 안 내려줄 수 있으므로)
-          try {
-            const r2 = await fetch(`${BASE_HTTP}/chat/chatrooms/${room.id}/`, {
-              headers: { Authorization: `Bearer ${token}` },
-            });
-            const det = await r2.json().catch(() => ({}));
-            setRoomName(det.room_name || det.name || String(room.id));
-          } catch {
-            setRoomName(String(room.id));
-          }
-        }
-      } catch (e) {
-        console.error('room create/find failed', e);
-      }
-    })();
-  }, [userId, token, navigate]);
-
-  // ---------------------------------------------
-  // 2) 과거 메시지 로드 (REST → UI 스키마 정규화)
-  //    - sender가 숫자/객체 두 케이스 모두 대응
-  //    - 401이면 로그인으로
-  // ---------------------------------------------
+  // 2) 방 상세를 읽어 이름만 보완(REST)
   useEffect(() => {
-    if (!roomId || !token) return;
+  if (!token || roomId == null) return;
+  (async () => {
+    try {
+      const r = await fetch(`${BASE_HTTP}/chat/chatrooms/${roomId}/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const det = await r.json().catch(() => ({}));
+      // 상대 닉네임 계산
+      const meId = myUserId ?? det?.me_id;
+      const u1 = det.user1_info, u2 = det.user2_info;
+      const meIsU1 = (det.user1 === meId) || (u1?.id === meId);
+      const partner = meIsU1 ? u2 : u1;
+      const partnerName =
+        partner?.username || partner?.account_id ||
+        det.room_name || det.name || `room: ${roomId}`;
+      setRoomName(partnerName);
+      // 헤더 타이틀로 주입
+      navigate('', { replace: true, state: { headerTitle: partnerName } });
+    } catch {
+      setRoomName(String(roomId));
+    }
+  })();
+}, [roomId, token, myUserId, navigate]);
 
-    (async () => {
-      try {
-        const res = await fetch(`${BASE_HTTP}/chat/chatrooms/${roomId}/messages/`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        const payload = await res.json().catch(() => []);
-        const list = Array.isArray(payload)
-          ? payload
-          : Array.isArray(payload?.results)
-          ? payload.results
-          : [];
-
-        if (!res.ok) {
-          if (res.status === 401) {
-            // navigate('/login'); // ← 임시 비활성
-            console.warn('401 Unauthorized (messages list) — 리다이렉트 임시 차단');
-          }
-          console.error('load messages failed', res.status, list);
-          return;
-        }
-
-        const normalized = list.map((m) => {
-          // sender가 5(숫자) 또는 { id:5, ... }(객체)로 올 수 있으니 통일
-          const senderId = typeof m.sender === 'object' ? m.sender?.id : m.sender;
-          return {
-            id: m.id,
-            sender: senderId === myUserId ? 'me' : 'other',
-            type: m.image_url ? 'image' : 'text',
-            content: m.content || '',
-            image: m.image_url || null,
-            createdTime: m.created_at,
-            // profileImage: m.sender_profile_image ?? null, // 필요 시 사용
-          };
-        });
-
-        setChatMessages(normalized);
-      } catch (e) {
-        console.error('load messages failed', e);
-      }
-    })();
-  }, [roomId, token, myUserId, navigate]);
-
-  // ---------------------------------------------
-  // 3) 실시간 메시지(WS)
-  //    - 훅은 백엔드 키 그대로 제공 → UI 스키마로 변환
-  // ---------------------------------------------
+  // 3) 실시간 메시지(WS) 원본을 받아서 화면 스키마로 변환
   const { status, messages: liveRaw, sendText } =
-    useChatWS({ roomName: roomName ?? '', token, withToken: false });
+    useChatWS({ roomId, token, withToken: true });
 
   const liveMessages = useMemo(() => {
     return liveRaw.map((d) => {
@@ -163,29 +122,31 @@ const ChatRoom = () => {
     });
   }, [liveRaw, myUserId]);
 
-  // ---------------------------------------------
-  // 4) 과거 + 실시간 합치기
-  //    - 메시지 id 기준 중복 제거
-  //    - 시간 오름차순 정렬 (오래된 → 최신)
-  // ---------------------------------------------
+  // 4) 과거(낙관적 포함) + 실시간을 합치고, 중복 제거 + 시간순 정렬
   const allMessages = useMemo(() => {
     const merged = [...chatMessages, ...liveMessages];
-    const dedup = merged.filter((m, i, arr) => arr.findIndex((x) => x.id === m.id) === i);
+    const dedup = merged.filter((m, i, arr) => {
+      const sameId = arr.findIndex((x) => x.id === m.id) === i;
+      const sameKey = arr.findIndex(
+        (x) => x.sender === m.sender && x.createdTime === m.createdTime && x.content === m.content
+      ) === i;
+      return sameId && sameKey;
+    });
     dedup.sort((a, b) => new Date(a.createdTime) - new Date(b.createdTime));
     return dedup;
   }, [chatMessages, liveMessages]);
 
-  // 리스트 변화 시 하단으로 스크롤
+  // 메시지 갱신 시 항상 하단으로
   useEffect(() => {
     scrollToBottom();
   }, [allMessages]);
 
-  /** 이미지 확대 모달 */
+  // 이미지 확대 모달
   const [selectedImage, setSelectedImage] = useState(null);
 
   return (
     <Styled.ChatRoom>
-      {/* 연결 상태/방 이름 표시 (개발 편의용) */}
+      {/* 상태 표시(개발 편의) */}
       <div style={{ position: 'absolute', top: 8, right: 12, fontSize: 12, opacity: .6 }}>
         WS: {status} | room: {roomName ?? '-'}
       </div>
@@ -215,49 +176,40 @@ const ChatRoom = () => {
       <ChatInput
         onSend={(msg) => {
           if (msg.type === 'text') {
-            const ok = sendText(msg.content);
-            if (!ok) {
-              // 낙관적 추가(테스트용) — 실제 연동 후엔 제거 가능
-              setChatMessages((prev) => prev.concat({
-                id: Date.now(),
+            // 낙관적 반영 + WS 전송
+            const tempId = `tmp-${Date.now()}`;
+            setChatMessages((prev) =>
+              prev.concat({
+                id: tempId,
                 sender: 'me',
                 type: 'text',
                 content: msg.content,
                 image: null,
                 createdTime: new Date().toISOString(),
-              }));
+              })
+            );
+            sendText(msg.content);
+          } else if (msg.type === 'image') {
+            // 이미지 프리뷰를 먼저 붙임(업로드 연동 전)
+            const previewUrl =
+              msg.preview || msg.image || (msg.file ? URL.createObjectURL(msg.file) : null);
+
+            const tempId = `tmp-${Date.now()}`;
+            setChatMessages((prev) =>
+              prev.concat({
+                id: tempId,
+                sender: 'me',
+                type: 'image',
+                content: '',
+                image: previewUrl,
+                createdTime: new Date().toISOString(),
+              })
+            );
+
+            // TODO: 업로드 → 업로드된 URL을 WS로 전송
+            if (msg.file && previewUrl?.startsWith('blob:')) {
+              setTimeout(() => URL.revokeObjectURL(previewUrl), 20_000);
             }
-            } else if (msg.type === 'image') {
-      // 1) 미리보기 URL 확보 (file, preview, image 중 사용 가능 한 걸 선택)
-      const previewUrl =
-        msg.preview || msg.image || (msg.file ? URL.createObjectURL(msg.file) : null);
-
-      // 2) 화면에 "먼저" 붙이기 (낙관적 추가)
-      const tempId = `tmp-${Date.now()}`;
-      setChatMessages((prev) =>
-        prev.concat({
-          id: tempId,
-          sender: 'me',
-          type: 'image',
-          content: '',
-          image: previewUrl,
-          createdTime: new Date().toISOString(),
-        })
-      );
-
-      // 3) (선택) 서버 업로드 or 업로드된 URL로 WS 전송
-      //    아직 업로드 API가 정해지지 않았으니, 업로드가 있다면 아래에 붙이면 됨.
-      //    예: const uploadedUrl = await uploadImageAndGetUrl(msg.file);
-      //    const ok = sendImage(uploadedUrl);
-      //
-      //    지금은 WS가 image_url만 받는 스펙이므로, 업로드 URL이 없으면
-      //    낙관 표시만 하고 끝낸다. (업로드/전송 연동되면 여기 채워넣기)
-      //
-      //    참고: ObjectURL 해제는 이미지가 실제로 DOM에 그려진 뒤가 안전.
-      //    잠깐 쓰는 프리뷰면 setTimeout으로 약간 뒤에 revoke해도 OK.
-      if (msg.file && previewUrl?.startsWith('blob:')) {
-        setTimeout(() => URL.revokeObjectURL(previewUrl), 20_000); // 20초 후 해제(임시)
-      }
           } else {
             alert('이미지 전송은 업로드 스펙 확정 후 연결할게요!');
           }
