@@ -1,12 +1,12 @@
-import * as Styled from './product.style';
+import * as Styled from './Product.style';
 import React, { useState, useEffect } from 'react';
 import { Camera } from 'lucide-react';
-import { createPost } from "../../api/productApi";
+import { createPost } from '../../api/productApi';
 import { usePageActions } from '../../context/PageActionsContext';
 
 const Product = () => {
   const { registerAction, unregisterAction } = usePageActions(); // 액션 등록/해제 함수
-  
+
   // 상태 관리
   const [preview, setPreview] = useState(null);
   const [imageFile, setImageFile] = useState(null);
@@ -23,13 +23,13 @@ const Product = () => {
   const categories = {
     농산물: [
       '잎채소류',
-      '열매채소류', 
+      '열매채소류',
       '뿌리채소류',
       '과일류',
       '곡류·잡곡',
       '버섯류',
       '견과류',
-      '기타농산물'
+      '기타농산물',
     ],
     수산물: [
       '생선류',
@@ -39,8 +39,8 @@ const Product = () => {
       '건어물류',
       '젓갈류',
       '어패가공품',
-      '기타수산물'
-    ]
+      '기타수산물',
+    ],
   };
 
   // 1차 카테고리 변경 시 2차 카테고리 초기화
@@ -90,17 +90,17 @@ const Product = () => {
       alert('상품명을 입력해 주세요.');
       return;
     }
-    
+
     if (!price?.trim()) {
       alert('가격을 입력해 주세요.');
       return;
     }
-    
+
     if (!link?.trim()) {
       alert('판매링크를 입력해 주세요.');
       return;
     }
-    
+
     if (!businessType) {
       alert('1차 카테고리를 선택해 주세요.');
       return;
@@ -138,19 +138,18 @@ const Product = () => {
       };
 
       console.log('상품 저장 요청 데이터:', productData);
-      
+
       // API 호출
       const result = await createPost(productData);
       console.log('API 응답:', result);
-      
+
       alert('상품이 등록되었습니다!');
-      
+
       // 폼 초기화
       resetForm();
-      
     } catch (error) {
       console.error('상품 등록 실패:', error);
-      
+
       // 더 자세한 에러 정보 표시
       if (error.response) {
         console.error('API 에러 응답:', error.response.data);
@@ -210,7 +209,7 @@ const Product = () => {
       if (preview) {
         URL.revokeObjectURL(preview);
       }
-      
+
       setImageFile(file);
       setPreview(URL.createObjectURL(file));
     }
@@ -231,13 +230,13 @@ const Product = () => {
   // 헤더 액션 등록/해제
   useEffect(() => {
     console.log('Product 컴포넌트: saveProfile 액션 등록');
-    
+
     // saveProfile 액션 등록 - 현재 state를 참조하는 함수로 래핑
     const saveAction = () => {
       console.log('헤더에서 상품 등록 실행');
       handleSubmitForm();
     };
-    
+
     registerAction('saveProfile', saveAction);
 
     // 컴포넌트 언마운트 시 액션 해제
@@ -274,24 +273,23 @@ const Product = () => {
           />
 
           {preview && <img src={preview} alt="업로드 미리보기" />}
-          
+
           <Styled.IconWrapper>
             <Camera color="#fff" size={22} />
           </Styled.IconWrapper>
         </Styled.ImageUploadWrapper>
       </Styled.InputGroup>
-      
 
       {/* 상품명 */}
       <Styled.InputGroup>
         <Styled.Label htmlFor="name">상품명</Styled.Label>
-        <Styled.InputText 
-          id="name" 
-          type="text" 
+        <Styled.InputText
+          id="name"
+          type="text"
           placeholder="2~15자 이내여야 합니다."
           maxLength={15}
           value={name}
-          onChange={(e) => setName(e.target.value)} 
+          onChange={(e) => setName(e.target.value)}
         />
       </Styled.InputGroup>
 
@@ -311,9 +309,9 @@ const Product = () => {
       {/* 판매링크 */}
       <Styled.InputGroup>
         <Styled.Label htmlFor="link">판매링크</Styled.Label>
-        <Styled.InputText 
-          id="link" 
-          type="url" 
+        <Styled.InputText
+          id="link"
+          type="url"
           placeholder="URL을 입력해 주세요."
           value={link}
           onChange={(e) => setLink(e.target.value)}
@@ -345,11 +343,7 @@ const Product = () => {
       {/* 1차 카테고리 */}
       <Styled.InputGroup>
         <Styled.Label htmlFor="business-type">1차 카테고리</Styled.Label>
-        <Styled.Select
-          id="business-type"
-          value={businessType}
-          onChange={handleBusinessTypeChange}
-        >
+        <Styled.Select id="business-type" value={businessType} onChange={handleBusinessTypeChange}>
           <option value="">카테고리를 선택해주세요</option>
           <option value="농산물">농산물</option>
           <option value="수산물">수산물</option>
@@ -378,7 +372,6 @@ const Product = () => {
       <Styled.Button type="submit" disabled={isSubmitting}>
         {isSubmitting ? '등록 중...' : '상품 등록'}
       </Styled.Button>
-
     </Styled.Form>
   );
 };
