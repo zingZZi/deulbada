@@ -12,7 +12,7 @@ const theme = {
     white600: '#959595',
     white700: '#767676',
 
-    black: '#000000',
+    black: '#333333',
   },
 
   //html의 기본사이즈는 10px
@@ -21,7 +21,7 @@ const theme = {
     large: '1.6rem',
     base: '1.4rem',
     small: '1.2rem',
-    xSmall: '1.2rem',
+    xSmall: '1.0rem',
   },
 
   fonts: {

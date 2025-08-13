@@ -1,7 +1,8 @@
 import styled from 'styled-components';
 
 export const StyledHome = styled.section`
-  width: 100%;
-  height: 100vh;
-  background-color: pink;
+  padding-bottom: 8rem;
+`;
+export const StyledContent = styled.section`
+  padding: 1.7rem 1.6rem;
 `;

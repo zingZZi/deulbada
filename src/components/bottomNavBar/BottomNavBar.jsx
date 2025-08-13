@@ -1,0 +1,35 @@
+import { HouseIcon, MessageCircleIcon, SquarePlusIcon, UserIcon } from '../icon/Icon.style';
+import * as Styled from './BottomNavBar.style';
+
+const BottomNavBar = () => {
+  return (
+    <Styled.BottomNav data-bottom-nav>
+      <Styled.BottomUl>
+        <Styled.BottomLi>
+          <Styled.BottomLink to="/home">
+            <HouseIcon />홈
+          </Styled.BottomLink>
+        </Styled.BottomLi>
+        <Styled.BottomLi>
+          <Styled.BottomLink to="/chatList">
+            <MessageCircleIcon />
+            채팅
+          </Styled.BottomLink>
+        </Styled.BottomLi>
+        <Styled.BottomLi>
+          <Styled.BottomLink to="/write">
+            <SquarePlusIcon />
+            게시물작성
+          </Styled.BottomLink>
+        </Styled.BottomLi>
+        <Styled.BottomLi>
+          <Styled.BottomLink to="/myprofile">
+            <UserIcon />
+            프로필
+          </Styled.BottomLink>
+        </Styled.BottomLi>
+      </Styled.BottomUl>
+    </Styled.BottomNav>
+  );
+};
+export default BottomNavBar;
