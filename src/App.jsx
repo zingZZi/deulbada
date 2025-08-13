@@ -4,7 +4,7 @@ import Guide from './pages/guide/Guide';
 import CommonLayout from './layout/commonLayout/CommonLayout';
 import LoginLayout from './layout/loginLayout/LoginLayout';
 import { StyledContainer } from './styles/Container.style';
-import NotFound from './pages/notFound/notFound';
+import NotFound from './pages/notFound/NotFound';
 import RequireAuth from './auth/RequireAuth';
 import { useEffect } from 'react';
 import { verifyToken } from './auth/authService';
