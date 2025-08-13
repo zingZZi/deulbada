@@ -64,7 +64,7 @@ const PostContent = ({ images, content, date, id, isLiked = false, like, comment
           <HeartIcon $liked={liked} />
           <Styled.Count>{currentLikeCount}</Styled.Count>
         </Styled.PostLikeButton>
-        <Styled.CommnetButton to={`/post/${id}`}>
+        <Styled.CommnetButton to={`/postDetail/${id}`}>
           <MessageCircleIcon />
           <Styled.Count>{comment}</Styled.Count>
         </Styled.CommnetButton>

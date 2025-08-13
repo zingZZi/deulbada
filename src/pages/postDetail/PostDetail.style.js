@@ -6,73 +6,8 @@ export const Container = styled.div`
 `;
 
 export const PostWrapper = styled.div`
-  display: flex;
-  margin: 20px 16px;
-
-  .profile {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin-right: 12px;
-    object-fit: cover;
-  }
-
-  .post-body {
-    flex: 1;
-  }
-
-  .post-header {
-    display: flex;
-    align-items: center;
-    font-size: ${({ theme }) => theme.fontSize.base};
-    color: ${({ theme }) => theme.colors.black};
-
-    .post-header-names {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      margin-bottom: 16px;
-    }
-
-    .username {
-      font-weight: ${({ theme }) => theme.fonts.weights.medium};
-      color: ${({ theme }) => theme.colors.black};
-    }
-
-    .account {
-      color: ${({ theme }) => theme.colors.white700};
-      font-size:${({ theme }) => theme.fontSize.small};
-    }
-  }
-
-  .post-content-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;  
-  }
-
-  .content {
-    word-break: keep-all;
-    font-size: ${({ theme }) => theme.fontSize.base};
-    line-height: ${({ theme }) => theme.fontSize.xLarge};
-    margin-bottom: 16px;
-  }
-
-  .post-info {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: ${({ theme }) => theme.fontSize.small};
-    color: ${({ theme }) => theme.colors.white700};
-    margin-bottom: 16px;
-  }
-
-  .post-time {
-    display: block;
-    font-size: ${({ theme }) => theme.fontSize.xSmall};
-    color: ${({ theme }) => theme.colors.white600};
-  }
+  padding: 2rem 1.6rem;
+  position: relative;
 `;
 
 export const PostImage = styled.img`
@@ -80,7 +15,7 @@ export const PostImage = styled.img`
   width: 100%;
   max-width: 350px;
   border-radius: 10px;
-  margin: 0 auto 12px; 
+  margin: 0 auto 12px;
 `;
 
 export const CommentList = styled.ul`
@@ -181,7 +116,7 @@ export const CommentInputWrapper = styled.div`
     &.active {
       color: ${({ theme }) => theme.colors.primary};
     }
-    
+
     &:disabled {
       cursor: not-allowed;
       opacity: 0.5;
