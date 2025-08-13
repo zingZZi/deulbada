@@ -4,8 +4,8 @@ import * as Styled from './Home.style.js';
 import theme from '../../styles/theme.js';
 import ProductList from './productList/ProductList.jsx';
 import PostList from './postList/PostList.jsx';
-import LoadingComponent from '../../components/loding/Loding';
-import { useTheme } from '../../context/ThemeContext';
+import LoadingComponent from '../../components/loding/Loding.jsx';
+import { useTheme } from '../../context/ThemeContext.jsx';
 
 const Home = () => {
   const [categorySelected, setCategorySelected] = useState('default');
