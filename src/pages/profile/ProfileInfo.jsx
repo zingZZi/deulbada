@@ -6,13 +6,11 @@ import { MessageCircleIcon, Share2Icon } from '../../components/icon/Icon.style'
 import { toggleFollow } from '../../api/userApi'; // API 파일 경로에 맞게 수정
 import defaultProfileImg from './../../assets/images/defaultProfileImg.png';
 
-const ProfileInfo = ({ user_name, isMyProfile, userInfo }) => {
+const ProfileInfo = ({ accountId, isMyProfile, userInfo }) => {
   // 팔로우 상태와 팔로워 수를 로컬 상태로 관리
   const [isFollowing, setIsFollowing] = useState(false);
   const [followerCount, setFollowerCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-
-  console.log('userInfo:', userInfo);
 
   // userInfo가 변경될 때마다 로컬 상태 업데이트
   useEffect(() => {
@@ -26,7 +24,7 @@ const ProfileInfo = ({ user_name, isMyProfile, userInfo }) => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: userInfo.user_name || userInfo.username,
+          title: userInfo.accountId || userInfo.username,
           text: userInfo.introduction || '프로필을 확인해보세요!',
           url: window.location.href,
         });
@@ -81,7 +79,7 @@ const ProfileInfo = ({ user_name, isMyProfile, userInfo }) => {
       <h2 className="text-ir">프로필 정보 영역입니다.</h2>
       <Styled.profileSmmary>
         <Styled.followInfo>
-          <Link to={`/followers/${user_name}`}>
+          <Link to={`/followers/${accountId}`}>
             <b>{followerCount}</b>
             followers
           </Link>
@@ -96,7 +94,7 @@ const ProfileInfo = ({ user_name, isMyProfile, userInfo }) => {
           </Styled.ProfileImgWrap>
         </li>
         <Styled.followInfo>
-          <Link to={`/followings/${user_name}`}>
+          <Link to={`/followings/${accountId}`}>
             <b>{userInfo.following_count || 0}</b>
             followings
           </Link>

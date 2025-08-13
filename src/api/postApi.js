@@ -11,7 +11,7 @@ export const getPostDetail = (id) => api.get(`/posts/${id}/`);
 export const getUserPost = (userId, page = 1, limit = 2) =>
   api.get(`/posts/by/${userId}/?page=${page}&page_size=${limit}`);
 // Delete: user  post 삭제
-export const delePost = (postId) => api.delete(`/posts/${postId}/`);
+export const delePost = (postId) => api.delete(`/posts/${postId}/edit/`);
 
 //좋아요 상호작용
 export const togglePostLike = (id) => api.post(`/posts/${id}/like/`);

@@ -14,7 +14,7 @@ import { fetchUser } from '../../api/userApi';
 import { useScrollObserver } from '../../hooks/useScrollObserver';
 
 const Profile = () => {
-  const { user_name } = useParams();
+  const { accountId } = useParams();
   const [userInfo, setUserInfo] = useState([]);
   const [userProduct, setUserProduct] = useState([]);
   const [userFeed, setUserFeed] = useState([]);
@@ -26,7 +26,7 @@ const Profile = () => {
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const isBottom = useScrollObserver();
 
-  useProfileRedirect(user_name);
+  useProfileRedirect(accountId);
 
   function feedTypeHandler(e) {
     setFeedType(e.currentTarget.dataset.type);
@@ -45,7 +45,7 @@ const Profile = () => {
     }
   }, [isBottom, isLoading, morepage, isInitialLoad, userFeed.length]);
 
-  // user_name 변경 시 초기화
+  // accountId 변경 시 초기화
   useEffect(() => {
     setPage(1);
     setMorepage(true);
@@ -53,11 +53,11 @@ const Profile = () => {
     setIsInitialLoad(true);
     setUserInfo([]);
     setUserProduct([]);
-  }, [user_name]);
+  }, [accountId]);
 
   // 사용자 정보와 상품 정보 로드 (초기 한번만)
   useEffect(() => {
-    if (!user_name) {
+    if (!accountId) {
       setIsLoading(false);
       return;
     }
@@ -67,8 +67,8 @@ const Profile = () => {
       try {
         setIsLoading(true);
         const [userResponse, productsResponse] = await Promise.allSettled([
-          fetchUser(user_name),
-          getProductUser(user_name),
+          fetchUser(accountId),
+          getProductUser(accountId),
         ]);
 
         if (isMounted) {
@@ -105,16 +105,16 @@ const Profile = () => {
     return () => {
       isMounted = false;
     };
-  }, [user_name]);
+  }, [accountId]);
 
   // 피드 데이터 로드 - ProductList와 동일한 패턴
   useEffect(() => {
-    if (!user_name) return;
+    if (!accountId) return;
 
     const getFeed = async () => {
       setIsLoading(true);
       try {
-        const response = await getUserPost(user_name, page, 6);
+        const response = await getUserPost(accountId, page, 6);
         const data = response.data.results || response.data;
         const nextPage = response.data.next;
 
@@ -140,10 +140,10 @@ const Profile = () => {
     };
 
     getFeed();
-  }, [user_name, page]);
+  }, [accountId, page]);
 
-  // user_name이 없을 때
-  if (!user_name) {
+  // accountId이 없을 때
+  if (!accountId) {
     return (
       <Styled.ProfileBg>
         <div style={{ padding: '20px', textAlign: 'center' }}>
@@ -156,7 +156,7 @@ const Profile = () => {
   return (
     <Styled.ProfileBg>
       {/* 상단프로필정보 */}
-      <ProfileInfo user_name={user_name} isMyProfile={false} userInfo={userInfo} />
+      <ProfileInfo accountId={accountId} isMyProfile={false} userInfo={userInfo} />
 
       {/* 판매중인 상품영역 / 제품있을시에만 노출 */}
       {userProduct.length > 0 && <SellProduct userProduct={userProduct} />}

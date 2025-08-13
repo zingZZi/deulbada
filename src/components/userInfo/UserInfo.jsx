@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Link } from 'react-router-dom';
 import * as Styled from './UserInfo.style';
 import defaultProfileImg from './../../assets/images/defaultProfileImg.png'; //기본프로필이미지
@@ -22,6 +23,7 @@ const UserInfo = ({
   onFollowToggle,
   feedData = null, // 전체 피드 데이터 객체
   userId = null, // 게시물 작성자 ID (대안으로 사용)
+  onPostDeleted = null, // 🔥 게시글 삭제 콜백 함수 추가
 }) => {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -49,18 +51,22 @@ const UserInfo = ({
 
   // 실제 피드 데이터 구성
   const getFeedDataForAction = () => {
-    // feedData가 있으면 그대로 사용
+    // feedData가 있으면 그대로 사용 (전체 게시글 데이터)
     if (feedData) {
       return feedData;
     }
 
     // feedData가 없으면 props로부터 구성
     return {
-      userId: userId || accountId, // userId가 없으면 accountId를 사용
+      userId: userId || accountId,
       username,
       profile_image,
       accountId,
-      // 필요한 경우 추가 데이터
+      author: {
+        account_id: accountId,
+        username,
+        profile_image: profile_image || profileImg,
+      },
     };
   };
 
@@ -68,12 +74,10 @@ const UserInfo = ({
     if (isLoading) return;
     try {
       setIsLoading(true);
-      // API 호출
       const result = await toggleFollow(accountId);
 
-      // 성공 시 부모 컴포넌트에 알림
       if (onFollowToggle) {
-        onFollowToggle(accountId, result); // accountId와 결과를 전달
+        onFollowToggle(accountId); // result 제거, accountId만 전달
       }
     } catch (error) {
       console.error('팔로우/언팔로우 처리 중 오류:', error);
@@ -98,7 +102,10 @@ const UserInfo = ({
       </Styled.UserInfoLayout>
 
       {feedList ? (
-        <Styled.MoreBtn onClick={() => handleFeedAction('openFeedMenu', getFeedDataForAction())}>
+        <Styled.MoreBtn
+          onClick={() => handleFeedAction('openFeedMenu', getFeedDataForAction(), onPostDeleted)}
+        >
+          {/* 🔥 handleFeedAction에 콜백 함수 전달 */}
           <EllipsisVerticalIcon size={'1.8rem'} />
           <span className="text-ir">더보기</span>
         </Styled.MoreBtn>
@@ -111,12 +118,19 @@ const UserInfo = ({
             radius={'xsmall'}
             fontSize={'small'}
             onClick={follwHandler}
+            disabled={isLoading}
           >
-            취소
+            {isLoading ? '처리중...' : '취소'}
           </Styled.FollwerLineBtn>
         ) : (
-          <Styled.FollwerBtn padding={'.7rem 1.1rem'} radius={'xsmall'} fontSize={'small'}>
-            팔로잉
+          <Styled.FollwerBtn
+            padding={'.7rem 1.1rem'}
+            radius={'xsmall'}
+            fontSize={'small'}
+            onClick={follwHandler}
+            disabled={isLoading}
+          >
+            {isLoading ? '처리중...' : '팔로잉'}
           </Styled.FollwerBtn>
         ))}
     </>

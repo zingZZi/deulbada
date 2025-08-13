@@ -14,6 +14,12 @@ const PostList = () => {
   const [hasMorePage, setHasMorePage] = useState(true);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const isBottom = useScrollObserver();
+
+  // 🔥 게시글 삭제 후 상태에서 제거하는 함수
+  const removePostFromList = (postId) => {
+    setPostList((prevList) => prevList.filter((post) => post.id !== postId));
+  };
+
   // 무한 스크롤 처리 - 원래 로직 유지
   useEffect(() => {
     if (isBottom && !isLoading && hasMorePage && !isInitialLoad && postList.length > 0) {
@@ -60,6 +66,7 @@ const PostList = () => {
   if (isInitialLoad && isLoading) {
     return <LoadingComponent />;
   }
+
   return (
     <>
       {postList && postList.length > 0 ? (
@@ -73,8 +80,9 @@ const PostList = () => {
                   feedList={true}
                   profileImg={e.author.profile_image}
                   to={`/profile/${e.author.account_id}`}
-                  feedData={e.author}
+                  feedData={e} // 🔥 전체 게시글 데이터 전달
                   is_farm_verified={e.author_is_farm_verified}
+                  onPostDeleted={removePostFromList} // 🔥 삭제 콜백 함수 전달
                 />
                 <PostContent
                   content={e.content}

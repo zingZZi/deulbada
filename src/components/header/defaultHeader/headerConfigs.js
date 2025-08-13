@@ -34,12 +34,12 @@ export const defaultHeaderMap = (pathname) => {
       leftText: 'Followings',
       rightButton: false,
     },
-    '/myProfile': {
+    '/myprofile': {
       leftText: false,
       rightButton: {
-        type: 'text',
-        text: '저장',
-        actionKey: 'saveProfile',
+        type: 'icon',
+        text: '더보기',
+        actionKey: 'openProfileMenu',
       },
     },
     '/product': {

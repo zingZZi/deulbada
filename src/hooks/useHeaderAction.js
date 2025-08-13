@@ -1,8 +1,11 @@
 /* eslint-disable no-unused-vars */
+import { useNavigate } from 'react-router-dom';
+import { logout } from '../auth/authService';
 import { usePageActions } from '../context/PageActionsContext';
 import { usePopup } from '../context/PopupContext';
 
 const useHeaderActions = () => {
+  const navigate = useNavigate();
   const { openPopup, closePopup, openModal, closeModal } = usePopup();
 
   let executeAction;
@@ -23,7 +26,13 @@ const useHeaderActions = () => {
         openPopup({
           text: '로그아웃',
           list: [
-            { label: '설정 및 개인정보', action: () => console.log('설정으로 이동') },
+            {
+              label: '설정 및 개인정보',
+              action: () => {
+                closePopup();
+                navigate('/profile/edit');
+              },
+            },
             {
               label: '로그아웃',
               action: () => {
@@ -31,7 +40,13 @@ const useHeaderActions = () => {
                 const modalData = {
                   modalList: [
                     { text: '취소', action: () => closeModal() },
-                    { text: '로그아웃', action: () => console.log('로그아웃') },
+                    {
+                      text: '로그아웃',
+                      action: () => {
+                        closeModal();
+                        logout();
+                      },
+                    },
                   ],
                   text: '로그아웃하시겠어요?',
                 };
