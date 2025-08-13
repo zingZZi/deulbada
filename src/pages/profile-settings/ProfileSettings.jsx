@@ -11,7 +11,6 @@ const ProfileSettings = () => {
   
   // 회원가입 페이지에서 전달받은 데이터
   const signupData = location.state || {};
-  
   const [image, setImage] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [name, setName] = useState(signupData.nickname || '');
@@ -157,18 +156,6 @@ const ProfileSettings = () => {
         }
       }
 
-      // 디버깅 로그
-      console.log('=== API 호출 준비 ===');
-      console.log('- 토큰 존재:', !!token);
-      console.log('- 토큰 타입:', typeof token);
-      console.log('- 토큰 전체 길이:', token?.length);
-      console.log('- 토큰 시작 20자:', token?.substring(0, 20));
-      console.log('- 토큰 끝 20자:', token?.substring(token.length - 20));
-      console.log('- Authorization 헤더:', `Bearer ${token?.substring(0, 10)}...`);
-      console.log('- FormData 내용:');
-      for (let [key, value] of formData.entries()) {
-        console.log(`  ${key}:`, value instanceof File ? `File(${value.name}, ${value.size} bytes)` : value);
-      }
       
       // API 호출
       const response = await fetch('http://43.201.70.73/api/users/mypage/profile/setup/', {

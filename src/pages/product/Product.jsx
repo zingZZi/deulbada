@@ -2,8 +2,11 @@ import * as Styled from './product.style';
 import React, { useState, useEffect } from 'react';
 import { Camera } from 'lucide-react';
 import { createPost } from "../../api/productApi";
+import { usePageActions } from '../../context/PageActionsContext';
 
 const Product = () => {
+  const { registerAction, unregisterAction } = usePageActions(); // 액션 등록/해제 함수
+  
   // 상태 관리
   const [preview, setPreview] = useState(null);
   const [imageFile, setImageFile] = useState(null);
@@ -14,6 +17,7 @@ const Product = () => {
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
   const [link, setLink] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false); // 제출 중 상태
 
   // 카테고리 데이터
   const categories = {
@@ -74,9 +78,12 @@ const Product = () => {
     }
   };
 
-  // 폼 제출 처리
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // 폼 제출 처리 함수 (헤더 버튼과 폼 제출에서 공통 사용)
+  const handleSubmitForm = async () => {
+    if (isSubmitting) {
+      console.log('이미 제출 중입니다.');
+      return;
+    }
 
     // 유효성 검사
     if (!name?.trim()) {
@@ -103,6 +110,8 @@ const Product = () => {
       alert('2차 카테고리를 선택해 주세요.');
       return;
     }
+
+    setIsSubmitting(true);
 
     try {
       let imageUrl = null;
@@ -152,7 +161,15 @@ const Product = () => {
       } else {
         alert(`상품 등록에 실패했습니다: ${error.message}`);
       }
+    } finally {
+      setIsSubmitting(false);
     }
+  };
+
+  // 폼 제출 처리 (폼 이벤트용)
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await handleSubmitForm();
   };
 
   // 폼 초기화
@@ -210,6 +227,25 @@ const Product = () => {
     const formatted = formatPrice(e.target.value);
     setPrice(formatted);
   };
+
+  // 헤더 액션 등록/해제
+  useEffect(() => {
+    console.log('Product 컴포넌트: saveProfile 액션 등록');
+    
+    // saveProfile 액션 등록 - 현재 state를 참조하는 함수로 래핑
+    const saveAction = () => {
+      console.log('헤더에서 상품 등록 실행');
+      handleSubmitForm();
+    };
+    
+    registerAction('saveProfile', saveAction);
+
+    // 컴포넌트 언마운트 시 액션 해제
+    return () => {
+      console.log('Product 컴포넌트: saveProfile 액션 해제');
+      unregisterAction('saveProfile');
+    };
+  }, [name, price, link, businessType, businessName, imageFile, tags]); // state 변경시 재등록
 
   // 컴포넌트 언마운트 시 미리보기 URL 해제
   useEffect(() => {
@@ -339,7 +375,9 @@ const Product = () => {
         </Styled.InputGroup>
       )}
 
-      <Styled.Button type="submit">상품 등록</Styled.Button>
+      <Styled.Button type="submit" disabled={isSubmitting}>
+        {isSubmitting ? '등록 중...' : '상품 등록'}
+      </Styled.Button>
 
     </Styled.Form>
   );
