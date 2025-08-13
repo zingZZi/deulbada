@@ -37,11 +37,12 @@ export const InputEmail = styled.input`
   color: ${({ theme }) => theme.colors.black};
 
   &::placeholder {
-  color: ${({ theme }) => theme.colors.white300};
+    color: ${({ theme }) => theme.colors.white300};
+  }
 
   &:focus {
-  outline: none;
-  border-bottom: 1px solid #5CA14E;
+    outline: none;
+    border-bottom: 1px solid #5CA14E;
   }
 `;
 
@@ -54,11 +55,12 @@ export const InputPassword = styled.input`
   color: ${({ theme }) => theme.colors.black};
 
   &::placeholder {
-  color: ${({ theme }) => theme.colors.white300};
-}
+    color: ${({ theme }) => theme.colors.white300};
+  }
+
   &:focus {
-  outline: none;
-  border-bottom: 1px solid #5CA14E;
+    outline: none;
+    border-bottom: 1px solid #5CA14E;
   }
 `;
 
@@ -71,11 +73,12 @@ export const InputRePassword = styled.input`
   color: ${({ theme }) => theme.colors.black};
 
   &::placeholder {
-  color: ${({ theme }) => theme.colors.white300};
-}
+    color: ${({ theme }) => theme.colors.white300};
+  }
+
   &:focus {
-  outline: none;
-  border-bottom: 1px solid #5CA14E;
+    outline: none;
+    border-bottom: 1px solid #5CA14E;
   }
 `;
 
@@ -88,12 +91,14 @@ export const InputName = styled.input`
   color: ${({ theme }) => theme.colors.black};
 
   &::placeholder {
-  color: ${({ theme }) => theme.colors.white300};
-}
+    color: ${({ theme }) => theme.colors.white300};
+  }
+
   &:focus {
-  outline: none;
-  border-bottom: 1px solid #5CA14E;
-  }`;
+    outline: none;
+    border-bottom: 1px solid #5CA14E;
+  }
+`;
 
 export const InputNumber = styled.input`
   border: none;
@@ -104,12 +109,14 @@ export const InputNumber = styled.input`
   color: ${({ theme }) => theme.colors.black};
 
   &::placeholder {
-  color: ${({ theme }) => theme.colors.white300};
-}
+    color: ${({ theme }) => theme.colors.white300};
+  }
+
   &:focus {
-  outline: none;
-  border-bottom: 1px solid #5CA14E;
-  }`;
+    outline: none;
+    border-bottom: 1px solid #5CA14E;
+  }
+`;
 
 export const InputBusiness = styled.input`
   border: none;
@@ -120,14 +127,16 @@ export const InputBusiness = styled.input`
   color: ${({ theme }) => theme.colors.black};
 
   &::placeholder {
-  color: ${({ theme }) => theme.colors.white300};
-}
-  &:focus {
-  outline: none;
-  border-bottom: 1px solid #5CA14E;
-  }`;
+    color: ${({ theme }) => theme.colors.white300};
+  }
 
-  export const InputPoscal = styled.input`
+  &:focus {
+    outline: none;
+    border-bottom: 1px solid #5CA14E;
+  }
+`;
+
+export const InputPoscal = styled.input`
   box-sizing: border-box;
   border: none;
   border-bottom: 1px solid #ccc;
@@ -137,11 +146,12 @@ export const InputBusiness = styled.input`
   color: ${({ theme }) => theme.colors.black};
 
   &::placeholder {
-  color: ${({ theme }) => theme.colors.white300};
-}
+    color: ${({ theme }) => theme.colors.white300};
+  }
+
   &:focus {
-  outline: none;
-  border-bottom: 1px solid #5CA14E;
+    outline: none;
+    border-bottom: 1px solid #5CA14E;
   }
 `;
 
@@ -155,11 +165,12 @@ export const Input = styled.input`
   color: ${({ theme }) => theme.colors.black};
 
   &::placeholder {
-  color: ${({ theme }) => theme.colors.white300};
-}
+    color: ${({ theme }) => theme.colors.white300};
+  }
+
   &:focus {
-  outline: none;
-  border-bottom: 1px solid #5CA14E;
+    outline: none;
+    border-bottom: 1px solid #5CA14E;
   }
 `;
 
@@ -168,13 +179,12 @@ export const InputWrapper = styled.div`
   display: flex;
   gap: 1rem;
   margin-bottom: 1.3rem;
-
   align-self: flex-start;
   align-items: flex-end;
 
   & > input {
-  flex: 1;
-  min-width: 0;
+    flex: 1;
+    min-width: 0;
   }
 `;
 
@@ -234,7 +244,6 @@ export const FileInputWrapper = styled.div`
   gap: 1.0rem;
 `;
 
-
 export const FileName = styled.span`
   font-size: 1.2rem;
   color: ${({ hasFile, theme }) =>
@@ -245,8 +254,7 @@ export const FileName = styled.span`
   border-bottom: 1px solid #ccc;
   white-space: nowrap;
   flex: 1;
-
-  `;
+`;
 
 export const CustomFileButton = styled.button`
   font-size: 1.2rem;
@@ -261,10 +269,17 @@ export const CustomFileButton = styled.button`
   white-space: nowrap;
 `;
 
-export const FileNameNotice = styled.button`
+export const FileNameNotice = styled.div`
+  font-size: 1rem;
+  color: ${({ theme }) => theme.colors.white300};
+  margin-top: 0.5rem;
 `;
 
-
+export const Error = styled.div`
+  font-size: 1rem;
+  color: #e74c3c;
+  margin-top: 0.5rem;
+`;
 
 export const Button = styled.button`
   padding: 1.1rem 0;
@@ -273,6 +288,12 @@ export const Button = styled.button`
   border: none;
   border-radius: 44px;
   margin-bottom: 1.0rem;
+  cursor: pointer;
+
+  &:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
 `;
 
 export const Signup = styled.span`

@@ -23,6 +23,7 @@ import LoadingComponent from '../../components/loding/Loding';
 import { LoadingProvider, useLoading } from '../../context/LoadingContext';
 import MyProfileEdit from '../../pages/myProfileEdit/MyProfileEdit';
 import { CustomThemeProvider } from '../../context/ThemeContext';
+import ProfileSettings from '../../pages/profile-settings/ProfileSettings';
 
 function Content({ page, searchQuery }) {
   switch (page) {
@@ -50,6 +51,8 @@ function Content({ page, searchQuery }) {
       return <PostUpload />;
     case 'myprofileEdit':
       return <MyProfileEdit />;
+    case 'profile-settings':
+      return <ProfileSettings />;
   }
 }
 

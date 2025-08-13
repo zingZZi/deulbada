@@ -1,14 +1,13 @@
 import * as Styled from './JoinMembership.style';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { registerUser, isEmailAvailable, isUsernameAvailable } from '../../api/authAPI';
+import { registerUser, isEmailAvailable, isAccountIdAvailable } from '../../api/authAPI';
 import { login } from '../../auth/authService';
 import { setAccountId } from '../../auth/tokenStore';
 
 const JoinMembership = () => {
   const [formData, setFormData] = useState({
-    account_id: '',     // username → account_id로 변경
-
+    account_id: '',   
     nickname: '',
     email: '',
     password: '',
@@ -17,7 +16,7 @@ const JoinMembership = () => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [emailStatus, setEmailStatus] = useState(null);
-  const [accountIdStatus, setAccountIdStatus] = useState(null);  // usernameStatus → accountIdStatus
+  const [accountIdStatus, setAccountIdStatus] = useState(null); 
   const [nicknameStatus, setNicknameStatus] = useState(null);
   
   const navigate = useNavigate();
@@ -29,7 +28,7 @@ const JoinMembership = () => {
     setNicknameStatus('checking');
     
     try {
-      const available = await isUsernameAvailable(nickname);
+      const available = await isAccountIdAvailable(nickname);
       setNicknameStatus(available ? 'available' : 'taken');
       
       if (!available) {
@@ -41,15 +40,14 @@ const JoinMembership = () => {
     }
   };
 
-
-  // 계정ID 중복 확인 (함수명 변경)
+  // 계정ID 중복 확인
   const checkAccountId = async (accountId) => {
     if (!accountId || accountId.length < 2) return;
     
     setAccountIdStatus('checking');
     
     try {
-      const available = await isUsernameAvailable(accountId);
+      const available = await isAccountIdAvailable(accountId);
       setAccountIdStatus(available ? 'available' : 'taken');
       
       if (!available) {
@@ -58,7 +56,6 @@ const JoinMembership = () => {
     } catch (error) {
       console.error('계정ID 확인 실패:', error);
       setAccountIdStatus(null);
-
     }
   };
 
@@ -91,7 +88,7 @@ const JoinMembership = () => {
     }
   };
 
-  // 계정ID 입력 처리 (함수명 및 내용 변경)
+  // 계정ID 입력 처리
   const handleAccountIdChange = (value) => {
     // 영문, 숫자, 특수문자만 허용
     const filteredValue = value.replace(/[^a-zA-Z0-9._-]/g, '');
@@ -113,7 +110,6 @@ const JoinMembership = () => {
     if (filteredValue.length >= 2) {
       window.accountIdCheckTimer = setTimeout(() => {
         checkAccountId(filteredValue);
-
       }, 500);
     }
   };
@@ -167,14 +163,13 @@ const JoinMembership = () => {
     e.preventDefault();
     const newErrors = {};
 
-    // 계정ID 유효성 검사 (필드명 변경)
+    // 계정ID 유효성 검사
     if (!formData.account_id.trim()) {
       newErrors.account_id = '계정ID를 입력해주세요.';
     } else if (formData.account_id.length < 2) {
       newErrors.account_id = '계정ID는 2자 이상이어야 합니다.';
     } else if (accountIdStatus === 'taken') {
       newErrors.account_id = '이미 사용중인 계정ID입니다.';
-
     }
 
     // 닉네임 유효성 검사
@@ -216,9 +211,7 @@ const JoinMembership = () => {
     if (Object.keys(newErrors).length > 0) return;
 
     // 중복 확인 대기 중이면 에러
-
     if (emailStatus === 'checking' || accountIdStatus === 'checking' || nicknameStatus === 'checking') {
-
       setErrors({ general: '중복 확인을 완료해주세요.' });
       return;
     }
@@ -227,7 +220,7 @@ const JoinMembership = () => {
 
     try {
       const result = await registerUser({
-        username: formData.account_id,  // API는 여전히 username 필드를 받지만 account_id 값 전달
+        account_id: formData.account_id,
         nickname: formData.nickname,
         email: formData.email,
         password: formData.password
@@ -237,14 +230,19 @@ const JoinMembership = () => {
       
       // account_id를 localStorage에 저장
       setAccountId(formData.account_id);
-      
 
       // 회원가입 성공 후 자동 로그인
       const loginResult = await login(formData.email, formData.password);
       console.log('자동 로그인 성공:', loginResult);
       
       alert('회원가입이 완료되었습니다!');
-      navigate('/home');
+      navigate('/profile-settings', { 
+        state: { 
+          account_id: formData.account_id,
+          nickname: formData.nickname,
+          email: formData.email
+        }
+      });
       
     } catch (error) {
       console.error('회원가입 실패:', error);
@@ -309,13 +307,11 @@ const JoinMembership = () => {
           onChange={(e) => handleAccountIdChange(e.target.value)}
         />
         {accountIdStatus === 'available' && (
-
           <div style={{ fontSize: '12px', marginTop: '4px', color: 'green' }}>
             ✓ 사용 가능한 계정ID입니다
           </div>
         )}
         {errors.account_id && <Styled.Error>{errors.account_id}</Styled.Error>}
-
       </Styled.InputGroup>
 
       <Styled.InputGroup>

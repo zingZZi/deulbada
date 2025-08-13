@@ -10,7 +10,7 @@ import { setTokens, clearTokens, getAccessToken, setAccountId } from './tokenSto
  * 서버 스펙:
  *  - POST http://43.201.70.73/api/token/
  *  - body: { email, password }
- *  - res: { access, refresh, user?: { username, nickname, ... } }
+ *  - res: { access, refresh, user?: { account_id, nickname, ... } }
  */
 export async function login(arg1, arg2) {
   // 1) 인자 유연 처리
@@ -53,7 +53,7 @@ export async function login(arg1, arg2) {
   if (!access || !refresh) throw new Error('토큰 없음');
   
   // 사용자 정보에서 account_id 추출하여 저장
-  const accountId = user?.account_id || user?.username || null;
+  const accountId = user?.account_id || null;
   setTokens(access, refresh, accountId);
   
   console.log('[AuthService] Login successful', { access, refresh, accountId });
@@ -63,7 +63,7 @@ export async function login(arg1, arg2) {
 /**
  * 사용자 정보 업데이트 (로그인 후 프로필 정보를 받았을 때)
  * @param {object} userInfo - 사용자 정보
- * @param {string} userInfo.account_id - 계정 ID
+ * @param {string} userInfo.account_id - 계정 ID (영문으로만 구성)
  */
 export function updateUserInfo(userInfo) {
   if (userInfo?.account_id) {
@@ -92,12 +92,14 @@ export async function verifyToken() {
 }
 
 /**
-
  * 로그아웃 (클라이언트 토큰 및 사용자 정보 제거)
  */
 export function logout() {
   console.log('[AuthService] Logging out');
-  clearTokens(); 
+  clearTokens();
+  if (typeof window !== 'undefined') {
+    window.location.assign('/login');
+  }
 }
 
 /**
