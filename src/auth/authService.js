@@ -96,7 +96,10 @@ export async function verifyToken() {
  */
 export function logout() {
   console.log('[AuthService] Logging out');
-  clearTokens(); 
+  clearTokens();
+  if (typeof window !== 'undefined') {
+    window.location.assign('/login');
+  }
 }
 
 /**

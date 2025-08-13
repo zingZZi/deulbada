@@ -86,12 +86,30 @@ export const InputEmail = styled.input`
   }
 `;
 
-export const InputPassword = styled.input`
+export const Id = styled.input`
   border: none;
   border-bottom: 1px solid #ccc;
   background: transparent;
   font-size: 1.2rem;
   margin-bottom: 0.3rem;
+  color: ${({ theme }) => theme.colors.black};
+
+  &::placeholder {
+    color: ${({ theme }) => theme.colors.white300};
+  }
+
+  &:focus {
+    outline: none;
+    border-bottom: 1px solid #5CA14E;
+  }
+`;
+
+export const InputInfo = styled.input`
+  border: none;
+  border-bottom: 1px solid #ccc;
+  background: transparent;
+  font-size: 1.2rem;
+  margin-bottom: 3rem;
   color: ${({ theme }) => theme.colors.black};
 
   &::placeholder {
