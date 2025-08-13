@@ -1,38 +1,38 @@
 import * as Styled from './JoinMembership.style';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { registerUser, isEmailAvailable, isAccountIdAvailable } from '../../api/authAPI';
+import { registerUser, isEmailAvailable, isAccountIdAvailable } from '../../api/authApi';
 import { login } from '../../auth/authService';
 import { setAccountId } from '../../auth/tokenStore';
 
 const JoinMembership = () => {
   const [formData, setFormData] = useState({
-    account_id: '',   
+    account_id: '',
     nickname: '',
     email: '',
     password: '',
-    rePassword: ''
+    rePassword: '',
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [emailStatus, setEmailStatus] = useState(null);
-  const [accountIdStatus, setAccountIdStatus] = useState(null); 
+  const [accountIdStatus, setAccountIdStatus] = useState(null);
   const [nicknameStatus, setNicknameStatus] = useState(null);
-  
+
   const navigate = useNavigate();
 
   // 닉네임 중복 확인
   const checkNickname = async (nickname) => {
     if (!nickname || nickname.length < 2) return;
-    
+
     setNicknameStatus('checking');
-    
+
     try {
       const available = await isAccountIdAvailable(nickname);
       setNicknameStatus(available ? 'available' : 'taken');
-      
+
       if (!available) {
-        setErrors(prev => ({ ...prev, nickname: '이미 사용중인 닉네임입니다.' }));
+        setErrors((prev) => ({ ...prev, nickname: '이미 사용중인 닉네임입니다.' }));
       }
     } catch (error) {
       console.error('닉네임 확인 실패:', error);
@@ -43,15 +43,15 @@ const JoinMembership = () => {
   // 계정ID 중복 확인
   const checkAccountId = async (accountId) => {
     if (!accountId || accountId.length < 2) return;
-    
+
     setAccountIdStatus('checking');
-    
+
     try {
       const available = await isAccountIdAvailable(accountId);
       setAccountIdStatus(available ? 'available' : 'taken');
-      
+
       if (!available) {
-        setErrors(prev => ({ ...prev, account_id: '이미 사용중인 계정ID입니다.' }));
+        setErrors((prev) => ({ ...prev, account_id: '이미 사용중인 계정ID입니다.' }));
       }
     } catch (error) {
       console.error('계정ID 확인 실패:', error);
@@ -62,15 +62,15 @@ const JoinMembership = () => {
   // 이메일 중복 확인
   const checkEmail = async (email) => {
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return;
-    
+
     setEmailStatus('checking');
-    
+
     try {
       const available = await isEmailAvailable(email);
       setEmailStatus(available ? 'available' : 'taken');
-      
+
       if (!available) {
-        setErrors(prev => ({ ...prev, email: '이미 사용중인 이메일입니다.' }));
+        setErrors((prev) => ({ ...prev, email: '이미 사용중인 이메일입니다.' }));
       }
     } catch (error) {
       console.error('이메일 확인 실패:', error);
@@ -80,11 +80,11 @@ const JoinMembership = () => {
 
   // 입력값 변경 처리
   const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    
+    setFormData((prev) => ({ ...prev, [field]: value }));
+
     // 해당 필드의 에러 제거
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
+      setErrors((prev) => ({ ...prev, [field]: '' }));
     }
   };
 
@@ -92,19 +92,19 @@ const JoinMembership = () => {
   const handleAccountIdChange = (value) => {
     // 영문, 숫자, 특수문자만 허용
     const filteredValue = value.replace(/[^a-zA-Z0-9._-]/g, '');
-    
-    setFormData(prev => ({ ...prev, account_id: filteredValue }));
-    
+
+    setFormData((prev) => ({ ...prev, account_id: filteredValue }));
+
     // 에러 제거
     if (errors.account_id) {
-      setErrors(prev => ({ ...prev, account_id: '' }));
+      setErrors((prev) => ({ ...prev, account_id: '' }));
     }
-    
+
     // 사용 가능 상태 초기화
     if (accountIdStatus === 'available') {
       setAccountIdStatus(null);
     }
-    
+
     // 중복 확인 (500ms 지연)
     clearTimeout(window.accountIdCheckTimer);
     if (filteredValue.length >= 2) {
@@ -118,19 +118,19 @@ const JoinMembership = () => {
   const handleNicknameChange = (value) => {
     // 한글과 숫자만 허용
     const filteredValue = value.replace(/[^가-힣ㄱ-ㅎㅏ-ㅣ0-9]/g, '');
-    
-    setFormData(prev => ({ ...prev, nickname: filteredValue }));
-    
+
+    setFormData((prev) => ({ ...prev, nickname: filteredValue }));
+
     // 에러 제거
     if (errors.nickname) {
-      setErrors(prev => ({ ...prev, nickname: '' }));
+      setErrors((prev) => ({ ...prev, nickname: '' }));
     }
-    
+
     // 사용 가능 상태 초기화
     if (nicknameStatus === 'available') {
       setNicknameStatus(null);
     }
-    
+
     // 중복 확인 (500ms 지연)
     clearTimeout(window.nicknameCheckTimer);
     if (filteredValue.length >= 2) {
@@ -144,14 +144,14 @@ const JoinMembership = () => {
   const handleEmailChange = (value) => {
     // 이메일에 허용되는 문자만 필터링
     const filteredValue = value.replace(/[^a-zA-Z0-9@._+-]/g, '');
-    
+
     handleInputChange('email', filteredValue);
-    
+
     // 사용 가능 상태 초기화
     if (emailStatus === 'available') {
       setEmailStatus(null);
     }
-    
+
     // 중복 확인 (500ms 지연)
     clearTimeout(window.emailCheckTimer);
     window.emailCheckTimer = setTimeout(() => {
@@ -196,7 +196,7 @@ const JoinMembership = () => {
       const hasLetter = /[a-zA-Z]/.test(formData.password);
       const hasNumber = /[0-9]/.test(formData.password);
       const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(formData.password);
-      
+
       if (!hasLetter || !hasNumber || !hasSpecial) {
         newErrors.password = '영문자, 숫자, 특수문자를 포함해 8자 이상 입력해주세요.';
       }
@@ -211,7 +211,11 @@ const JoinMembership = () => {
     if (Object.keys(newErrors).length > 0) return;
 
     // 중복 확인 대기 중이면 에러
-    if (emailStatus === 'checking' || accountIdStatus === 'checking' || nicknameStatus === 'checking') {
+    if (
+      emailStatus === 'checking' ||
+      accountIdStatus === 'checking' ||
+      nicknameStatus === 'checking'
+    ) {
       setErrors({ general: '중복 확인을 완료해주세요.' });
       return;
     }
@@ -223,27 +227,26 @@ const JoinMembership = () => {
         account_id: formData.account_id,
         nickname: formData.nickname,
         email: formData.email,
-        password: formData.password
+        password: formData.password,
       });
-      
+
       console.log('회원가입 성공:', result);
-      
+
       // account_id를 localStorage에 저장
       setAccountId(formData.account_id);
 
       // 회원가입 성공 후 자동 로그인
       const loginResult = await login(formData.email, formData.password);
       console.log('자동 로그인 성공:', loginResult);
-      
+
       alert('회원가입이 완료되었습니다!');
-      navigate('/profile-settings', { 
-        state: { 
+      navigate('/profile-settings', {
+        state: {
           account_id: formData.account_id,
           nickname: formData.nickname,
-          email: formData.email
-        }
+          email: formData.email,
+        },
       });
-      
     } catch (error) {
       console.error('회원가입 실패:', error);
       setErrors({ general: '회원가입에 실패했습니다. 다시 시도해주세요.' });
@@ -272,12 +275,12 @@ const JoinMembership = () => {
         )}
         {errors.email && <Styled.Error>{errors.email}</Styled.Error>}
       </Styled.InputGroup>
-      
+
       <Styled.InputGroup>
         <Styled.Label htmlFor="password">비밀번호</Styled.Label>
-        <Styled.InputPassword 
-          id="password" 
-          type="password" 
+        <Styled.InputPassword
+          id="password"
+          type="password"
           placeholder="영문자, 숫자, 특수문자를 포함해 8자 이상 입력해주세요"
           value={formData.password}
           onChange={(e) => handleInputChange('password', e.target.value)}
@@ -288,8 +291,8 @@ const JoinMembership = () => {
       <Styled.InputGroup>
         <Styled.Label htmlFor="re-password">비밀번호 확인</Styled.Label>
         <Styled.InputPassword
-          id="re-password" 
-          type="password" 
+          id="re-password"
+          type="password"
           placeholder="한 번 더 입력해주세요"
           value={formData.rePassword}
           onChange={(e) => handleInputChange('rePassword', e.target.value)}
@@ -340,7 +343,6 @@ const JoinMembership = () => {
       <Link to="/join-producer">
         <Styled.Signup>생산자 인증 가입하기</Styled.Signup>
       </Link>
-
     </Styled.Form>
   );
 };
