@@ -27,6 +27,9 @@ export const UserName = styled.p`
   font-size: ${({ theme }) => theme.fontSize.base};
   line-height: 1.8rem;
   margin-bottom: 2px;
+  i {
+    margin-left: 0.2rem;
+  }
 `;
 export const UserId = styled.p`
   font-size: 1.2rem;

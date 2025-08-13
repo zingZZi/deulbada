@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const SearchList = styled.ul`
-  padding: 2rem 1.6rem;
+  padding: 2rem 1.6rem 8rem;
 `;
 export const SearchItem = styled.li`
   margin-bottom: 1.6rem;

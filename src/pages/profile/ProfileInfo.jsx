@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import * as Styled from './ProfileInfo.style';
 import { BasicBtn, LineBtn, LineLink } from '../../styles/Button.style';
@@ -6,18 +6,26 @@ import { MessageCircleIcon, Share2Icon } from '../../components/icon/Icon.style'
 import { toggleFollow } from '../../api/userApi'; // API 파일 경로에 맞게 수정
 import defaultProfileImg from './../../assets/images/defaultProfileImg.png';
 
-const ProfileInfo = ({ user_name, isMyProfile, userInfo }) => {
+const ProfileInfo = ({ accountId, isMyProfile, userInfo }) => {
   // 팔로우 상태와 팔로워 수를 로컬 상태로 관리
-  const [isFollowing, setIsFollowing] = useState(userInfo.is_following);
-  const [followerCount, setFollowerCount] = useState(userInfo.follower_count);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followerCount, setFollowerCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+
+  // userInfo가 변경될 때마다 로컬 상태 업데이트
+  useEffect(() => {
+    if (userInfo && Object.keys(userInfo).length > 0) {
+      setIsFollowing(userInfo.is_following || false);
+      setFollowerCount(userInfo.follower_count || 0);
+    }
+  }, [userInfo]);
 
   const handleShare = async () => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: userInfo.user_name,
-          text: '{한줄말}',
+          title: userInfo.accountId || userInfo.username,
+          text: userInfo.introduction || '프로필을 확인해보세요!',
           url: window.location.href,
         });
       } catch (error) {
@@ -42,7 +50,7 @@ const ProfileInfo = ({ user_name, isMyProfile, userInfo }) => {
       if (isFollowing) {
         // 언팔로우인 경우
         setIsFollowing(false);
-        setFollowerCount((prev) => prev - 1);
+        setFollowerCount((prev) => Math.max(0, prev - 1)); // 음수 방지
       } else {
         // 팔로우인 경우
         setIsFollowing(true);
@@ -56,12 +64,22 @@ const ProfileInfo = ({ user_name, isMyProfile, userInfo }) => {
       setIsLoading(false);
     }
   };
+
+  // userInfo가 없거나 비어있으면 로딩 상태 표시
+  if (!userInfo || Object.keys(userInfo).length === 0) {
+    return (
+      <Styled.ProfileInfo>
+        <div style={{ padding: '20px', textAlign: 'center' }}>프로필 정보를 불러오는 중...</div>
+      </Styled.ProfileInfo>
+    );
+  }
+
   return (
     <Styled.ProfileInfo>
       <h2 className="text-ir">프로필 정보 영역입니다.</h2>
       <Styled.profileSmmary>
         <Styled.followInfo>
-          <Link to={`/followers/${user_name}`}>
+          <Link to={`/followers/${accountId}`}>
             <b>{followerCount}</b>
             followers
           </Link>
@@ -69,15 +87,15 @@ const ProfileInfo = ({ user_name, isMyProfile, userInfo }) => {
         <li>
           <Styled.ProfileImgWrap>
             {userInfo.profile_image ? (
-              <img src={userInfo.profile_image} alt="프로필이미지" />
+              <img src={`http://43.201.70.73/${userInfo.profile_image}`} alt="프로필이미지" />
             ) : (
               <img src={defaultProfileImg} alt="기본 프로필이미지" />
             )}
           </Styled.ProfileImgWrap>
         </li>
         <Styled.followInfo>
-          <Link to={`/followings/${user_name}`}>
-            <b>{userInfo.following_count}</b>
+          <Link to={`/followings/${accountId}`}>
+            <b>{userInfo.following_count || 0}</b>
             followings
           </Link>
         </Styled.followInfo>

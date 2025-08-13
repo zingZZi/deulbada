@@ -42,11 +42,6 @@ const Home = () => {
     }
   }, [categorySelected]);
 
-  // 카테고리 변경 시 로딩 상태는 자식 컴포넌트에서 관리
-  // useEffect(() => {
-  //   setLoading(true);
-  // }, [categorySelected, subCategory]);
-
   // 로딩 상태 업데이트 함수
   const handleLoadingChange = (isLoading) => {
     setLoading(isLoading);

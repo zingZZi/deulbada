@@ -19,13 +19,7 @@ const Search = ({ searchQuery }) => {
     try {
       setLoading(true);
       setError(null);
-
-      console.log('🔍 검색 요청:', query); // 요청할 검색어
       const response = await SearchUser(query);
-      console.log('📡 API 응답 전체:', response); // 전체 응답
-      console.log('📊 받은 결과 개수:', response.data?.count); // 총 개수
-      console.log('👥 받은 사용자들:', response.data?.results); // 실제 사용자 배열
-
       // API 응답에서 results 배열 추출
       const userData = response.data?.results || [];
       setList(userData);
@@ -68,7 +62,7 @@ const Search = ({ searchQuery }) => {
       </Styled.NoResult>
     );
   }
-
+  console.log(lists);
   return (
     <>
       {searchQuery && lists.length === 0 ? (
@@ -82,8 +76,9 @@ const Search = ({ searchQuery }) => {
             return (
               <Styled.SearchItem key={user.id}>
                 <UserInfo
-                  to={`/profile/${user.username}`}
+                  to={`/profile/${user.account_id}`}
                   key={user.id}
+                  profileImg={user.profile_image}
                   username={user.username}
                   accountId={user.account_id}
                   is_farm_verified={user.is_farm_verified || false} // API에 없으면 false

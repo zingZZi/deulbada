@@ -20,25 +20,36 @@ const useFeedActions = () => {
     };
   }
 
-  // 현재 사용자 ID를 가져오는 함수 (실제 구현에 맞게 수정)
+  // 현재 사용자 ID를 가져오는 함수
   const getCurrentUserId = () => {
-    // 예시: localStorage, context, 또는 다른 상태관리에서 가져오기
     return localStorage.getItem('account_id') || null;
   };
 
   // 게시물 소유자인지 확인하는 함수
   const isOwner = (feedData) => {
     const currentUserId = getCurrentUserId();
-    return currentUserId && feedData?.account_id === currentUserId;
+    // 🔥 게시글 작성자 ID 확인 로직
+    const authorId = feedData?.author?.account_id || feedData?.account_id;
+    return currentUserId && authorId === currentUserId;
   };
 
-  //게시물 삭제 API
-  const handleDeletePost = async (postId) => {
+  // 🔥 게시물 삭제 API - 콜백 함수 포함
+  const handleDeletePost = async (postId, onPostDeleted) => {
     try {
       await delePost(postId);
       console.log('게시물 삭제 성공');
-      // 성공 시 추가 처리 (예: 피드 목록 업데이트, 페이지 이동 등)
-      // executeAction('refreshFeedList'); // 예시
+
+      // 🔥 삭제 성공 시 콜백 함수 호출하여 UI에서 제거
+      if (onPostDeleted && typeof onPostDeleted === 'function') {
+        onPostDeleted(postId);
+      }
+
+      // 성공 메시지 표시
+      const successModalData = {
+        modalList: [{ text: '확인', action: () => closeModal() }],
+        text: '게시물이 삭제되었습니다.',
+      };
+      openModal(successModalData);
     } catch (error) {
       console.error('게시물 삭제 실패:', error);
       const errorModalData = {
@@ -49,7 +60,8 @@ const useFeedActions = () => {
     }
   };
 
-  const handleFeedAction = (actionKey, feedData) => {
+  // 🔥 handleFeedAction - 콜백 파라미터 받도록 수정
+  const handleFeedAction = (actionKey, feedData, onPostDeleted = null) => {
     console.log('handleFeedAction called with:', actionKey, feedData);
 
     switch (actionKey) {
@@ -59,15 +71,15 @@ const useFeedActions = () => {
         let menuList = [];
 
         if (isMyPost) {
-          // 내 게시물인 경우: 삭제, 수정만 (신고 없음)
+          // 내 게시물인 경우: 삭제, 수정만
           menuList = [
             {
               label: '삭제',
               action: () => {
-                // postId 확인
-                const postId = feedData?.id || feedData?.post_id;
+                // 🔥 게시물 ID 찾기
+                const postId = feedData?.id;
                 if (!postId) {
-                  console.error('게시물 ID를 찾을 수 없습니다.');
+                  console.error('게시물 ID를 찾을 수 없습니다.', feedData);
                   closePopup();
                   return;
                 }
@@ -80,7 +92,8 @@ const useFeedActions = () => {
                       text: '삭제',
                       action: async () => {
                         closeModal(); // 모달 먼저 닫기
-                        await handleDeletePost(postId); // API 호출
+                        // 🔥 콜백 함수를 포함하여 삭제 처리
+                        await handleDeletePost(postId, onPostDeleted);
                       },
                     },
                   ],
@@ -118,12 +131,12 @@ const useFeedActions = () => {
         break;
 
       case 'openCommentMenu':
-        const isMyComment = isOwner(feedData); // feedData에 댓글 정보가 들어온다고 가정
+        const isMyComment = isOwner(feedData);
 
         let commentMenuList = [];
 
         if (isMyComment) {
-          // 내 댓글인 경우: 삭제, 수정만 (신고 없음)
+          // 내 댓글인 경우: 삭제, 수정만
           commentMenuList = [
             {
               label: '삭제',
@@ -131,7 +144,14 @@ const useFeedActions = () => {
                 const modalData = {
                   modalList: [
                     { text: '취소', action: () => closeModal() },
-                    { text: '삭제', action: () => console.log('댓글 삭제') },
+                    {
+                      text: '삭제',
+                      action: async () => {
+                        closeModal();
+                        console.log('댓글 삭제', feedData);
+                        // 여기에 댓글 삭제 API 및 콜백 처리 구현
+                      },
+                    },
                   ],
                   text: '댓글을 삭제할까요?',
                 };
@@ -165,6 +185,9 @@ const useFeedActions = () => {
           text: isMyComment ? '댓글 관리' : '댓글 신고',
         });
         break;
+
+      default:
+        console.warn(`Unknown action: ${actionKey}`);
     }
   };
 

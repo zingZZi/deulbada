@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import bedgeFarmer from './../../assets/images/bedge_farmer.svg';
+import { boxImgWrap } from '../../styles/Common.style';
 
 export const ProfileInfo = styled.section`
   margin-bottom: 0.6rem;
@@ -35,12 +36,7 @@ export const ProfileImgWrap = styled.figure`
   padding-top: 11rem;
   overflow: hidden;
   position: relative;
-  img {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
+  ${boxImgWrap}
 `;
 export const UserName = styled.h3`
   font-size: ${({ theme }) => theme.fontSize.large};
