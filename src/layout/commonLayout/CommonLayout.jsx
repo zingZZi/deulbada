@@ -57,10 +57,10 @@ function Content({ page, searchQuery }) {
 }
 
 //bottom이 안붙는 케이스엔 여기에 추가
-  const HIDDEN_PATTERNS = [
-    /^\/chatRoom(\/|$)/,    // /chatRoom, /chatRoom/2 ...
-    /^\/post(\/|$)/,        // /post, /post/123 ...
-  ];
+const HIDDEN_PATTERNS = [
+  /^\/chatRoom(\/|$)/, // /chatRoom, /chatRoom/2 ...
+  /^\/postDetail(\/|$)/, // /postDetail, /postDetail/123 ...
+];
 
 const CommonLayoutInner = ({ page }) => {
   const location = useLocation();
@@ -69,9 +69,9 @@ const CommonLayoutInner = ({ page }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const isHiddenBottom = useMemo(
-  () => HIDDEN_PATTERNS.some((re) => re.test(location.pathname)),
-  [location.pathname]
-);
+    () => HIDDEN_PATTERNS.some((re) => re.test(location.pathname)),
+    [location.pathname]
+  );
 
   // 전역 팝업 상태 사용 - modalConfig 추가
   const { isPopupOpen, popupConfig, isModalPopOpen, modalConfig, setIsPopupOpen } = usePopup();
