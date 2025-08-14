@@ -6,6 +6,8 @@ import ImagePreview from '../../assets/images/image-preview.png';
 import { getAccessToken, clearTokens } from '../../auth/tokenStore';
 
 const ProfileSettings = () => {
+  const baseUrl = 'https://deulbada.duckdns.org';
+
   const location = useLocation();
   const navigate = useNavigate();
   
@@ -142,7 +144,7 @@ const ProfileSettings = () => {
       }
 
       // API 호출
-      const response = await fetch('http://43.201.70.73/api/users/mypage/profile/setup/', {
+      const response = await fetch(`${baseUrl}/api/users/mypage/profile/setup/`, {
         method: 'PUT',
         body: formData,
         headers: {
