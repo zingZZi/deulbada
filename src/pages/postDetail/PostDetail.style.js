@@ -9,6 +9,7 @@ export const Container = styled.div`
 `;
 export const PostSection = styled.section`
   padding: 2rem 1.6rem;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.white300};
 `;
 export const PostWrapper = styled.article`
   position: relative;
@@ -24,7 +25,7 @@ export const PostImage = styled.img`
 export const CommentSection = styled.section``;
 export const HeightWrap = styled.div`
   max-height: calc(100vh - 7rem - 4.8rem);
-  overflow-y: scroll;
+  overflow-y: auto;
 `;
 export const CommentInputWrapper = styled.div`
   display: flex;

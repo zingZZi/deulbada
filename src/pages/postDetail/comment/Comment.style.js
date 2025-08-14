@@ -3,7 +3,6 @@ import { boxImgWrap } from '../../../styles/Common.style';
 import { NolineIconBtn } from '../../../styles/Button.style';
 
 export const commentWrap = styled.ul`
-  border-top: 1px solid ${({ theme }) => theme.colors.white300};
   padding: 2rem 1.6rem;
 `;
 export const commentItem = styled.li`
@@ -49,4 +48,9 @@ export const MoreBtn = styled(NolineIconBtn)`
   position: absolute;
   right: 0;
   top: 0;
+`;
+export const NoComment = styled.p`
+  border-top: 1px solid ${({ theme }) => theme.colors.white300};
+  padding: 2rem 0;
+  text-align: center;
 `;

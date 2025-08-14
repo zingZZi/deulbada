@@ -126,9 +126,7 @@ const Comment = forwardRef(({ postId, onCommentCountChange }, ref) => {
             );
           })}
         </Styled.commentWrap>
-      ) : (
-        <p>댓글이 없습니다</p>
-      )}
+      ) : null}
     </>
   );
 });

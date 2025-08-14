@@ -62,7 +62,6 @@ const Search = ({ searchQuery }) => {
       </Styled.NoResult>
     );
   }
-  console.log(lists);
   return (
     <>
       {searchQuery && lists.length === 0 ? (
