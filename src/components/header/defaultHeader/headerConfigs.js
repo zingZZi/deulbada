@@ -80,6 +80,18 @@ export const defaultHeaderMap = (pathname) => {
     };
   }
 
+  // (추가) /chatRoom 동적 경로
+  if (pathname.startsWith('/chatRoom')) {
+    return {
+      leftText: false,
+      rightButton: {
+        type: 'icon',
+        text: '더보기',
+        actionKey: 'openChatMenu', // ← 클릭 시 발생시킬 키
+      },
+    };
+  }
+
   if (pathname.startsWith('/profile/') && pathname !== '/profile/edit') {
     return {
       leftText: false,

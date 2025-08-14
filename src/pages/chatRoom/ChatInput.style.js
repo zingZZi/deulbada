@@ -11,7 +11,7 @@ export const InputWrapper = styled.form`
   align-items: center;
   border-top: 1px solid ${({ theme }) => theme.colors.white400};
   background-color: ${({ theme }) => theme.colors.white100};
-  z-index: 10;
+  z-index: 0;
 `;
 
 export const Input = styled.input`

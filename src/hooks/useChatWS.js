@@ -25,13 +25,21 @@ export default function useChatWS({
   const shouldReconnect = useRef(true); // 재연결 여부
   const openedOnce = useRef(false);     // 중복 연결 방지 플래그
 
-  const makeAbsoluteUrl = useCallback((url) => {
-  if (!url) return null;
-  if (url.startsWith('http')) return url; // 이미 절대경로
-  if (url.startsWith('//')) return `https:${url}`;
-  if (url.startsWith('/')) return `https://${HOST}${url}`; // 상대경로 → 절대경로
-  return `https://${HOST}/${url}`;
+  const sendJson = useCallback((payload) => {
+  const ws = wsRef.current;
+  if (!ws || ws.readyState !== WebSocket.OPEN) return false;
+  ws.send(JSON.stringify(payload));
+  return true;
 }, []);
+
+  const makeAbsoluteUrl = useCallback((url) => {
+    if (!url) return null;
+    if (url.startsWith('http')) return url; // 이미 절대경로
+    const proto = typeof window !== 'undefined' && window.location.protocol === 'https:' ? 'https' : 'http';
+    if (url.startsWith('//')) return `${proto}:${url}`;                       // //path → http(s)://path
+    if (url.startsWith('/')) return `${proto}://${HOST}${url}`;               // /path → http(s)://HOST/path
+    return `${proto}://${HOST}/${url}`;                                       // path → http(s)://HOST/path
+  }, []);
 
   // WebSocket URL 만들기
   const qs = withToken && token ? `?token=${encodeURIComponent(token)}` : '';
@@ -155,5 +163,5 @@ export default function useChatWS({
     openedOnce.current = false;
   }, []);
 
-  return { status, messages, sendText, sendImage, setMessages, close };
+  return { status, messages, sendText, sendImage, sendJson, setMessages, close };
 }

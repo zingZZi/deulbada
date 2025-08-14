@@ -5,6 +5,7 @@ import ChatInput from './ChatInput';
 import useChatWS from '../../hooks/useChatWS';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getAccessToken } from '../../auth/tokenStore';
+import ActionSheet from '../../components/actionSheet/ActionSheet.jsx';
 
 const BASE_HTTP = 'http://43.201.70.73';
 
@@ -27,13 +28,24 @@ const ChatRoom = () => {
   const [roomId, setRoomId] = useState(null);
   const [roomName, setRoomName] = useState(null);
   const [partnerProfileImage, setPartnerProfileImage] = useState(null);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
   // 리스트 하단 스크롤용 ref
   const messagesEndRef = useRef(null);
+
+  const wsArrivedRef = useRef(false);
+  const wsFallbackTimerRef = useRef(null);
+
+  const lastPendingIdRef = useRef(null);       // 서버가 돌려준 saved.id
+  const lastPendingImgRef = useRef(null);
+
+  const tempMessageIdsRef = useRef(new Set());
 
   // 인증 정보
   const token = getAccessToken();
   const [myUserId, setMyUserId] = useState(Number(localStorage.getItem('userId')) || null);
   const [myUsername, setMyUsername] = useState(localStorage.getItem('username') || null);
+
+  
 
 
   // 내 userId 없으면 한 번 조회해서 저장
@@ -146,8 +158,33 @@ const ChatRoom = () => {
   }, [roomId, token, myUserId, navigate]);
 
   // 3) 실시간 메시지(WS) 원본을 받아서 화면 스키마로 변환
-  const { status, messages: liveRaw, sendText } =
+  const { status, messages: liveRaw, sendText, sendJson } =
     useChatWS({ roomId, token, withToken: true });
+
+    useEffect(() => {
+      if (!liveRaw || !liveRaw.length) return;
+      const latest = liveRaw[liveRaw.length - 1];
+      
+      const sameId = lastPendingIdRef.current && latest?.id === lastPendingIdRef.current;
+      const sameImg = lastPendingImgRef.current && latest?.image_url === lastPendingImgRef.current;
+      
+      if (sameId || sameImg) {
+        wsArrivedRef.current = true;
+        if (wsFallbackTimerRef.current) {
+          clearTimeout(wsFallbackTimerRef.current);
+          wsFallbackTimerRef.current = null;
+        }
+
+        // 임시 메시지 ID가 있다면 제거 (서버 메시지로 대체됨)
+        if (latest.client_id && tempMessageIdsRef.current.has(latest.client_id)) {
+          setChatMessages(prev => prev.filter(m => m.id !== latest.client_id));
+          tempMessageIdsRef.current.delete(latest.client_id);
+        }
+
+        lastPendingIdRef.current = null;
+        lastPendingImgRef.current = null;
+      }
+    }, [liveRaw]);
 
     useEffect(() => {
       console.log('[ChatRoom] liveRaw 변경됨:', liveRaw);
@@ -155,7 +192,12 @@ const ChatRoom = () => {
 
   const liveMessages = useMemo(() => {
     console.log('[ChatRoom] liveRaw 메시지들:', liveRaw);
-    return liveRaw.map((d) => {
+    return liveRaw
+    .filter(d => {
+      // 임시 메시지와 같은 ID면 필터링 (중복 방지)
+      return !tempMessageIdsRef.current.has(d.id);
+    })
+    .map((d) => {
     // 1) 다양한 키 지원 + 공백 제거
     const rawImage =
       d.image_url ?? d.imageUrl ?? d.image ?? d.file_url ?? d.fileUrl ?? null;
@@ -209,6 +251,41 @@ const ChatRoom = () => {
   useEffect(() => {
     scrollToBottom();
   }, [allMessages]);
+
+  useEffect(() => {
+    const open = () => setIsSheetOpen(true);
+    document.addEventListener('openChatMenu', open);
+    return () => document.removeEventListener('openChatMenu', open);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (wsFallbackTimerRef.current) {
+        clearTimeout(wsFallbackTimerRef.current);
+        wsFallbackTimerRef.current = null;
+      }
+    };
+  }, [roomId]);
+
+
+  const handleLeaveRoom = async () => {
+    if (!window.confirm('채팅방에서 나가시겠어요?')) return;
+
+    try {
+      // TODO: 백엔드에 나가기 API가 있으면 여기서 호출
+      // await fetch(`${BASE_HTTP}/chat/chatrooms/${roomId}/leave/`, {
+      //   method: 'POST',
+      //   headers: { Authorization: `Bearer ${token}` },
+      // });
+
+      navigate('/chatList'); // UX: 일단 목록으로 이동
+    } catch (e) {
+      console.error('채팅방 나가기 실패:', e);
+      alert('나가기 중 문제가 발생했어요.');
+    } finally {
+      setIsSheetOpen(false);
+    }
+  };
 
   // 이미지 확대 모달
   const [selectedImage, setSelectedImage] = useState(null);
@@ -276,6 +353,7 @@ const ChatRoom = () => {
           } else if (msg.type === 'image') {
             // 이미지 업로드 및 전송
             const tempId = `tmp-${Date.now()}`;
+            const createdAt = new Date().toISOString();
       try {
         const previewUrl = msg.preview || msg.image || (msg.file ? URL.createObjectURL(msg.file) : null);
         
@@ -287,7 +365,7 @@ const ChatRoom = () => {
             content: '',
             image: previewUrl,
             profileImage: null,
-            createdTime: new Date().toISOString(),
+            createdTime: createdAt,
             isUploading: true,
           })
         );
@@ -298,34 +376,85 @@ const ChatRoom = () => {
 
         const uploadedUrl = await uploadImage(msg.file);
 
-        const messageData = {
-          content: msg.content && msg.content.trim().length > 0 ? msg.content : '(사진)',
-          image_url: uploadedUrl,
-        };
-
+        // 1) 서버에 메시지 생성 요청
         const res = await fetch(`${BASE_HTTP}/chat/chatrooms/${roomId}/messages/`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(messageData)
+          body: JSON.stringify({
+            content: msg.content && msg.content.trim().length > 0 ? msg.content : '(사진)',
+            image_url: uploadedUrl,
+          }),
         });
-
+        
+        // 2) 응답 바디는 한 번만 읽기 (이전 코드처럼 두 번 읽으면 에러!)
+        let saved = null;
+        let raw = null;
+        try {
+          raw = await res.text();                     // 문자열로 먼저 읽고
+          saved = raw ? JSON.parse(raw) : null;       // 가능하면 JSON 파싱
+        } catch { /* noop */ }
+        
+        // 3) 에러면 상세를 로그로 남기고 종료
         if (!res.ok) {
-          // 에러 상세를 콘솔로 확인 (무엇이 invalid인지 바로 알 수 있음)
-          const errBody = await res.json().catch(() => ({}));
-          console.error('메시지 생성 실패 상세:', errBody);
+          console.error('메시지 생성 실패 상세:', saved ?? raw);
           throw new Error(`메시지 전송 실패: ${res.status}`);
         }
-
-        // 성공 → 임시 메시지 제거 (실제 메시지는 WS로 들어옴)
-        setChatMessages((prev) => prev.filter(m => m.id !== tempId));
-
-        // sendImage(uploadedUrl);
-        console.log('WebSocket으로 이미지 전송:', uploadedUrl);
-
         
+        // 4) 성공 → "임시"를 "확정"으로 치환 (삭제 X)
+        if (saved) {
+          // 서버가 저장된 메시지 정보를 돌려준 경우
+          const serverMsg = {
+            id: saved.id,
+            sender: 'me',
+            type: saved.image_url ? 'image' : 'text',
+            content: saved.content || '',
+            image: saved.image_url || null,
+            profileImage: null,
+            createdTime: saved.created_at || new Date().toISOString(),
+          };
+          setChatMessages((prev) => prev.map(m => (m.id === tempId ? serverMsg : m)));
+
+          lastPendingIdRef.current = saved?.id ?? null;
+          lastPendingImgRef.current = saved?.image_url ?? null;
+
+          // ★ 폴백 준비: WS가 곧 올 것으로 기대
+          wsArrivedRef.current = false;
+
+          // 기존에 걸린 타이머 있으면 정리
+          if (wsFallbackTimerRef.current) {
+            clearTimeout(wsFallbackTimerRef.current);
+            wsFallbackTimerRef.current = null;
+          }
+        
+          // 700ms 동안 WS가 안 오면 프론트가 대신 WS로 한 번 전파
+          wsFallbackTimerRef.current = setTimeout(() => {
+            if (wsArrivedRef.current) return; // 이미 WS 도착 → 아무 것도 안 함
+            // 서버 consumer가 이해하는 포맷에 맞춰 보내세요
+            sendJson?.({
+              type: 'message',
+              id: saved.id,
+              room_id: roomId,
+              message: saved.content || '(사진)',
+              content: saved.content || '(사진)',
+              image_url: saved.image_url,
+              sender_id: myUserId,
+              sender: myUsername,
+              created_at: serverMsg.createdTime,
+              client_id: tempId, // 있으면 중복 제거에 도움
+            });
+          }, 700);
+        
+        } else {
+          // 혹시 응답 바디가 비어 있다면, 최소한 이미지 URL만 확정해 치환
+          setChatMessages((prev) =>
+            prev.map(m => (m.id === tempId ? { ...m, image: uploadedUrl, isUploading: false } : m))
+          );
+        }
+        
+        // 5) blob URL 정리
         if (previewUrl?.startsWith('blob:')) {
           URL.revokeObjectURL(previewUrl);
         }
@@ -340,6 +469,15 @@ const ChatRoom = () => {
     }
   }}
 />
+
+{isSheetOpen && (
+  <ActionSheet
+    setIsPopupOpen={setIsSheetOpen}
+    list={[
+      { label: '채팅방 나가기', action: handleLeaveRoom },
+    ]}
+  />
+)}
 
     </Styled.ChatRoom>
   );
