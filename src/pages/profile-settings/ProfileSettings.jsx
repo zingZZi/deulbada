@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Camera } from 'lucide-react';
 import ImagePreview from '../../assets/images/image-preview.png';
-import { getAccessToken, clearTokens } from '../../auth/tokenStore'; // tokenStore 사용
+import { getAccessToken, clearTokens } from '../../auth/tokenStore';
 
 const ProfileSettings = () => {
   const location = useLocation();
@@ -20,25 +20,13 @@ const ProfileSettings = () => {
   const [userIdError, setUserIdError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
+  
   // 회원가입에서 온 데이터가 있으면 필드를 비활성화
   const isFromSignup = Boolean(signupData.account_id && signupData.nickname);
   
   // 토큰 유효성 검증 함수
   const validateToken = () => {
     const token = getAccessToken(); // tokenStore 사용
-    
-    // 상세한 토큰 디버깅
-    console.log('=== 토큰 디버깅 시작 ===');
-    console.log('- getAccessToken() 결과:', token);
-    console.log('- 토큰 타입:', typeof token);
-    console.log('- 토큰 길이:', token?.length);
-    console.log('- 토큰이 존재하는가:', !!token);
-    
-    // localStorage 직접 확인
-    const directToken = localStorage.getItem('accessToken');
-    const directToken2 = localStorage.getItem('token');
-    console.log('- localStorage.accessToken:', directToken);
-    console.log('- localStorage.token:', directToken2);
     
     if (!token) {
       console.error('❌ 토큰이 없습니다.');
@@ -47,26 +35,12 @@ const ProfileSettings = () => {
       return null;
     }
     
-    // 토큰 형태 확인
-    if (token.startsWith('eyJ')) {
-      console.log('✅ JWT 토큰 형태입니다.');
-    } else if (token === 'dummy-access-token') {
-      console.log('⚠️ 더미 토큰입니다!');
-    } else {
-      console.log('❓ 알 수 없는 토큰 형태:', token.substring(0, 20) + '...');
-    }
-    
     try {
       // JWT 토큰인 경우 만료시간 검증
       const tokenParts = token.split('.');
       if (tokenParts.length === 3) {
         const payload = JSON.parse(atob(tokenParts[1]));
         const currentTime = Math.floor(Date.now() / 1000);
-        
-        console.log('- JWT 페이로드:', payload);
-        console.log('- 토큰 만료시간:', new Date(payload.exp * 1000));
-        console.log('- 현재 시간:', new Date());
-        console.log('- 토큰이 유효한가:', payload.exp > currentTime);
         
         if (payload.exp && payload.exp < currentTime) {
           console.error('❌ 토큰이 만료되었습니다.');
@@ -81,7 +55,6 @@ const ProfileSettings = () => {
       // JWT가 아닐 수도 있으므로 경고만 출력
     }
     
-    console.log('=== 토큰 디버깅 끝 ===');
     return token;
   };
 
@@ -228,8 +201,8 @@ const ProfileSettings = () => {
     const file = e.target.files[0];
     if (file) {
       // 파일 크기 체크 (5MB 제한)
-      if (file.size > 5 * 1024 * 1024) {
-        alert('이미지 크기는 5MB 이하여야 합니다.');
+      if (file.size > 1 * 1024 * 1024) {
+        alert('이미지 크기는 1MB 이하여야 합니다.');
         return;
       }
       
@@ -280,11 +253,6 @@ const ProfileSettings = () => {
           onChange={(e) => setName(e.target.value)}
           disabled={isFromSignup}
         />
-        {isFromSignup && (
-          <div style={{ fontSize: '12px', marginTop: '4px', color: '#666' }}>
-            이 정보는 변경할 수 없습니다.
-          </div>
-        )}
         {nameError && <Styled.ErrorMessage>{nameError}</Styled.ErrorMessage>}
       </Styled.InputGroup>
 
@@ -298,11 +266,6 @@ const ProfileSettings = () => {
           onChange={(e) => setUserId(e.target.value)}
           disabled={isFromSignup}
         />
-        {isFromSignup && (
-          <div style={{ fontSize: '12px', marginTop: '4px', color: '#666' }}>
-            이 정보는 변경할 수 없습니다.
-          </div>
-        )}
         {userIdError && <Styled.ErrorMessage>{userIdError}</Styled.ErrorMessage>}
       </Styled.InputGroup>
 
