@@ -61,6 +61,7 @@ const PostDetail = () => {
         const data = response.data;
 
         const userInfo = await fetchUser(useraccountId);
+        console.log(userInfo);
         const userInfodata = userInfo.data;
         setMyProfileImage(userInfodata.profile_image);
         setPostData(data);
