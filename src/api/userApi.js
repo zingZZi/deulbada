@@ -23,4 +23,13 @@ export const fetchFollowing = (accountId) => api.get(`/api/users/profiles/${acco
 //Post 팔로잉하기
 export const toggleFollow = (accountId) => api.post(`/api/users/profiles/${accountId}/follow/`);
 
-export const myPost = () => api.get(`/api/users/myposts/`);
+export const editProfile = (formData) =>
+  api.patch('/api/users/mypage/profile/setup/', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+export const checkAccountId = (accountId) =>
+  api.get(`/api/users/check-account-id/`, {
+    params: { account_id: accountId },
+  });

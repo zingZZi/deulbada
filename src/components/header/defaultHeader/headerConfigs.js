@@ -14,8 +14,8 @@ export const defaultHeaderMap = (pathname) => {
       leftText: false,
       rightButton: {
         type: 'text',
-        text: '수정',
-        action: () => console.log('수정'),
+        text: '저장',
+        actionKey: 'editProfile',
       },
     },
     '/post': {
@@ -77,6 +77,18 @@ export const defaultHeaderMap = (pathname) => {
     return {
       leftText: 'Followings',
       rightButton: false,
+    };
+  }
+
+  // (추가) /chatRoom 동적 경로
+  if (pathname.startsWith('/chatRoom')) {
+    return {
+      leftText: false,
+      rightButton: {
+        type: 'icon',
+        text: '더보기',
+        actionKey: 'openChatMenu', // ← 클릭 시 발생시킬 키
+      },
     };
   }
 

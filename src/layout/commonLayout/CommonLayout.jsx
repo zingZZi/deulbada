@@ -1,5 +1,5 @@
 import { useLocation } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useState, useMemo } from 'react';
 import BottomNavBar from '../../components/bottomNavBar/BottomNavBar';
 import Header from '../../components/header/Header';
 import ChatList from '../../pages/chatList/ChatList';
@@ -56,23 +56,39 @@ function Content({ page, searchQuery }) {
   }
 }
 
+//bottom이 안붙는 케이스엔 여기에 추가
+const HIDDEN_PATTERNS = [
+  /^\/chatRoom(\/|$)/, // /chatRoom, /chatRoom/2 ...
+  /^\/postDetail(\/|$)/, // /postDetail, /postDetail/123 ...
+];
+
 const CommonLayoutInner = ({ page }) => {
   const location = useLocation();
-  const [isNav, setIsNav] = useState('');
+  const stateTitle = location.state?.headerTitle;
+  // const [isNav, setIsNav] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+
+  const isHiddenBottom = useMemo(
+    () => HIDDEN_PATTERNS.some((re) => re.test(location.pathname)),
+    [location.pathname]
+  );
 
   // 전역 팝업 상태 사용 - modalConfig 추가
   const { isPopupOpen, popupConfig, isModalPopOpen, modalConfig, setIsPopupOpen } = usePopup();
 
   const { handleHeaderAction } = useHeaderActions();
 
-  useEffect(() => {
-    setIsNav(location.pathname);
-  }, [location.pathname]);
-  const currentHeaderConfig = defaultHeaderMap[location.pathname] || {};
+  // useEffect(() => {
+  //   setIsNav(location.pathname);
+  // }, [location.pathname]);
+
+  const currentHeaderConfig = {
+    ...(defaultHeaderMap[location.pathname] || {}),
+    ...(stateTitle ? { title: stateTitle } : {}),
+  };
 
   //bottom이 안붙는 케이스엔 여기에 추가
-  const hiddenPaths = ['/post', '/chatRoom'];
+  // const hiddenPaths = ['/post', '/chatRoom'];
   // 전역 로딩 상태 사용
   const { isLoading } = useLoading(); // 전역 로딩 중일 때 로딩 컴포넌트 표시
   if (isLoading) {
@@ -99,7 +115,7 @@ const CommonLayoutInner = ({ page }) => {
         onAction={handleHeaderAction}
       />
       <Content page={page} searchQuery={searchQuery} />
-      {!hiddenPaths.includes(isNav) && <BottomNavBar />}
+      {!isHiddenBottom && <BottomNavBar />}
 
       {/* 전역 ActionSheet 팝업 (바텀영역 고정팝업) */}
       {isPopupOpen && popupConfig?.list && (

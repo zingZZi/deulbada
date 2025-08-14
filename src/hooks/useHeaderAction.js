@@ -63,7 +63,10 @@ const useHeaderActions = () => {
           list: [{ label: '채팅방 나가기', action: () => console.log('채팅방나가기') }],
         });
         break;
-
+      case 'editProfile':
+        console.log('Executing editProfile action');
+        executeAction('editProfile');
+        break;
       case 'saveProfile':
         console.log('Executing saveProfile action');
         executeAction('saveProfile');

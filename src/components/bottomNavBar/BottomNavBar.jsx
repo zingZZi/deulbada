@@ -17,7 +17,7 @@ const BottomNavBar = () => {
           </Styled.BottomLink>
         </Styled.BottomLi>
         <Styled.BottomLi>
-          <Styled.BottomLink to="/write">
+          <Styled.BottomLink to="/postUpload">
             <SquarePlusIcon />
             게시물작성
           </Styled.BottomLink>

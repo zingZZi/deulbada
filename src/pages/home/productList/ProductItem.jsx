@@ -1,8 +1,9 @@
 import * as Styled from './ProductItem.style';
 const ProductItem = ({ data }) => {
+  console.log(data);
   return (
     <Styled.ProductItem>
-      <a href="https://www.google.com" target="_blank">
+      <a href={data.sales_link} target="_blank">
         <Styled.ImgWrap>
           <img src={data.image_urls} alt="" />
         </Styled.ImgWrap>
