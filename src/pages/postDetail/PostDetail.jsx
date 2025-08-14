@@ -26,12 +26,8 @@ const PostDetail = () => {
       const response = await createComment(postId, commentData);
       const newCommentData = response.data;
 
-      // 댓글 작성 성공 시
-      console.log('댓글 작성 성공:', newCommentData);
-
       // 댓글 입력창 초기화
       setNewComment('');
-
       // 댓글 카운트 업데이트
       setPostData((prevData) => ({
         ...prevData,
@@ -46,6 +42,13 @@ const PostDetail = () => {
       console.error('댓글 작성 실패:', error);
       // 에러 처리
     }
+  };
+
+  const handleCommentCountDecrease = () => {
+    setPostData((prevData) => ({
+      ...prevData,
+      comment_count: Math.max(0, prevData.comment_count - 1),
+    }));
   };
 
   const { postId } = useParams();
@@ -77,55 +80,67 @@ const PostDetail = () => {
     <Styled.Container>
       {postData ? (
         <>
-          <Styled.PostWrapper>
-            <UserInfo
-              id={postData.id}
-              username={postData.author.username}
-              accountId={postData.author.account_id}
-              feedList={true}
-              profileImg={postData.author.profile_image}
-              to={`/profile/${postData.author.account_id}`}
-              feedData={postData}
-              is_farm_verified={postData.author_is_farm_verified}
-              onPostDeleted={removePostFromList}
-            />
-            <PostContent
-              content={postData.content}
-              images={postData.image_urls}
-              date={postData.created_at}
-              id={postData.id}
-              like={postData.like_count}
-              isLiked={postData.is_liked}
-              comment={postData.comment_count}
-            />
-          </Styled.PostWrapper>
-
-          <Comment ref={commentRef} postId={postId} />
-
-          <Styled.CommentInputWrapper>
-            <img
-              src={`http://43.201.70.73/${myProfileImage}`}
-              alt="내 프로필"
-              className="profile"
-            />
-            <div className="input-area">
-              <input
-                type="text"
-                placeholder="댓글을 입력하세요..."
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleAddComment()}
-                maxLength={MAX_COMMENT_LENGTH}
+          <Styled.HeightWrap>
+            <Styled.PostSection>
+              <h2 className="text-ir">게시글 상세페이지</h2>
+              <Styled.PostWrapper>
+                <UserInfo
+                  id={postData.id}
+                  username={postData.author.username}
+                  accountId={postData.author.account_id}
+                  feedList={true}
+                  profileImg={postData.author.profile_image}
+                  to={`/profile/${postData.author.account_id}`}
+                  feedData={postData}
+                  is_farm_verified={postData.author_is_farm_verified}
+                  onPostDeleted={removePostFromList}
+                />
+                <PostContent
+                  content={postData.content}
+                  images={postData.image_urls}
+                  date={postData.created_at}
+                  id={postData.id}
+                  like={postData.like_count}
+                  isLiked={postData.is_liked}
+                  comment={postData.comment_count}
+                />
+              </Styled.PostWrapper>
+            </Styled.PostSection>
+            <Styled.CommentSection>
+              <h3 className="text-ir">댓글영역</h3>
+              <Comment
+                ref={commentRef}
+                postId={postId}
+                onCommentCountChange={handleCommentCountDecrease}
               />
-            </div>
-            <button
-              className={newComment.trim() ? 'active' : ''}
-              onClick={handleAddComment}
-              disabled={!newComment.trim()}
-            >
-              게시
-            </button>
-          </Styled.CommentInputWrapper>
+            </Styled.CommentSection>
+          </Styled.HeightWrap>
+          <Styled.CommentSection>
+            <h3 className="text-ir">댓글작성영역</h3>
+            <Styled.CommentInputWrapper>
+              <Styled.ImgWrap>
+                <img src={myProfileImage} alt="내 프로필" />
+              </Styled.ImgWrap>
+
+              <div className="input-area">
+                <input
+                  type="text"
+                  placeholder="댓글을 입력하세요..."
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleAddComment()}
+                  maxLength={MAX_COMMENT_LENGTH}
+                />
+              </div>
+              <button
+                className={newComment.trim() ? 'active' : ''}
+                onClick={handleAddComment}
+                disabled={!newComment.trim()}
+              >
+                게시
+              </button>
+            </Styled.CommentInputWrapper>
+          </Styled.CommentSection>
         </>
       ) : (
         <></>

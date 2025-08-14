@@ -2,7 +2,7 @@
 /* eslint-disable no-unused-vars */
 import { usePopup } from '../context/PopupContext';
 import { usePageActions } from '../context/PageActionsContext';
-import { delePost } from '../api/postApi';
+import { delePost, deleteComment, reportComment } from '../api/postApi';
 
 const useFeedActions = () => {
   // 전역 팝업 컨텍스트 사용
@@ -28,18 +28,30 @@ const useFeedActions = () => {
   // 게시물 소유자인지 확인하는 함수
   const isOwner = (feedData) => {
     const currentUserId = getCurrentUserId();
-    // 🔥 게시글 작성자 ID 확인 로직
-    const authorId = feedData?.author?.account_id || feedData?.account_id;
+    // 게시글 작성자 ID 확인 로직
+    const authorId = feedData?.author?.account_id || feedData?.account_id || feedData?.userId;
     return currentUserId && authorId === currentUserId;
   };
 
-  // 🔥 게시물 삭제 API - 콜백 함수 포함
+  // 댓글 소유자인지 확인하는 함수
+  const isCommentOwner = (commentData) => {
+    const currentUserId = getCurrentUserId();
+
+    const commentAuthorId =
+      commentData?.user?.account_id || commentData?.userId || commentData?.user?.id;
+
+    // 타입을 맞춰서 비교 (문자열로 통일)
+    const isOwner = currentUserId && String(commentAuthorId) === String(currentUserId);
+
+    return isOwner;
+  };
+
+  // 게시물 삭제 API - 콜백 함수 포함
   const handleDeletePost = async (postId, onPostDeleted) => {
     try {
       await delePost(postId);
-      console.log('게시물 삭제 성공');
 
-      // 🔥 삭제 성공 시 콜백 함수 호출하여 UI에서 제거
+      // 삭제 성공 시 콜백 함수 호출하여 UI에서 제거
       if (onPostDeleted && typeof onPostDeleted === 'function') {
         onPostDeleted(postId);
       }
@@ -60,10 +72,59 @@ const useFeedActions = () => {
     }
   };
 
-  // 🔥 handleFeedAction - 콜백 파라미터 받도록 수정
-  const handleFeedAction = (actionKey, feedData, onPostDeleted = null) => {
-    console.log('handleFeedAction called with:', actionKey, feedData);
+  // 댓글 삭제 API - 콜백 함수 포함
+  const handleDeleteComment = async (commentId, onCommentDeleted) => {
+    try {
+      await deleteComment(commentId);
 
+      // 삭제 성공 시 콜백 함수 호출하여 UI에서 제거
+      if (onCommentDeleted && typeof onCommentDeleted === 'function') {
+        onCommentDeleted(commentId);
+      }
+
+      // 성공 메시지 표시
+      const successModalData = {
+        modalList: [{ text: '확인', action: () => closeModal() }],
+        text: '댓글이 삭제되었습니다.',
+      };
+      openModal(successModalData);
+    } catch (error) {
+      console.error('댓글 삭제 실패:', error);
+      const errorModalData = {
+        modalList: [{ text: '확인', action: () => closeModal() }],
+        text: '댓글 삭제에 실패했습니다.',
+      };
+      openModal(errorModalData);
+    }
+  };
+
+  // 댓글 신고 처리
+  const handleReportComment = async (commentData) => {
+    try {
+      const commentId = commentData?.id || commentData?.commentId;
+      if (!commentId) {
+        throw new Error('댓글 ID를 찾을 수 없습니다.');
+      }
+
+      await reportComment(commentId);
+
+      const successModalData = {
+        modalList: [{ text: '확인', action: () => closeModal() }],
+        text: '댓글 신고가 접수되었습니다.',
+      };
+      openModal(successModalData);
+    } catch (error) {
+      console.error('댓글 신고 실패:', error);
+      const errorModalData = {
+        modalList: [{ text: '확인', action: () => closeModal() }],
+        text: '댓글 신고에 실패했습니다.',
+      };
+      openModal(errorModalData);
+    }
+  };
+
+  // handleFeedAction - 댓글 액션도 포함하도록 확장
+  const handleFeedAction = (actionKey, feedData, onDeleted = null) => {
     switch (actionKey) {
       case 'openFeedMenu':
         const isMyPost = isOwner(feedData);
@@ -76,7 +137,7 @@ const useFeedActions = () => {
             {
               label: '삭제',
               action: () => {
-                // 🔥 게시물 ID 찾기
+                // 게시물 ID 찾기
                 const postId = feedData?.id;
                 if (!postId) {
                   console.error('게시물 ID를 찾을 수 없습니다.', feedData);
@@ -92,8 +153,8 @@ const useFeedActions = () => {
                       text: '삭제',
                       action: async () => {
                         closeModal(); // 모달 먼저 닫기
-                        // 🔥 콜백 함수를 포함하여 삭제 처리
-                        await handleDeletePost(postId, onPostDeleted);
+                        // 콜백 함수를 포함하여 삭제 처리
+                        await handleDeletePost(postId, onDeleted);
                       },
                     },
                   ],
@@ -106,7 +167,6 @@ const useFeedActions = () => {
             {
               label: '수정',
               action: () => {
-                console.log('피드 수정', feedData);
                 closePopup();
               },
             },
@@ -117,7 +177,6 @@ const useFeedActions = () => {
             {
               label: '신고',
               action: () => {
-                console.log('피드 신고', feedData);
                 closePopup();
               },
             },
@@ -130,17 +189,26 @@ const useFeedActions = () => {
         });
         break;
 
+      // 댓글 메뉴 액션 추가
       case 'openCommentMenu':
-        const isMyComment = isOwner(feedData);
+        const isMyComment = isCommentOwner(feedData);
 
         let commentMenuList = [];
 
         if (isMyComment) {
-          // 내 댓글인 경우: 삭제, 수정만
+          // 내 댓글인 경우: 삭제만
           commentMenuList = [
             {
               label: '삭제',
               action: () => {
+                // 댓글 ID 찾기
+                const commentId = feedData?.id || feedData?.commentId;
+                if (!commentId) {
+                  console.error('댓글 ID를 찾을 수 없습니다.', feedData);
+                  closePopup();
+                  return;
+                }
+
                 const modalData = {
                   modalList: [
                     { text: '취소', action: () => closeModal() },
@@ -148,8 +216,8 @@ const useFeedActions = () => {
                       text: '삭제',
                       action: async () => {
                         closeModal();
-                        console.log('댓글 삭제', feedData);
-                        // 여기에 댓글 삭제 API 및 콜백 처리 구현
+                        // 댓글 삭제 처리
+                        await handleDeleteComment(commentId, onDeleted);
                       },
                     },
                   ],
@@ -159,13 +227,6 @@ const useFeedActions = () => {
                 openModal(modalData);
               },
             },
-            {
-              label: '수정',
-              action: () => {
-                console.log('댓글 수정', feedData);
-                closePopup();
-              },
-            },
           ];
         } else {
           // 남의 댓글인 경우: 신고만
@@ -173,8 +234,21 @@ const useFeedActions = () => {
             {
               label: '신고',
               action: () => {
-                console.log('댓글 신고', feedData);
+                const modalData = {
+                  modalList: [
+                    { text: '취소', action: () => closeModal() },
+                    {
+                      text: '신고',
+                      action: async () => {
+                        closeModal();
+                        await handleReportComment(feedData);
+                      },
+                    },
+                  ],
+                  text: '이 댓글을 신고하시겠습니까?',
+                };
                 closePopup();
+                openModal(modalData);
               },
             },
           ];

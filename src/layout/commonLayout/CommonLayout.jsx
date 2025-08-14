@@ -72,7 +72,19 @@ const CommonLayoutInner = ({ page }) => {
   const currentHeaderConfig = defaultHeaderMap[location.pathname] || {};
 
   //bottom이 안붙는 케이스엔 여기에 추가
-  const hiddenPaths = ['/post', '/chatRoom'];
+  //const hiddenPaths = ['/postDetail', '/chatRoom'];
+
+  // 함수로 분리
+  const shouldHideBottomNav = (pathname) => {
+    const hiddenPaths = ['/post', '/chatRoom'];
+    const hiddenPathPrefixes = ['/postDetail', '/product']; // 파라미터가 있는 경로들
+
+    return (
+      hiddenPaths.includes(pathname) ||
+      hiddenPathPrefixes.some((prefix) => pathname.startsWith(prefix))
+    );
+  };
+
   // 전역 로딩 상태 사용
   const { isLoading } = useLoading(); // 전역 로딩 중일 때 로딩 컴포넌트 표시
   if (isLoading) {
@@ -99,7 +111,7 @@ const CommonLayoutInner = ({ page }) => {
         onAction={handleHeaderAction}
       />
       <Content page={page} searchQuery={searchQuery} />
-      {!hiddenPaths.includes(isNav) && <BottomNavBar />}
+      {!shouldHideBottomNav(isNav) && <BottomNavBar />}
 
       {/* 전역 ActionSheet 팝업 (바텀영역 고정팝업) */}
       {isPopupOpen && popupConfig?.list && (
