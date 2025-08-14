@@ -9,7 +9,7 @@ const GalleryView = ({ userFeed }) => {
           <Styled.FeedListItem key={e.id}>
             <Link to={`/post/${e.id}`}>
               <Styled.GalleryImgWrap>
-                <img src={`http://43.201.70.73/${e.image_urls[0]}`} alt="샘플이미지" />
+                <img src={`https://deulbada.duckdns.org/${e.image_urls[0]}`} alt="샘플이미지" />
                 {e.image_urls.length > 1 && <Styled.StyledCopyIcon />}
               </Styled.GalleryImgWrap>
             </Link>

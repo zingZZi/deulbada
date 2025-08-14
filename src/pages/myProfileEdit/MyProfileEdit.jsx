@@ -260,7 +260,7 @@ const MyProfileEdit = () => {
             image
               ? image.startsWith('blob:')
                 ? image // 새로 선택한 이미지 (blob URL)
-                : `http://43.201.70.73/${image}` // 서버 이미지
+                : `https://deulbada.duckdns.org/${image}` // 서버 이미지
               : ImagePreview // 기본 이미지
           }
           alt="프로필 이미지"
