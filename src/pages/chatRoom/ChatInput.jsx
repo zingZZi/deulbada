@@ -15,23 +15,24 @@ const ChatInput = ({ onSend }) => {
   };
 
   const handleImageUpload = (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
     if (!file) return;
 
+    // 이미지 파일만 허용
     if (!file.type.startsWith('image/')) {
       alert('이미지 파일만 업로드할 수 있어요!');
+      e.target.value = ''; // 같은 파일 다시 선택 가능하도록 초기화
       return;
     }
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      if (reader.result) {
-        onSend({ type: 'image', image: reader.result });
-      } else {
-        alert('이미지 로드에 실패했어요!');
-      }
-    };
-    reader.readAsDataURL(file);
+    // 미리보기 URL (옵션)
+    const preview = URL.createObjectURL(file);
+
+    // *** 단 한 번만 호출 ***
+    onSend({ type: 'image', file, preview });
+
+    // 같은 파일을 연속 선택할 수 있도록 input 초기화
+    e.target.value = '';
   };
 
 
