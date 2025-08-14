@@ -318,28 +318,6 @@ const Product = () => {
         />
       </Styled.InputGroup>
 
-      {/* 태그 */}
-      <Styled.InputGroup>
-        <Styled.Label htmlFor="tag">태그</Styled.Label>
-        <Styled.InputText
-          id="tag"
-          type="text"
-          placeholder="쉼표(,)를 이용해 여러 개의 태그를 입력하세요"
-          value={tagInput}
-          onChange={(e) => setTagInput(e.target.value)}
-          onKeyDown={handleTagKeyDown}
-        />
-
-        <Styled.TagList>
-          {tags.map((tag, index) => (
-            <Styled.Tag key={index}>
-              #{tag}
-              <Styled.RemoveButton onClick={() => handleTagRemove(tag)}>×</Styled.RemoveButton>
-            </Styled.Tag>
-          ))}
-        </Styled.TagList>
-      </Styled.InputGroup>
-
       {/* 1차 카테고리 */}
       <Styled.InputGroup>
         <Styled.Label htmlFor="business-type">1차 카테고리</Styled.Label>
@@ -368,6 +346,28 @@ const Product = () => {
           </Styled.Select>
         </Styled.InputGroup>
       )}
+
+      {/* 태그 */}
+      <Styled.InputGroup>
+        <Styled.Label htmlFor="tag">태그</Styled.Label>
+        <Styled.InputText
+          id="tag"
+          type="text"
+          placeholder="쉼표(,)를 이용해 여러 개의 태그를 입력하세요"
+          value={tagInput}
+          onChange={(e) => setTagInput(e.target.value)}
+          onKeyDown={handleTagKeyDown}
+        />
+
+        <Styled.TagList>
+          {tags.map((tag, index) => (
+            <Styled.Tag key={index}>
+              #{tag}
+              <Styled.RemoveButton onClick={() => handleTagRemove(tag)}>×</Styled.RemoveButton>
+            </Styled.Tag>
+          ))}
+        </Styled.TagList>
+      </Styled.InputGroup>
 
       <Styled.Button type="submit" disabled={isSubmitting}>
         {isSubmitting ? '등록 중...' : '상품 등록'}

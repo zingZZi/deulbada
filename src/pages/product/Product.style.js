@@ -91,6 +91,30 @@ export const InputText = styled.input`
   }
 `;
 
+export const Select = styled.select.attrs((props) => ({
+  hasValue: props.value !== "",
+}))`
+  height: 2.8rem;
+  padding: 0 2rem 0 0;
+  font-size: 1.2rem;
+  color: ${({ hasValue, theme }) =>
+    hasValue ? theme.colors.black : theme.colors.white300};
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #ccc;
+  appearance: none;
+  margin-bottom: 1.8rem;
+
+  &:focus {
+    outline: none;
+    border-bottom: 1px solid #5CA14E;
+  }
+
+  option {
+    color: ${({ theme }) => theme.colors.black};
+  }
+`;
+
 export const TagList = styled.label`
 `;
 
@@ -115,30 +139,6 @@ export const RemoveButton = styled.button`
 
   &:hover {
     color: red;
-  }
-`;
-
-export const Select = styled.select.attrs((props) => ({
-  hasValue: props.value !== "",
-}))`
-  height: 2.8rem;
-  padding: 0 2rem 0 0;
-  font-size: 1.2rem;
-  color: ${({ hasValue, theme }) =>
-    hasValue ? theme.colors.black : theme.colors.white300};
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid #ccc;
-  appearance: none;
-  margin-bottom: 1.8rem;
-
-  &:focus {
-    outline: none;
-    border-bottom: 1px solid #5CA14E;
-  }
-
-  option {
-    color: ${({ theme }) => theme.colors.black};
   }
 `;
 
