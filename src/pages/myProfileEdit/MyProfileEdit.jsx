@@ -53,6 +53,12 @@ const MyProfileEdit = () => {
 
   // 사용자 이름 유효성 검사
   const validateName = (value) => {
+    // 한글 정규식 (완성형 한글 + 자음/모음 조합)
+    const koreanRegex = /^[가-힣]+$/;
+
+    if (!koreanRegex.test(value)) {
+      return '사용자 이름은 한글만 입력 가능합니다.';
+    }
     if (value.length < 2) {
       return '사용자 이름은 2자 이상이어야 합니다.';
     }
@@ -260,7 +266,7 @@ const MyProfileEdit = () => {
             image
               ? image.startsWith('blob:')
                 ? image // 새로 선택한 이미지 (blob URL)
-                : `https://deulbada.duckdns.org/${image}` // 서버 이미지
+                : `${image}` // 서버 이미지
               : ImagePreview // 기본 이미지
           }
           alt="프로필 이미지"
