@@ -7,7 +7,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getAccessToken } from '../../auth/tokenStore';
 import ActionSheet from '../../components/actionSheet/ActionSheet.jsx';
 
-const BASE_HTTP = 'http://43.201.70.73';
+const BASE_HTTP = 'https://deulbada.duckdns.org';
 
 // 날짜 라벨 포맷
 function formatDate(dateString) {
