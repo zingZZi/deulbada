@@ -7,7 +7,7 @@ const GalleryView = ({ userFeed }) => {
       {filteredData.map((e) => {
         return (
           <Styled.FeedListItem key={e.id}>
-            <Link to={`/post/${e.id}`}>
+            <Link to={`/postDetail/${e.id}`}>
               <Styled.GalleryImgWrap>
                 <img src={`https://deulbada.duckdns.org/${e.image_urls[0]}`} alt="샘플이미지" />
                 {e.image_urls.length > 1 && <Styled.StyledCopyIcon />}

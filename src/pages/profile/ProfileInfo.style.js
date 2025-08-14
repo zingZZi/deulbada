@@ -60,6 +60,7 @@ export const UserId = styled.p`
   font-size: ${({ theme }) => theme.fontSize.small};
   color: ${({ theme }) => theme.colors.white700};
   margin: 0.6rem 0 1.6rem;
+  font-family: ${({ theme }) => theme.fonts.base};
 `;
 export const UserBio = styled.p`
   font-size: ${({ theme }) => theme.fontSize.base};

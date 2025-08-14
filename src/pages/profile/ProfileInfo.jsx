@@ -166,7 +166,7 @@ const ProfileInfo = ({ accountId, isMyProfile, userInfo }) => {
             </LineLink>
           </li>
           <li>
-            <LineLink radius={'medium'} padding={'.8rem 2.6rem'} fontSize={'base'}>
+            <LineLink radius={'medium'} padding={'.8rem 2.6rem'} fontSize={'base'} to="/product">
               상품등록
             </LineLink>
           </li>
