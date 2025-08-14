@@ -25,6 +25,14 @@ export default function useChatWS({
   const shouldReconnect = useRef(true); // 재연결 여부
   const openedOnce = useRef(false);     // 중복 연결 방지 플래그
 
+  const makeAbsoluteUrl = useCallback((url) => {
+  if (!url) return null;
+  if (url.startsWith('http')) return url; // 이미 절대경로
+  if (url.startsWith('//')) return `https:${url}`;
+  if (url.startsWith('/')) return `https://${HOST}${url}`; // 상대경로 → 절대경로
+  return `https://${HOST}/${url}`;
+}, []);
+
   // WebSocket URL 만들기
   const qs = withToken && token ? `?token=${encodeURIComponent(token)}` : '';
   const path =
@@ -68,16 +76,19 @@ export default function useChatWS({
 
     // 서버 → 클라이언트 메시지 수신
     ws.onmessage = (e) => {
+      console.log('[WS] RAW 데이터:', e.data);
       try {
         const d = JSON.parse(e.data);
         console.log('[WS] 받은 메시지:', d);
+        console.log('[WS] 이미지 URL:', d.image_url);
+        console.log('[WS] 발신자:', d.sender);
         setMessages((prev) =>
           prev.concat({
             id: d.id ?? (self.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`),
             sender: d.sender,
             sender_username: d.sender_username ?? null,
             content: d.message ?? d.content ?? '',
-            image_url: d.image_url ?? null,
+            image_url: d.image_url ? makeAbsoluteUrl(d.image_url) : null,
             is_read: d.is_read ?? false,
             created_at: d.created_at || new Date().toISOString(),
           })
@@ -102,7 +113,7 @@ export default function useChatWS({
       retryCount.current += 1;
       scheduleReconnect();
     };
-  }, [wsUrl, token, useSubprotocol, scheduleReconnect]);
+  }, [wsUrl, token, useSubprotocol, scheduleReconnect, makeAbsoluteUrl]);
 
   // 최초 연결 & 언마운트 시 정리
   useEffect(() => {

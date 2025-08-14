@@ -26,6 +26,7 @@ const ChatRoom = () => {
   // 현재 방의 id / 표시용 이름
   const [roomId, setRoomId] = useState(null);
   const [roomName, setRoomName] = useState(null);
+  const [partnerProfileImage, setPartnerProfileImage] = useState(null);
   // 리스트 하단 스크롤용 ref
   const messagesEndRef = useRef(null);
 
@@ -106,17 +107,30 @@ const ChatRoom = () => {
           partner?.username || partner?.account_id ||
           details.room_name || details.name || `room: ${roomId}`;
         setRoomName(partnerName);
+
+        // 상대방 프로필 이미지 가져오기 (여러 가능한 필드명 체크)
+        const partnerProfile = partner?.profile_image || partner?.avatar || partner?.profile_picture || null;
+        // 상대경로인 경우 절대경로로 변환
+        const absoluteProfileImage = partnerProfile
+          ? (partnerProfile.startsWith('http')
+              ? partnerProfile
+              : `${BASE_HTTP}${partnerProfile.startsWith('/') ? '' : '/'}${partnerProfile}`)
+          : null;
+
+        setPartnerProfileImage(absoluteProfileImage);
         
         // 기존 메시지 불러오기
         if (details.messages && Array.isArray(details.messages)) {
           const pastMessages = details.messages.map((msg) => {
             const senderId = typeof msg.sender === 'object' ? msg.sender?.id : msg.sender;
+            const isMyMessage = senderId === meId;
             return {
               id: msg.id,
               sender: senderId === meId ? 'me' : 'other',
               type: msg.image_url ? 'image' : 'text',
               content: msg.content || msg.message || '',
               image: msg.image_url || null,
+              profileImage: isMyMessage ? null : absoluteProfileImage,
               createdTime: msg.created_at || msg.timestamp,
             };
           });
@@ -132,24 +146,46 @@ const ChatRoom = () => {
   }, [roomId, token, myUserId, navigate]);
 
   // 3) 실시간 메시지(WS) 원본을 받아서 화면 스키마로 변환
-  const { status, messages: liveRaw, sendText, sendImage } =
+  const { status, messages: liveRaw, sendText } =
     useChatWS({ roomId, token, withToken: true });
+
+    useEffect(() => {
+      console.log('[ChatRoom] liveRaw 변경됨:', liveRaw);
+    }, [liveRaw]);
 
   const liveMessages = useMemo(() => {
     console.log('[ChatRoom] liveRaw 메시지들:', liveRaw);
     return liveRaw.map((d) => {
-      const converted = {
-      id: d.id,
+    // 1) 다양한 키 지원 + 공백 제거
+    const rawImage =
+      d.image_url ?? d.imageUrl ?? d.image ?? d.file_url ?? d.fileUrl ?? null;
+    const cleaned = typeof rawImage === 'string' ? rawImage.trim() : null;
+
+    // 2) 상대경로 → 절대경로
+    const absoluteImage = cleaned
+      ? (cleaned.startsWith('http')
+          ? cleaned
+          : `${BASE_HTTP}${cleaned.startsWith('/') ? '' : '/'}${cleaned}`)
+      : null;
+
+    // 3) 이미지 존재 여부로 type 결정
+    const hasImage = Boolean(absoluteImage);
+
+    const isMyMessage = d.sender === myUsername;
+    const converted = {
+      id: d.id ?? crypto.randomUUID?.() ?? String(Date.now()),
       sender: d.sender === myUsername ? 'me' : 'other',
-      type: d.image_url ? 'image' : 'text',
-      content: d.content || '',
-      image: d.image_url || null,
-      createdTime: d.created_at,
+      type: hasImage ? 'image' : 'text',
+      content: (d.content ?? d.message ?? '').trim(),
+      image: hasImage ? absoluteImage : null,
+      profileImage: isMyMessage ? null : partnerProfileImage,
+      createdTime: d.created_at ?? d.createdAt ?? d.timestamp ?? new Date().toISOString(),
     };
+
     console.log('[ChatRoom] 변환된 메시지:', converted);
     return converted;
   });
-  }, [liveRaw, myUsername]);
+  }, [liveRaw, myUsername, partnerProfileImage]);
 
   // 4) 과거(낙관적 포함) + 실시간을 합치고, 중복 제거 + 시간순 정렬
   const allMessages = useMemo(() => {
@@ -165,6 +201,10 @@ const ChatRoom = () => {
     return dedup;
   }, [chatMessages, liveMessages]);
 
+
+    useEffect(() => {
+    console.log('[ChatRoom] allMessages 변경됨:', allMessages);
+  }, [allMessages]);
   // 메시지 갱신 시 항상 하단으로
   useEffect(() => {
     scrollToBottom();
@@ -215,7 +255,7 @@ const ChatRoom = () => {
           return (
             <div key={msg.id}>
               {isNewDay && <Styled.DateDivider>{formatDate(msg.createdTime)}</Styled.DateDivider>}
-              <ChatMessage data={msg} onImageClick={setSelectedImage} />
+              <ChatMessage data={msg} onImageClick={setSelectedImage} partnerProfileImage={partnerProfileImage} />
             </div>
           );
         })}
@@ -246,6 +286,7 @@ const ChatRoom = () => {
             type: 'image',
             content: '',
             image: previewUrl,
+            profileImage: null,
             createdTime: new Date().toISOString(),
             isUploading: true,
           })
@@ -281,7 +322,7 @@ const ChatRoom = () => {
         // 성공 → 임시 메시지 제거 (실제 메시지는 WS로 들어옴)
         setChatMessages((prev) => prev.filter(m => m.id !== tempId));
 
-        sendImage(uploadedUrl);
+        // sendImage(uploadedUrl);
         console.log('WebSocket으로 이미지 전송:', uploadedUrl);
 
         
