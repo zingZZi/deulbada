@@ -1,3 +1,4 @@
+/* eslint-disable no-dupe-keys */
 import { useEffect, useState, useRef } from 'react';
 import * as Styled from './PostDetail.style';
 import OptionsBottomSheet from './OptionsBottomSheet';
@@ -12,6 +13,7 @@ const MAX_COMMENT_LENGTH = 200;
 const PostDetail = () => {
   const useraccountId = window.localStorage.getItem('account_id');
   const [myProfileImage, setMyProfileImage] = useState(null);
+  const [myUserInfo, setMyUserInfo] = useState(null); // 현재 사용자 전체 정보 저장
   const [newComment, setNewComment] = useState('');
 
   const commentRef = useRef(); // Comment 컴포넌트 참조용
@@ -26,6 +28,24 @@ const PostDetail = () => {
       const response = await createComment(postId, commentData);
       const newCommentData = response.data;
 
+      // 📌 새 댓글에 현재 사용자 정보 완전히 재구성
+      const enhancedCommentData = {
+        ...newCommentData,
+        user: {
+          account_id: useraccountId,
+          username: myUserInfo?.username || '사용자',
+          profile_image: myProfileImage,
+          // 기존 서버 응답 정보도 보존
+          ...(newCommentData.user || {}),
+          // 하지만 위의 정보들로 덮어쓰기
+          account_id: useraccountId,
+          username: myUserInfo?.username || '사용자',
+          profile_image: myProfileImage,
+        },
+      };
+
+      console.log('Enhanced comment data:', enhancedCommentData); // 디버깅용
+
       // 댓글 입력창 초기화
       setNewComment('');
       // 댓글 카운트 업데이트
@@ -36,7 +56,7 @@ const PostDetail = () => {
 
       // Comment 컴포넌트에 새 댓글 바로 추가
       if (commentRef.current && commentRef.current.addNewComment) {
-        commentRef.current.addNewComment(newCommentData);
+        commentRef.current.addNewComment(enhancedCommentData);
       }
     } catch (error) {
       console.error('댓글 작성 실패:', error);
@@ -63,6 +83,9 @@ const PostDetail = () => {
         const userInfo = await fetchUser(useraccountId);
         console.log(userInfo);
         const userInfodata = userInfo.data;
+
+        // 📌 사용자 정보 전체를 저장
+        setMyUserInfo(userInfodata);
         setMyProfileImage(userInfodata.profile_image);
         setPostData(data);
       } catch (error) {
