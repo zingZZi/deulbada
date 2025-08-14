@@ -29,6 +29,9 @@ const ChatRoom = () => {
   const [roomName, setRoomName] = useState(null);
   const [partnerProfileImage, setPartnerProfileImage] = useState(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+
+  const [leaving, setLeaving] = useState(false);
+
   // 리스트 하단 스크롤용 ref
   const messagesEndRef = useRef(null);
 
@@ -251,20 +254,48 @@ const ChatRoom = () => {
   }, []);
 
   const handleLeaveRoom = async () => {
+    if (leaving) return; // 중복 클릭 방지
     if (!window.confirm('채팅방에서 나가시겠어요?')) return;
 
-    try {
-      // TODO: 백엔드에 나가기 API가 있으면 여기서 호출
-      // await fetch(`${BASE_HTTP}/chat/chatrooms/${roomId}/leave/`, {
-      //   method: 'POST',
-      //   headers: { Authorization: `Bearer ${token}` },
-      // });
+    if (!roomId) {
+      alert('방 정보가 없어요. 잠시 후 다시 시도해 주세요.');
+      return;
+    }
 
-      navigate('/chatList'); // UX: 일단 목록으로 이동
+    console.log('[leave] DELETE start', roomId);
+    try {
+      setLeaving(true);
+
+      // ✅ Swagger 기준 정답: 방 삭제/나가기
+      const res = await fetch(`${BASE_HTTP}/chat/chatrooms/${roomId}/`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${getAccessToken()}` },
+      });
+
+      // 성공 케이스: 204 No Content
+      if (res.status === 204) {
+        // (옵션) WS로 알림 브로드캐스트 하고 싶으면 유지
+        sendJson?.({
+          type: 'leave',
+          room_id: roomId,
+          sender: myUsername,
+          sender_id: myUserId,
+        });
+
+        // 목록으로 이동 + ChatList에서 해당 방 제거 & 새로고침 트리거
+        navigate('/chatList', { state: { refresh: true, removedRoomId: roomId } });
+        return;
+      }
+
+      // 실패 시 상세 출력
+      const body = await res.text().catch(() => '');
+      console.error('나가기 실패', res.status, body);
+      alert(`나가기 실패(${res.status})`);
     } catch (e) {
-      console.error('채팅방 나가기 실패:', e);
+      console.error('채팅방 나가기 에러:', e);
       alert('나가기 중 문제가 발생했어요.');
     } finally {
+      setLeaving(false);
       setIsSheetOpen(false);
     }
   };
@@ -289,7 +320,7 @@ const ChatRoom = () => {
     }
 
     const result = await response.json();
-     const imageUrl = result.image;
+    const imageUrl = result.image;
 
     if (imageUrl && imageUrl.startsWith('/')) {
       return `${BASE_HTTP}${imageUrl}`;
@@ -402,7 +433,13 @@ const ChatRoom = () => {
   <ActionSheet
     setIsPopupOpen={setIsSheetOpen}
     list={[
-      { label: '채팅방 나가기', action: handleLeaveRoom },
+      {  label: leaving ? '나가는 중…' : '채팅방 나가기', action: () => {
+          // 시트 먼저 닫고
+          setIsSheetOpen(false);
+          // 실제 나가기 로직 실행
+          handleLeaveRoom();
+        },
+      }
     ]}
   />
 )}
