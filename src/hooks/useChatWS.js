@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 
-const HOST = '43.201.70.73';
-const wsScheme =
-  typeof window !== 'undefined' && window.location.protocol === 'https:' ? 'wss' : 'ws';
+const HOST = 'deulbada.duckdns.org';
+const wsScheme = 'wss';
+  // typeof window !== 'undefined' && window.location.protocol === 'https:' ? 'wss' : 'ws';
 
 /**
  * WebSocket 기반 채팅 훅
