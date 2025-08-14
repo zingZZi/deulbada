@@ -45,7 +45,7 @@ const PostContent = ({ images, content, date, id, isLiked = false, like, comment
 
       {images && images.length === 1 && (
         <Styled.ImgBoxWrap>
-          <img src={`http://43.201.70.73/${images[0]}`} alt="업로드이미지" />
+          <img src={`https://deulbada.duckdns.org/${images[0]}`} alt="업로드이미지" />
         </Styled.ImgBoxWrap>
       )}
 
@@ -53,7 +53,7 @@ const PostContent = ({ images, content, date, id, isLiked = false, like, comment
         <Styled.CustomSwiper autoHeight={true} pagination={true} modules={[Pagination]}>
           {images.map((e, i) => (
             <Styled.CustomSwiperItem key={i}>
-              <img src={`http://43.201.70.73/${e}`} alt="업로드이미지" />
+              <img src={`https://deulbada.duckdns.org/${e}`} alt="업로드이미지" />
             </Styled.CustomSwiperItem>
           ))}
         </Styled.CustomSwiper>
