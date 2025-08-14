@@ -58,11 +58,11 @@ const useHeaderActions = () => {
         });
         break;
 
-      case 'openChatMenu':
-        openPopup({
-          list: [{ label: '채팅방 나가기', action: () => console.log('채팅방나가기') }],
-        });
+      case 'openChatMenu': {
+        console.log('채팅방나가기');
+        document.dispatchEvent(new CustomEvent('openChatMenu'));
         break;
+      }
       case 'editProfile':
         console.log('Executing editProfile action');
         executeAction('editProfile');
