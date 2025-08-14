@@ -87,6 +87,7 @@ const UserInfo = ({
     }
   };
 
+  const localaccountId = localStorage.getItem('account_id');
   return (
     <>
       <Styled.UserInfoLayout to={to}>
@@ -102,13 +103,21 @@ const UserInfo = ({
       </Styled.UserInfoLayout>
 
       {feedList ? (
-        <Styled.MoreBtn
-          onClick={() => handleFeedAction('openFeedMenu', getFeedDataForAction(), onPostDeleted)}
-        >
-          {/* 🔥 handleFeedAction에 콜백 함수 전달 */}
-          <EllipsisVerticalIcon size={'1.8rem'} />
-          <span className="text-ir">더보기</span>
-        </Styled.MoreBtn>
+        <>
+          {accountId === localaccountId ? (
+            <Styled.MoreBtn
+              onClick={() =>
+                handleFeedAction('openFeedMenu', getFeedDataForAction(), onPostDeleted)
+              }
+            >
+              {/* 🔥 handleFeedAction에 콜백 함수 전달 */}
+              <EllipsisVerticalIcon size={'1.8rem'} />
+              <span className="text-ir">더보기</span>
+            </Styled.MoreBtn>
+          ) : (
+            <></>
+          )}
+        </>
       ) : null}
 
       {btns &&
