@@ -87,7 +87,7 @@ const ProfileInfo = ({ accountId, isMyProfile, userInfo }) => {
         <li>
           <Styled.ProfileImgWrap>
             {userInfo.profile_image ? (
-              <img src={`http://43.201.70.73/${userInfo.profile_image}`} alt="프로필이미지" />
+              <img src={userInfo.profile_image} alt="프로필이미지" />
             ) : (
               <img src={defaultProfileImg} alt="기본 프로필이미지" />
             )}
