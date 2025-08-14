@@ -94,6 +94,8 @@ const Comment = forwardRef(({ postId, onCommentCountChange }, ref) => {
     };
   };
 
+  // localStorage에서 사용자 정보 가져오기
+  const accountId = localStorage.getItem('account_id');
   return (
     <>
       {comments.length > 0 ? (
@@ -108,18 +110,21 @@ const Comment = forwardRef(({ postId, onCommentCountChange }, ref) => {
                   <Styled.UserName>
                     {e.user.username} <Styled.Time>{formatTimeDisplay(e.created_at)}</Styled.Time>
                   </Styled.UserName>
-                  <Styled.MoreBtn
-                    onClick={() => {
-                      handleFeedAction(
-                        'openCommentMenu',
-                        getCommentDataForAction(e),
-                        handleCommentDeleted
-                      );
-                    }}
-                  >
-                    <EllipsisVerticalIcon size={'1.8rem'} />
-                    <span className="text-ir">더보기</span>
-                  </Styled.MoreBtn>
+
+                  {accountId === e.user.account_id ? (
+                    <Styled.MoreBtn
+                      onClick={() => {
+                        handleFeedAction(
+                          'openCommentMenu',
+                          getCommentDataForAction(e),
+                          handleCommentDeleted
+                        );
+                      }}
+                    >
+                      <EllipsisVerticalIcon size={'1.8rem'} />
+                      <span className="text-ir">더보기</span>
+                    </Styled.MoreBtn>
+                  ) : null}
                 </Styled.commentUserInfo>
                 <Styled.CommentContent>{e.content}</Styled.CommentContent>
               </Styled.commentItem>
