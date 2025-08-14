@@ -341,39 +341,43 @@ const JoinProducer = () => {
 
     setIsLoading(true);
 
-    try {
-      const fullAddress = detailAddress ? `${address} ${detailAddress}` : address;
+  try {
+    const fullAddress = detailAddress ? `${address} ${detailAddress}` : address;
 
-      const result = await registerProducer({
+    const result = await registerProducer({
+      account_id: formData.account_id,
+      nickname: formData.nickname,
+      email: formData.email,
+      password: formData.password,
+      ceo_name: ceoName,
+      phone: phone,
+      business_number: businessNumber.replace(/-/g, ''),
+      address_postcode: postalCode,
+      address_line1: fullAddress,
+    });
+
+    console.log('프로듀서 회원가입 성공:', result);
+    setAccountId(formData.account_id);
+    
+    const loginResult = await login(formData.email, formData.password);
+    console.log('자동 로그인 성공:', loginResult);
+
+    alert('프로듀서 회원가입이 완료되었습니다!');
+    
+    navigate('/profile-settings', {
+      state: {
         account_id: formData.account_id,
         nickname: formData.nickname,
-        email: formData.email,
-        password: formData.password,
-        ceo_name: ceoName,
-        phone: phone,
-        business_number: businessNumber.replace(/-/g, ''),
-        address_postcode: postalCode,
-        address_line1: fullAddress,
-      });
-
-      console.log('프로듀서 회원가입 성공:', result);
-
-      // account_id를 localStorage에 저장 (회원가입 성공 시)
-      setAccountId(formData.account_id);
-
-      // 회원가입 성공 후 자동 로그인
-      const loginResult = await login(formData.email, formData.password);
-      console.log('자동 로그인 성공:', loginResult);
-
-      alert('프로듀서 회원가입이 완료되었습니다!');
-      navigate('/home');
-    } catch (error) {
-      console.error('프로듀서 회원가입 실패:', error);
-      setErrors({ general: '회원가입에 실패했습니다. 다시 시도해주세요.' });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+        isFromProducerSignup: true
+      }
+    });
+  } catch (error) {
+    console.error('프로듀서 회원가입 실패:', error);
+    setErrors({ general: '회원가입에 실패했습니다. 다시 시도해주세요.' });
+  } finally {
+    setIsLoading(false);
+  }
+}; // handleSubmit 함수 끝
 
   return (
     <Styled.Form onSubmit={handleSubmit}>

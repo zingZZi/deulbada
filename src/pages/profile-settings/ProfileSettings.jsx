@@ -18,15 +18,18 @@ const ProfileSettings = () => {
   const [info, setInfo] = useState('');
   const [nameError, setNameError] = useState('');
   const [userIdError, setUserIdError] = useState('');
+  const [infoError, setInfoError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
-  
   // 회원가입에서 온 데이터가 있으면 필드를 비활성화
-  const isFromSignup = Boolean(signupData.account_id && signupData.nickname);
+  const isFromSignup = Boolean(
+    (signupData.account_id && signupData.nickname) || // 일반 회원가입
+    signupData.isFromProducerSignup // 생산자 회원가입
+  );
   
   // 토큰 유효성 검증 함수
   const validateToken = () => {
-    const token = getAccessToken(); // tokenStore 사용
+    const token = getAccessToken();
     
     if (!token) {
       console.error('❌ 토큰이 없습니다.');
@@ -44,7 +47,7 @@ const ProfileSettings = () => {
         
         if (payload.exp && payload.exp < currentTime) {
           console.error('❌ 토큰이 만료되었습니다.');
-          clearTokens(); // tokenStore 사용
+          clearTokens();
           alert('로그인이 만료되었습니다. 다시 로그인해주세요.');
           navigate('/login');
           return null;
@@ -52,7 +55,6 @@ const ProfileSettings = () => {
       }
     } catch (error) {
       console.warn('⚠️ 토큰 검증 중 오류:', error);
-      // JWT가 아닐 수도 있으므로 경고만 출력
     }
     
     return token;
@@ -63,13 +65,14 @@ const ProfileSettings = () => {
     const token = validateToken();
     if (!token) return;
 
+    // 회원가입에서 온 경우 (일반 회원가입 또는 생산자 회원가입)
     if (!isFromSignup) {
       alert('잘못된 접근입니다.');
       navigate('/login');
     }
-  }, [isFromSignup, navigate]);
+  }, [navigate, isFromSignup]);
 
-  const isFormValid = name && userId && info;
+  const isFormValid = name && userId; // info 조건 제거
 
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -82,6 +85,14 @@ const ProfileSettings = () => {
     }
 
     let isValid = true;
+
+    // 소개글 유효성 검사를 먼저 실행
+    if (!info.trim()) {
+      setInfoError('소개글을 입력해주세요.');
+      isValid = false;
+    } else {
+      setInfoError('');
+    }
 
     // 회원가입에서 온 경우 이름과 ID 검증 스킵
     if (!isFromSignup) {
@@ -103,13 +114,14 @@ const ProfileSettings = () => {
       }
     }
 
+    // 유효성 검사 실패 시 여기서 멈춤
     if (!isValid) {
       setIsLoading(false);
       return;
     }
 
     try {
-      // FormData로 이미지만 준비 (이미지가 필수)
+      // FormData로 이미지만 준비
       const formData = new FormData();
       
       // 이미지 처리 - 사용자가 업로드한 이미지가 있으면 그것을, 없으면 기본 이미지 사용
@@ -129,7 +141,6 @@ const ProfileSettings = () => {
         }
       }
 
-      
       // API 호출
       const response = await fetch('http://43.201.70.73/api/users/mypage/profile/setup/', {
         method: 'PUT',
@@ -139,12 +150,9 @@ const ProfileSettings = () => {
         }
       });
       
-      // 응답 상태 확인
       console.log('API 응답 상태:', response.status);
-      console.log('API 응답 헤더:', Object.fromEntries(response.headers.entries()));
       
       if (!response.ok) {
-        // 상세한 에러 정보 가져오기
         let errorMessage = `HTTP ${response.status}`;
         try {
           const errorData = await response.text();
@@ -154,11 +162,10 @@ const ProfileSettings = () => {
           console.error('에러 응답 파싱 실패:', e);
         }
         
-        // 특정 상태 코드별 처리
         switch (response.status) {
           case 401:
             alert('인증이 만료되었습니다. 다시 로그인해주세요.');
-            clearTokens(); // tokenStore 사용
+            clearTokens();
             navigate('/login');
             return;
           case 403:
@@ -186,7 +193,6 @@ const ProfileSettings = () => {
     } catch (error) {
       console.error('프로필 설정 실패:', error);
       
-      // 네트워크 에러인 경우
       if (error.name === 'TypeError' && error.message.includes('fetch')) {
         alert('네트워크 연결을 확인해주세요.');
       } else {
@@ -200,13 +206,11 @@ const ProfileSettings = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // 파일 크기 체크 (5MB 제한)
       if (file.size > 1 * 1024 * 1024) {
         alert('이미지 크기는 1MB 이하여야 합니다.');
         return;
       }
       
-      // 파일 타입 체크
       if (!file.type.startsWith('image/')) {
         alert('이미지 파일만 업로드 가능합니다.');
         return;
@@ -272,12 +276,13 @@ const ProfileSettings = () => {
       <Styled.InputGroup>
         <Styled.Label htmlFor="info">소개</Styled.Label>
         <Styled.InputInfo
-        id="info" 
-        type="text" 
-        placeholder="소개글을 작성해주세요!" 
-        value={info}
-        onChange={(e) => setInfo(e.target.value)}
+          id="info" 
+          type="text" 
+          placeholder="소개글을 작성해주세요!" 
+          value={info}
+          onChange={(e) => setInfo(e.target.value)}
         />
+        {infoError && <Styled.ErrorMessage>{infoError}</Styled.ErrorMessage>}
       </Styled.InputGroup>
 
       <Styled.Button type="submit" disabled={!isFormValid || isLoading}>
