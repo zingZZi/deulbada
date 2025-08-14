@@ -3,21 +3,22 @@ import React, { useState, useEffect } from 'react';
 import { Camera } from 'lucide-react';
 import { createPost } from '../../api/productApi';
 import { usePageActions } from '../../context/PageActionsContext';
+import { getAccessToken } from '../../auth/tokenStore'; // 토큰 가져오기
 
 const Product = () => {
-  const { registerAction, unregisterAction } = usePageActions(); // 액션 등록/해제 함수
+  const { registerAction, unregisterAction } = usePageActions();
 
   // 상태 관리
   const [preview, setPreview] = useState(null);
   const [imageFile, setImageFile] = useState(null);
-  const [businessType, setBusinessType] = useState(''); // 1차 카테고리 (농산물/수산물)
-  const [businessName, setBusinessName] = useState(''); // 2차 카테고리 (세부 분류)
+  const [businessType, setBusinessType] = useState('');
+  const [businessName, setBusinessName] = useState('');
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState([]);
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
   const [link, setLink] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false); // 제출 중 상태
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // 카테고리 데이터
   const categories = {
@@ -46,39 +47,51 @@ const Product = () => {
   // 1차 카테고리 변경 시 2차 카테고리 초기화
   const handleBusinessTypeChange = (e) => {
     setBusinessType(e.target.value);
-    setBusinessName(''); // 2차 카테고리 초기화
+    setBusinessName('');
   };
 
-  // 이미지 업로드 함수
+  // 이미지 업로드 함수 (성공한 방식으로 고정)
   const uploadImage = async (file) => {
-    const formData = new FormData();
-    formData.append('file', file);
+    console.log('=== 이미지 업로드 시작 ===');
+    console.log('파일:', file.name, '크기:', file.size, '타입:', file.type);
+
+    // 토큰 가져오기
+    const token = getAccessToken();
+    if (!token) {
+      throw new Error('인증 토큰이 없습니다. 다시 로그인해주세요.');
+    }
 
     try {
-      // 백엔드 이미지 업로드 엔드포인트
+      const formData = new FormData();
+      formData.append('image', file); // 성공한 필드명: 'image'
+
       const response = await fetch('http://43.201.70.73/api/uploads/images/', {
         method: 'POST',
         body: formData,
-        // 인증 헤더는 api.js에서 전역 설정되어 있다면 여기서는 제외
-        // headers: {
-        //   'Authorization': `Bearer ${token}` // 필요 시 추가
-        // }
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       });
 
+      console.log('이미지 업로드 응답 상태:', response.status);
+
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(`이미지 업로드 실패: ${response.status} ${errorText}`);
       }
 
       const result = await response.json();
-      console.log('이미지 업로드 응답:', result);
-      return result.imageUrl || result.url || result.file_url; // 백엔드 응답 구조에 맞게 조정
+      console.log('✅ 이미지 업로드 성공:', result);
+      
+      // 성공 응답에서 이미지 URL 추출
+      return result.image; // result.image에 URL이 있음
     } catch (error) {
       console.error('이미지 업로드 실패:', error);
       throw error;
     }
   };
 
-  // 폼 제출 처리 함수 (헤더 버튼과 폼 제출에서 공통 사용)
+  // 폼 제출 처리 함수
   const handleSubmitForm = async () => {
     if (isSubmitting) {
       console.log('이미 제출 중입니다.');
@@ -116,32 +129,62 @@ const Product = () => {
     try {
       let imageUrl = null;
 
-      // 이미지가 있으면 먼저 업로드
+      // 이미지가 있으면 업로드 시도
       if (imageFile) {
-        console.log('이미지 업로드 시작...');
-        imageUrl = await uploadImage(imageFile);
-        console.log('이미지 업로드 완료:', imageUrl);
+        try {
+          console.log('이미지 업로드 시작...');
+          imageUrl = await uploadImage(imageFile);
+          console.log('이미지 업로드 완료:', imageUrl);
+        } catch (imageError) {
+          console.error('이미지 업로드 실패, 이미지 없이 상품 등록 진행:', imageError);
+          imageUrl = null;
+        }
       }
 
-      // 상품 데이터 준비 (백엔드 스펙 추정)
+      // 상품 데이터 준비 (카테고리 분리 + 이미지 활성화)
       const productData = {
-        name: name.trim(), // 상품명
-        price: parseInt(price.replace(/,/g, '')), // 가격 (숫자)
-        description: link.trim(), // 설명 (판매링크)
-        image_urls: imageUrl ? [imageUrl] : [], // 이미지 URL 배열
-        tags: tags, // 태그 배열
+        name: name.trim(),
+        description: `${name.trim()} 상품입니다.`,
+        sales_link: link.trim(),
+        price: parseInt(price.replace(/,/g, '')),
+        // 이미지 URL 다시 활성화
+        ...(imageUrl ? { image_urls: imageUrl } : {}),
         category_type: businessType, // 1차 카테고리 (농산물/수산물)
-        category_name: businessName, // 2차 카테고리 (잎채소류 등)
-        // 또는 백엔드가 다른 필드명을 원한다면:
-        // type: businessType,
-        // category: businessName,
+        category_name: businessName, // 2차 카테고리 (잎채소류, 과일류 등)
+        tags: tags,
       };
 
-      console.log('상품 저장 요청 데이터:', productData);
+      console.log('상품 저장 요청 데이터 (완전 버전):', productData);
+
+      console.log('=== 이미지 디버깅 ===');
+      console.log('이미지 URL:', imageUrl);
+      console.log('image_urls 필드 포함:', 'image_urls' in productData);
+
+      console.log('=== 카테고리 디버깅 ===');
+      console.log('1차 카테고리 (category_type):', businessType);
+      console.log('2차 카테고리 (category_name):', businessName);
+
+      console.log('=== 태그 디버깅 ===');
+      console.log('tags 배열:', tags);
+      console.log('tags 길이:', tags.length);
+      console.log('tags 타입:', Array.isArray(tags));
+      console.log('각 태그:', tags.forEach ? tags.map((tag, i) => `${i}: "${tag}"`).join(', ') : 'tags가 배열이 아님');
 
       // API 호출
       const result = await createPost(productData);
       console.log('API 응답:', result);
+      console.log('응답 데이터 전체:', JSON.stringify(result, null, 2));
+      
+      // 응답 데이터 검증
+      console.log('=== 응답 데이터 검증 ===');
+      console.log('등록된 ID:', result.id);
+      console.log('등록된 상품명:', result.name);
+      console.log('등록된 가격:', result.price);
+      console.log('등록된 이미지:', result.image_urls);
+      console.log('등록된 판매링크:', result.sales_link);
+      console.log('등록된 카테고리 타입:', result.category_type);
+      console.log('등록된 카테고리 이름:', result.category_name);
+      console.log('등록된 태그:', result.tags);
 
       alert('상품이 등록되었습니다!');
 
@@ -231,7 +274,6 @@ const Product = () => {
   useEffect(() => {
     console.log('Product 컴포넌트: saveProfile 액션 등록');
 
-    // saveProfile 액션 등록 - 현재 state를 참조하는 함수로 래핑
     const saveAction = () => {
       console.log('헤더에서 상품 등록 실행');
       handleSubmitForm();
@@ -239,12 +281,12 @@ const Product = () => {
 
     registerAction('saveProfile', saveAction);
 
-    // 컴포넌트 언마운트 시 액션 해제
     return () => {
       console.log('Product 컴포넌트: saveProfile 액션 해제');
       unregisterAction('saveProfile');
     };
-  }, [name, price, link, businessType, businessName, imageFile, tags]); // state 변경시 재등록
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [name, price, link, businessType, businessName, imageFile, tags]); // handleSubmitForm, registerAction, unregisterAction 제거
 
   // 컴포넌트 언마운트 시 미리보기 URL 해제
   useEffect(() => {
@@ -261,7 +303,7 @@ const Product = () => {
 
       {/* 이미지 업로드 */}
       <Styled.InputGroup>
-        <Styled.Label>이미지 등록</Styled.Label>
+        <Styled.ImageLabel>이미지 등록</Styled.ImageLabel>
 
         <Styled.ImageUploadWrapper htmlFor="image-upload">
           <input
@@ -318,8 +360,37 @@ const Product = () => {
         />
       </Styled.InputGroup>
 
-      {/* 태그 */}
+      {/* 1차 카테고리 */}
       <Styled.InputGroup>
+        <Styled.Label htmlFor="business-type">1차 카테고리</Styled.Label>
+        <Styled.Select id="business-type" value={businessType} onChange={handleBusinessTypeChange}>
+          <option value="">카테고리를 선택해주세요</option>
+          <option value="농산물">농산물</option>
+          <option value="수산물">수산물</option>
+        </Styled.Select>
+      </Styled.InputGroup>
+
+      {/* 2차 카테고리 */}
+      <Styled.InputGroup>
+        <Styled.Label htmlFor="business-name">2차 카테고리</Styled.Label>
+        <Styled.Select
+          id="business-name"
+          value={businessName}
+          onChange={(e) => setBusinessName(e.target.value)}
+          disabled={!businessType}
+        >
+          <option value="">세부 카테고리를 선택해주세요</option>
+          {businessType &&
+            categories[businessType]?.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+        </Styled.Select>
+      </Styled.InputGroup>
+
+      {/* 태그 */}
+      <Styled.InputTag>
         <Styled.Label htmlFor="tag">태그</Styled.Label>
         <Styled.InputText
           id="tag"
@@ -338,36 +409,7 @@ const Product = () => {
             </Styled.Tag>
           ))}
         </Styled.TagList>
-      </Styled.InputGroup>
-
-      {/* 1차 카테고리 */}
-      <Styled.InputGroup>
-        <Styled.Label htmlFor="business-type">1차 카테고리</Styled.Label>
-        <Styled.Select id="business-type" value={businessType} onChange={handleBusinessTypeChange}>
-          <option value="">카테고리를 선택해주세요</option>
-          <option value="농산물">농산물</option>
-          <option value="수산물">수산물</option>
-        </Styled.Select>
-      </Styled.InputGroup>
-
-      {/* 2차 카테고리 */}
-      {businessType && (
-        <Styled.InputGroup>
-          <Styled.Label htmlFor="business-name">2차 카테고리</Styled.Label>
-          <Styled.Select
-            id="business-name"
-            value={businessName}
-            onChange={(e) => setBusinessName(e.target.value)}
-          >
-            <option value="">세부 카테고리를 선택해주세요</option>
-            {categories[businessType]?.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </Styled.Select>
-        </Styled.InputGroup>
-      )}
+      </Styled.InputTag>
 
       <Styled.Button type="submit" disabled={isSubmitting}>
         {isSubmitting ? '등록 중...' : '상품 등록'}
