@@ -15,5 +15,16 @@ export const delePost = (postId) => api.delete(`/posts/${postId}/edit/`);
 
 //좋아요 상호작용
 export const togglePostLike = (id) => api.post(`/posts/${id}/like/`);
-//commonet 글쓰기
-export const fetchComment = (id) => api.post(`/posts/${id}/comment/`);
+// 댓글 목록 가져오기
+export const getComments = (postId) => api.get(`/posts/${postId}/comments/`);
+
+// 댓글 작성하기
+export const createComment = (postId, commentData) =>
+  api.post(`/posts/${postId}/comments/new/`, commentData);
+
+// 댓글 삭제하기
+export const deleteComment = (commentId) => api.delete(`/posts/comments/${commentId}/`);
+
+// 댓글 신고하기 (신고 API가 있다면)
+export const reportComment = (commentId, reason = '') =>
+  api.post(`/posts/comments/${commentId}/report/`, { reason });

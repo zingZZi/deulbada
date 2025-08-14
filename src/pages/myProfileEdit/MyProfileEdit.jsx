@@ -1,226 +1,118 @@
-import * as Styled from '../profile-settings/ProfileSettings.style';
-import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import * as Styled from './MyPrifleEdit.style';
+import React, { useEffect, useState } from 'react';
 import { Camera } from 'lucide-react';
 import ImagePreview from '../../assets/images/image-preview.png';
-import { getAccessToken, clearTokens } from '../../auth/tokenStore'; // tokenStore 사용
+import { usePageActions } from '../../context/PageActionsContext';
+import { fetchUser, editProfile, checkAccountId } from '../../api/userApi'; // checkAccountId 추가
 
 const MyProfileEdit = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  // 회원가입 페이지에서 전달받은 데이터
-  const signupData = location.state || {};
+  const [myData, setMyData] = useState();
   const [image, setImage] = useState(null);
   const [imageFile, setImageFile] = useState(null);
-  const [name, setName] = useState(signupData.nickname || '');
-  const [userId, setUserId] = useState(signupData.account_id || '');
+  const [name, setName] = useState('');
+  const [userId, setUserId] = useState('');
   const [info, setInfo] = useState('');
-  const [nameError, setNameError] = useState('');
-  const [userIdError, setUserIdError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // 회원가입에서 온 데이터가 있으면 필드를 비활성화
-  const isFromSignup = Boolean(signupData.account_id && signupData.nickname);
+  // 유효성 검사 상태
+  const [nameError, setNameError] = useState('');
+  const [userIdError, setUserIdError] = useState('');
+  const [isCheckingUserId, setIsCheckingUserId] = useState(false);
 
-  // 토큰 유효성 검증 함수
-  const validateToken = () => {
-    const token = getAccessToken(); // tokenStore 사용
+  const useraccountId = window.localStorage.getItem('account_id');
 
-    // 상세한 토큰 디버깅
-    console.log('=== 토큰 디버깅 시작 ===');
-    console.log('- getAccessToken() 결과:', token);
-    console.log('- 토큰 타입:', typeof token);
-    console.log('- 토큰 길이:', token?.length);
-    console.log('- 토큰이 존재하는가:', !!token);
-
-    // localStorage 직접 확인
-    const directToken = localStorage.getItem('accessToken');
-    const directToken2 = localStorage.getItem('token');
-    console.log('- localStorage.accessToken:', directToken);
-    console.log('- localStorage.token:', directToken2);
-
-    if (!token) {
-      console.error('❌ 토큰이 없습니다.');
-      alert('로그인이 필요합니다.');
-      navigate('/login');
-      return null;
-    }
-
-    // 토큰 형태 확인
-    if (token.startsWith('eyJ')) {
-      console.log('✅ JWT 토큰 형태입니다.');
-    } else if (token === 'dummy-access-token') {
-      console.log('⚠️ 더미 토큰입니다!');
-    } else {
-      console.log('❓ 알 수 없는 토큰 형태:', token.substring(0, 20) + '...');
-    }
-
-    try {
-      // JWT 토큰인 경우 만료시간 검증
-      const tokenParts = token.split('.');
-      if (tokenParts.length === 3) {
-        const payload = JSON.parse(atob(tokenParts[1]));
-        const currentTime = Math.floor(Date.now() / 1000);
-
-        console.log('- JWT 페이로드:', payload);
-        console.log('- 토큰 만료시간:', new Date(payload.exp * 1000));
-        console.log('- 현재 시간:', new Date());
-        console.log('- 토큰이 유효한가:', payload.exp > currentTime);
-
-        if (payload.exp && payload.exp < currentTime) {
-          console.error('❌ 토큰이 만료되었습니다.');
-          clearTokens(); // tokenStore 사용
-          alert('로그인이 만료되었습니다. 다시 로그인해주세요.');
-          navigate('/login');
-          return null;
-        }
-      }
-    } catch (error) {
-      console.warn('⚠️ 토큰 검증 중 오류:', error);
-      // JWT가 아닐 수도 있으므로 경고만 출력
-    }
-
-    console.log('=== 토큰 디버깅 끝 ===');
-    return token;
-  };
-
+  // 초기 data값 가져오기
   useEffect(() => {
-    // 컴포넌트 마운트 시 토큰 검증
-    const token = validateToken();
-    if (!token) return;
-
-    if (!isFromSignup) {
-      alert('잘못된 접근입니다.');
-      navigate('/login');
-    }
-  }, [isFromSignup, navigate]);
-
-  const isFormValid = name && userId && info;
-
-  const handleSubmit = async () => {
-    setIsLoading(true);
-
-    // 토큰 재검증
-    const token = validateToken();
-    if (!token) {
-      setIsLoading(false);
-      return;
-    }
-
-    let isValid = true;
-
-    // 회원가입에서 온 경우 이름과 ID 검증 스킵
-    if (!isFromSignup) {
-      // 이름 유효성 검사
-      if (name.length < 2 || name.length > 10) {
-        setNameError('이름은 2자 이상 10자 이하로 입력해주세요.');
-        isValid = false;
-      } else {
-        setNameError('');
-      }
-
-      // ID 유효성 검사
-      const idRegex = /^[a-zA-Z0-9._]+$/;
-      if (!idRegex.test(userId)) {
-        setUserIdError('ID는 영문, 숫자, 특수문자(.)와 (_)만 사용할 수 있습니다.');
-        isValid = false;
-      } else {
-        setUserIdError('');
-      }
-    }
-
-    if (!isValid) {
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      // FormData로 이미지만 준비 (이미지가 필수)
-      const formData = new FormData();
-
-      // 이미지 처리 - 사용자가 업로드한 이미지가 있으면 그것을, 없으면 기본 이미지 사용
-      if (imageFile) {
-        formData.append('profile_image', imageFile);
-      } else {
-        try {
-          const response = await fetch(ImagePreview);
-          const blob = await response.blob();
-          const defaultImageFile = new File([blob], 'default-profile.png', { type: 'image/png' });
-          formData.append('profile_image', defaultImageFile);
-        } catch (error) {
-          console.error('기본 이미지 로드 실패:', error);
-          alert('기본 이미지 로드에 실패했습니다.');
-          setIsLoading(false);
-          return;
+    const getMyData = async () => {
+      try {
+        const response = await fetchUser(useraccountId);
+        const data = response.data;
+        setMyData(data);
+        // 기존 이미지가 있다면 설정
+        if (data.profile_image) {
+          setImage(data.profile_image);
         }
+      } catch (error) {
+        console.error('내정보를 불러오지 못했습니다.', error);
+        alert('프로필 정보를 불러오는데 실패했습니다.');
       }
+    };
+    getMyData();
+  }, []);
 
-      // API 호출
-      const response = await fetch('http://43.201.70.73/api/users/mypage/profile/setup/', {
-        method: 'PUT',
-        body: formData,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      // 응답 상태 확인
-      console.log('API 응답 상태:', response.status);
-      console.log('API 응답 헤더:', Object.fromEntries(response.headers.entries()));
-
-      if (!response.ok) {
-        // 상세한 에러 정보 가져오기
-        let errorMessage = `HTTP ${response.status}`;
-        try {
-          const errorData = await response.text();
-          console.error('서버 에러 응답:', errorData);
-          errorMessage += `: ${errorData}`;
-        } catch (e) {
-          console.error('에러 응답 파싱 실패:', e);
-        }
-
-        // 특정 상태 코드별 처리
-        switch (response.status) {
-          case 401:
-            alert('인증이 만료되었습니다. 다시 로그인해주세요.');
-            clearTokens(); // tokenStore 사용
-            navigate('/login');
-            return;
-          case 403:
-            alert('접근 권한이 없습니다. 로그인 상태를 확인해주세요.');
-            break;
-          case 404:
-            alert('요청한 리소스를 찾을 수 없습니다.');
-            break;
-          case 500:
-            alert('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-            break;
-          default:
-            alert(`프로필 설정에 실패했습니다: ${errorMessage}`);
-        }
-
-        throw new Error(errorMessage);
-      }
-
-      const result = await response.json();
-      console.log('프로필 설정 성공:', result);
-
-      alert('프로필 설정이 완료되었습니다!');
-      navigate('/home');
-    } catch (error) {
-      console.error('프로필 설정 실패:', error);
-
-      // 네트워크 에러인 경우
-      if (error.name === 'TypeError' && error.message.includes('fetch')) {
-        alert('네트워크 연결을 확인해주세요.');
-      } else {
-        alert('프로필 설정에 실패했습니다. 다시 시도해주세요.');
-      }
-    } finally {
-      setIsLoading(false);
+  // myData가 업데이트될 때마다 form state도 업데이트
+  useEffect(() => {
+    if (myData) {
+      setName(myData.username || '');
+      setUserId(myData.account_id || '');
+      setInfo(myData.introduction || '');
     }
+  }, [myData]);
+
+  const { registerAction } = usePageActions();
+
+  // 사용자 이름 유효성 검사
+  const validateName = (value) => {
+    if (value.length < 2) {
+      return '사용자 이름은 2자 이상이어야 합니다.';
+    }
+    if (value.length > 10) {
+      return '사용자 이름은 10자 이하여야 합니다.';
+    }
+    return '';
   };
+
+  // 계정 ID 유효성 검사 (정규식)
+  const validateUserId = (value) => {
+    const regex = /^[a-zA-Z0-9._]+$/;
+    if (!regex.test(value)) {
+      return '영문, 숫자, 특수문자(.), (_)만 사용 가능합니다.';
+    }
+    if (value.length < 3) {
+      return '계정 ID는 3자 이상이어야 합니다.';
+    }
+    if (value.length > 20) {
+      return '계정 ID는 20자 이하여야 합니다.';
+    }
+    return '';
+  };
+
+  // 계정 ID 중복 체크 (디바운싱 적용)
+  useEffect(() => {
+    const checkUserIdAvailability = async () => {
+      if (!userId || userId === myData?.account_id) {
+        setUserIdError('');
+        return;
+      }
+
+      const validationError = validateUserId(userId);
+      if (validationError) {
+        setUserIdError(validationError);
+        return;
+      }
+
+      setIsCheckingUserId(true);
+
+      try {
+        const response = await checkAccountId(userId);
+        if (response.data.exists) {
+          setUserIdError('이미 사용중인 계정 ID입니다.');
+        } else {
+          setUserIdError('');
+        }
+      } catch (error) {
+        console.error('계정 ID 중복 체크 실패:', error);
+        setUserIdError('계정 ID 중복 확인에 실패했습니다.');
+      } finally {
+        setIsCheckingUserId(false);
+      }
+    };
+
+    // 디바운싱: 500ms 후에 중복 체크 실행
+    const timeoutId = setTimeout(checkUserIdAvailability, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [userId, myData?.account_id]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -230,30 +122,149 @@ const MyProfileEdit = () => {
         alert('이미지 크기는 5MB 이하여야 합니다.');
         return;
       }
-
       // 파일 타입 체크
       if (!file.type.startsWith('image/')) {
         alert('이미지 파일만 업로드 가능합니다.');
         return;
       }
-
       setImage(URL.createObjectURL(file));
       setImageFile(file);
     }
   };
 
+  const handleNameChange = (e) => {
+    const value = e.target.value;
+    setName(value);
+    setNameError(validateName(value));
+  };
+
+  const handleUserIdChange = (e) => {
+    const value = e.target.value;
+    setUserId(value);
+    // 입력 즉시 기본 유효성 검사
+    const validationError = validateUserId(value);
+    if (validationError) {
+      setUserIdError(validationError);
+    }
+  };
+
+  const EditProfile = async () => {
+    if (isLoading || isCheckingUserId) return; // 중복 요청 방지
+
+    // 최종 유효성 검사
+    const currentNameError = validateName(name);
+    const currentUserIdError = validateUserId(userId);
+
+    setNameError(currentNameError);
+
+    if (!userId || userId === myData?.account_id) {
+      setUserIdError('');
+    } else {
+      setUserIdError(currentUserIdError);
+    }
+
+    if (currentNameError || (currentUserIdError && userId !== myData?.account_id)) {
+      alert('입력 정보를 확인해주세요.');
+      return;
+    }
+
+    // 중복 체크 에러가 있는 경우
+    if (userIdError && userId !== myData?.account_id) {
+      alert('계정 ID를 확인해주세요.');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+
+      // FormData 생성 (이미지 업로드를 위해)
+      const formData = new FormData();
+
+      // 변경된 데이터만 추가
+      if (name !== myData?.username) {
+        formData.append('username', name);
+      }
+      if (userId !== myData?.account_id) {
+        formData.append('account_id', userId);
+      }
+      if (info !== myData?.introduction) {
+        formData.append('introduction', info);
+      }
+      if (imageFile) {
+        formData.append('profile_image', imageFile);
+      }
+
+      // 수정할 데이터가 없는 경우
+      if (formData.entries().next().done) {
+        alert('변경된 내용이 없습니다.');
+        return;
+      }
+
+      const response = await editProfile(formData);
+
+      if (response.status === 200 || response.status === 204) {
+        alert('프로필이 성공적으로 수정되었습니다.');
+        // 수정된 데이터로 상태 업데이트
+        setMyData((prev) => ({
+          ...prev,
+          username: name,
+          account_id: userId,
+          introduction: info,
+          profile_image: response.data?.profile_image || image,
+        }));
+
+        // localStorage의 account_id도 업데이트 (만약 변경되었다면)
+        if (userId !== useraccountId) {
+          window.localStorage.setItem('account_id', userId);
+        }
+      }
+    } catch (error) {
+      console.error('프로필 수정 실패:', error);
+
+      if (error.response?.status === 400) {
+        const errorData = error.response.data;
+        if (errorData.account_id) {
+          setUserIdError('이미 사용중인 계정 ID입니다.');
+        } else if (errorData.username) {
+          setNameError('사용자 이름을 확인해주세요.');
+        } else {
+          alert('입력 정보를 확인해주세요.');
+        }
+      } else if (error.response?.status === 401) {
+        alert('로그인이 필요합니다.');
+      } else {
+        alert('프로필 수정에 실패했습니다. 다시 시도해주세요.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (registerAction) {
+      registerAction('editProfile', EditProfile);
+    }
+  }, [name, userId, info, imageFile, myData, isLoading, nameError, userIdError]);
+
   return (
     <Styled.Form
       onSubmit={(e) => {
         e.preventDefault();
-        handleSubmit();
+        EditProfile();
       }}
     >
-      <Styled.H2>프로필설정</Styled.H2>
-      <Styled.Message>들바다의 신선한 농수산 식품을 경험하세요!</Styled.Message>
-
+      <h2 className="text-ir">프로필설정</h2>
       <Styled.ImageWrapper>
-        <Styled.ImagePreview src={image || ImagePreview} alt="프로필 이미지" />
+        <Styled.ImagePreview
+          src={
+            image
+              ? image.startsWith('blob:')
+                ? image // 새로 선택한 이미지 (blob URL)
+                : `http://43.201.70.73/${image}` // 서버 이미지
+              : ImagePreview // 기본 이미지
+          }
+          alt="프로필 이미지"
+        />
         <Styled.FileInputLabel htmlFor="profile-upload">
           <Camera color="#fff" size={22} />
         </Styled.FileInputLabel>
@@ -273,14 +284,10 @@ const MyProfileEdit = () => {
           type="text"
           placeholder="2~10자 이내여야 합니다."
           value={name}
-          onChange={(e) => setName(e.target.value)}
-          disabled={isFromSignup}
+          onChange={handleNameChange}
+          disabled={isLoading}
+          style={{ borderColor: nameError ? 'red' : '' }}
         />
-        {isFromSignup && (
-          <div style={{ fontSize: '12px', marginTop: '4px', color: '#666' }}>
-            이 정보는 변경할 수 없습니다.
-          </div>
-        )}
         {nameError && <Styled.ErrorMessage>{nameError}</Styled.ErrorMessage>}
       </Styled.InputGroup>
 
@@ -291,15 +298,15 @@ const MyProfileEdit = () => {
           type="text"
           placeholder="영문, 숫자, 특수문자(.),(_)만 사용 가능합니다."
           value={userId}
-          onChange={(e) => setUserId(e.target.value)}
-          disabled={isFromSignup}
+          onChange={handleUserIdChange}
+          disabled={isLoading}
+          style={{ borderColor: userIdError ? 'red' : '' }}
         />
-        {isFromSignup && (
-          <div style={{ fontSize: '12px', marginTop: '4px', color: '#666' }}>
-            이 정보는 변경할 수 없습니다.
-          </div>
-        )}
+        {isCheckingUserId && <Styled.CheckingMessage>중복 확인 중...</Styled.CheckingMessage>}
         {userIdError && <Styled.ErrorMessage>{userIdError}</Styled.ErrorMessage>}
+        {!userIdError && !isCheckingUserId && userId && userId !== myData?.account_id && (
+          <Styled.SuccessMessage>사용 가능한 계정 ID입니다.</Styled.SuccessMessage>
+        )}
       </Styled.InputGroup>
 
       <Styled.InputGroup>
@@ -310,12 +317,9 @@ const MyProfileEdit = () => {
           placeholder="소개글을 작성해주세요!"
           value={info}
           onChange={(e) => setInfo(e.target.value)}
+          disabled={isLoading}
         />
       </Styled.InputGroup>
-
-      <Styled.Button type="submit" disabled={!isFormValid || isLoading}>
-        {isLoading ? '설정 중...' : '들바다 시작하기'}
-      </Styled.Button>
     </Styled.Form>
   );
 };

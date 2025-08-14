@@ -14,8 +14,8 @@ export const defaultHeaderMap = (pathname) => {
       leftText: false,
       rightButton: {
         type: 'text',
-        text: '수정',
-        action: () => console.log('수정'),
+        text: '저장',
+        actionKey: 'editProfile',
       },
     },
     '/post': {
