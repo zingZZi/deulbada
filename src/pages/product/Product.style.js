@@ -33,13 +33,20 @@ export const InputGroup = styled.div`
   margin-bottom: 0.8rem;
 `;
 
+export const ImageLabel = styled.label`
+  display: inline-block;
+  margin-top: 2rem;
+  margin-bottom: 1.8rem;
+  color: ${({ theme }) => theme.colors.white700};
+`;
+
 export const ImageUploadWrapper = styled.label`
   position: relative;
   display: block;
   width: 100%;
   aspect-ratio: 322 / 204;
   border: 1px solid ${({ theme }) => theme.colors.white300};
-  border-radius: 8px;
+  border-radius: 0.8rem,
   cursor: pointer;
   overflow: hidden;
   margin-bottom: 2.0rem;
@@ -57,10 +64,10 @@ export const IconWrapper = styled.span`
   position: absolute;
   height: 3.6rem;
   bottom: 0.6rem;
-  bottom: 8px;
-  right: 8px;
+  bottom: 0.8rem;
+  right: 0.8rem;
   background-color: ${({ theme }) => theme.colors.white400};
-  padding: 6px;
+  padding: 0.6rem;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -115,27 +122,37 @@ export const Select = styled.select.attrs((props) => ({
   }
 `;
 
-export const TagList = styled.label`
+
+export const InputTag = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 5rem;
 `;
 
 export const Tag = styled.span`
-  display: inline-block;
+  display: inline-flex;
+  align-items: center; 
+  justify-content: center; 
   padding: 0.3rem 0.8rem;
   margin: 0.4rem 0.4rem 0 0;
   margin-bottom: 1.8rem;
   background-color: ${({ theme }) => theme.colors.white200};
   border-radius: 9999px;
-  font-size: 0.9rem;
+  font-size: 1rem;
   color: ${({ theme }) => theme.colors.black};
+  line-height: 1.2; // 또는 필요 시 1
+`;
+
+export const TagList = styled.label`
 `;
 
 export const RemoveButton = styled.button`
-  margin-left: 8px;
+  margin-left: 0.2rem;
   background: none;
   border: none;
   color: #999;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 1.4rem;
 
   &:hover {
     color: red;
@@ -143,14 +160,14 @@ export const RemoveButton = styled.button`
 `;
 
 export const Button = styled.button`
-  padding: 12px 20px;
+  padding: 1.2rem 2rem;
   background-color: #A2D098;
   color: white;
   border: none;
-  border-radius: 8px;
-  font-size: 16px;
+  border-radius: 0.8rem,
+  font-size: 1.6rem,
   cursor: pointer;
-  margin-top: 20px;
+  margin-top: 0.2rem;
   
   &:hover {
     background-color: #8BC085;

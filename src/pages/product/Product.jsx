@@ -261,7 +261,7 @@ const Product = () => {
 
       {/* 이미지 업로드 */}
       <Styled.InputGroup>
-        <Styled.Label>이미지 등록</Styled.Label>
+        <Styled.ImageLabel>이미지 등록</Styled.ImageLabel>
 
         <Styled.ImageUploadWrapper htmlFor="image-upload">
           <input
@@ -328,27 +328,27 @@ const Product = () => {
         </Styled.Select>
       </Styled.InputGroup>
 
-      {/* 2차 카테고리 */}
-      {businessType && (
-        <Styled.InputGroup>
-          <Styled.Label htmlFor="business-name">2차 카테고리</Styled.Label>
-          <Styled.Select
-            id="business-name"
-            value={businessName}
-            onChange={(e) => setBusinessName(e.target.value)}
-          >
-            <option value="">세부 카테고리를 선택해주세요</option>
-            {categories[businessType]?.map((category) => (
+      {/* 2차 카테고리 - 항상 보이게 하기 */}
+      <Styled.InputGroup>
+        <Styled.Label htmlFor="business-name">2차 카테고리</Styled.Label>
+        <Styled.Select
+          id="business-name"
+          value={businessName}
+          onChange={(e) => setBusinessName(e.target.value)}
+          disabled={!businessType} // 선택 전에는 비활성화할 수도 있음
+        >
+          <option value="">세부 카테고리를 선택해주세요</option>
+          {businessType &&
+            categories[businessType]?.map((category) => (
               <option key={category} value={category}>
                 {category}
               </option>
             ))}
-          </Styled.Select>
-        </Styled.InputGroup>
-      )}
+        </Styled.Select>
+      </Styled.InputGroup>
 
       {/* 태그 */}
-      <Styled.InputGroup>
+      <Styled.InputTag>
         <Styled.Label htmlFor="tag">태그</Styled.Label>
         <Styled.InputText
           id="tag"
@@ -367,7 +367,7 @@ const Product = () => {
             </Styled.Tag>
           ))}
         </Styled.TagList>
-      </Styled.InputGroup>
+      </Styled.InputTag>
 
       <Styled.Button type="submit" disabled={isSubmitting}>
         {isSubmitting ? '등록 중...' : '상품 등록'}
