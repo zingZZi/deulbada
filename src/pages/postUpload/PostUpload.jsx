@@ -117,9 +117,9 @@ const PostUpload = () => {
       return;
     }
 
-    // 업로드 제한(예: 최대 5장)
-    if (images.length > 5) {
-      alert('이미지는 최대 5장까지 업로드할 수 있어요.');
+    // 업로드 제한(예: 최대 1장)
+    if (images.length > 1) {
+      alert('이미지는 최대 1장까지 업로드할 수 있어요.');
       return;
     }
 
@@ -129,8 +129,9 @@ const PostUpload = () => {
       const formData = new FormData();
       formData.append('content', content);
 
-      // 이미지 파일들 추가
-      images.forEach((img) => formData.append('image', img.file));
+      if (images.length > 0) {
+        formData.append('image', images[0].file);
+      }
 
       // 디버깅: FormData 내용 확인
       console.log('FormData 내용:');
@@ -222,11 +223,11 @@ const PostUpload = () => {
       previewUrl: URL.createObjectURL(file),
     }));
 
-    // 최대 5장 제한
+    // 최대 1장 제한
     setImages((prev) => {
-      const next = [...prev, ...mapped].slice(0, 5);
-      if (prev.length + mapped.length > 5) {
-        alert('이미지는 최대 5장까지 업로드할 수 있어요.');
+      const next = [...prev, ...mapped].slice(0, 1);
+      if (prev.length + mapped.length > 1) {
+        alert('이미지는 최대 1장까지 업로드할 수 있어요.');
       }
       return next;
     });
@@ -257,7 +258,7 @@ const PostUpload = () => {
       <Styled.HiddenFileInput
         type="file"
         accept="image/*"
-        multiple
+        // multiple
         ref={fileInputRef}
         onChange={handleImageChange}
       />
