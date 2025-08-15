@@ -130,7 +130,7 @@ const PostUpload = () => {
       formData.append('content', content);
 
       // 이미지 파일들 추가
-      images.forEach((img) => formData.append('images', img.file));
+      images.forEach((img) => formData.append('image', img.file));
 
       // 디버깅: FormData 내용 확인
       console.log('FormData 내용:');
@@ -156,6 +156,9 @@ const PostUpload = () => {
       }
 
       const response = await res.json();
+      console.log('서버 응답:', response); // 디버깅용
+      console.log('서버 응답의 data:', response.data); // 추가 디버깅
+      console.log('추출된 data:', response.data || response); // 추가 디버깅
       // PostDetail 패턴에 맞춰 response.data에서 데이터 추출
       const data = response.data || response;
 
