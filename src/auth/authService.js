@@ -129,6 +129,9 @@ export async function verifyToken() {
 export function logout() {
   console.log('[AuthService] Logging out');
   clearTokens(); 
+
+  localStorage.removeItem('userId');
+  localStorage.removeItem('username');
 }
 
 /**
