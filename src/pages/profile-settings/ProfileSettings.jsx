@@ -15,7 +15,7 @@ const ProfileSettings = () => {
   const signupData = location.state || {};
   const [image, setImage] = useState(null);
   const [imageFile, setImageFile] = useState(null);
-  const [name, setName] = useState(signupData.nickname || '');
+  const [name, setName] = useState(signupData.username || '');
   const [userId, setUserId] = useState(signupData.account_id || '');
   const [info, setInfo] = useState('');
   const [nameError, setNameError] = useState('');
@@ -25,7 +25,7 @@ const ProfileSettings = () => {
   
   // 회원가입에서 온 데이터가 있으면 필드를 비활성화
   const isFromSignup = Boolean(
-    (signupData.account_id && signupData.nickname) || // 일반 회원가입
+    (signupData.account_id && signupData.username) || // 일반 회원가입
     signupData.isFromProducerSignup // 생산자 회원가입
   );
   
