@@ -1,5 +1,5 @@
 import * as Styled from './JoinProducer.style';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { registerProducer, isEmailAvailable, isAccountIdAvailable } from '../../api/authApi';
 import { login } from '../../auth/authService';
@@ -33,6 +33,88 @@ const JoinProducer = () => {
   const [usernameStatus, setusernameStatus] = useState(null);
 
   const navigate = useNavigate();
+
+  // 폼 유효성 검사 및 버튼 활성화 상태 계산
+  const isFormValid = useMemo(() => {
+    // 기본 회원가입 정보 확인
+    const isBasicFieldsFilled = 
+      formData.email.trim() &&
+      formData.password.trim() &&
+      formData.rePassword.trim() &&
+      formData.account_id.trim() &&
+      formData.username.trim();
+
+    // 프로듀서 전용 정보 확인
+    const isProducerFieldsFilled = 
+      ceoName.trim() &&
+      phone.trim() &&
+      businessNumber.trim() &&
+      postalCode &&
+      address.trim() &&
+      businessType;
+
+    if (!isBasicFieldsFilled || !isProducerFieldsFilled) return false;
+
+    // 이메일 형식 검사
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const isEmailValid = emailRegex.test(formData.email);
+
+    // 비밀번호 유효성 검사
+    const isPasswordValid = formData.password.length >= 8;
+    const hasLetter = /[a-zA-Z]/.test(formData.password);
+    const hasNumber = /[0-9]/.test(formData.password);
+    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(formData.password);
+    const isPasswordStrong = hasLetter && hasNumber && hasSpecial;
+
+    // 비밀번호 확인
+    const isPasswordMatch = formData.password === formData.rePassword;
+
+    // 최소 길이 검사
+    const isAccountIdValid = formData.account_id.length >= 2;
+    const isUsernameValid = formData.username.length >= 2;
+
+    // 전화번호 형식 검사
+    const isPhoneValid = /^01[0-9]-\d{3,4}-\d{4}$/.test(phone);
+
+    // 사업자번호 형식 검사
+    const isBusinessNumberValid = /^\d{3}-\d{2}-\d{5}$/.test(businessNumber);
+
+    // 중복 확인 상태 검사
+    const isDuplicateCheckPassed = 
+      emailStatus === 'available' &&
+      accountIdStatus === 'available' &&
+      usernameStatus === 'available';
+
+    // 중복 확인 중이 아닌지 검사
+    const isNotChecking = 
+      emailStatus !== 'checking' &&
+      accountIdStatus !== 'checking' &&
+      usernameStatus !== 'checking';
+
+    return (
+      isEmailValid &&
+      isPasswordValid &&
+      isPasswordStrong &&
+      isPasswordMatch &&
+      isAccountIdValid &&
+      isUsernameValid &&
+      isPhoneValid &&
+      isBusinessNumberValid &&
+      isDuplicateCheckPassed &&
+      isNotChecking
+    );
+  }, [
+    formData,
+    ceoName,
+    phone,
+    businessNumber,
+    postalCode,
+    address,
+    businessType,
+    emailStatus,
+    accountIdStatus,
+    usernameStatus
+  ]);
 
   // 다음 주소 API 스크립트 로드
   useEffect(() => {
@@ -570,7 +652,11 @@ const JoinProducer = () => {
 
       {errors.general && <Styled.Error>{errors.general}</Styled.Error>}
 
-      <Styled.Button type="submit" disabled={isLoading}>
+      <Styled.Button 
+        type="submit" 
+        disabled={isLoading || !isFormValid}
+        $isActive={isFormValid}
+      >
         {isLoading ? '가입 중...' : '다음'}
       </Styled.Button>
 
