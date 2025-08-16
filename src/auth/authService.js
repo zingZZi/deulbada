@@ -10,7 +10,7 @@ import { setTokens, clearTokens, getAccessToken, setAccountId } from './tokenSto
  * 서버 스펙:
  *  - POST http://43.201.70.73/api/token/
  *  - body: { email, password }
- *  - res: { access, refresh, user?: { account_id, nickname, ... } }
+ *  - res: { access, refresh, user?: { account_id, username, ... } }
  */
 export async function login(arg1, arg2) {
   // 1) 인자 유연 처리
@@ -113,7 +113,7 @@ export async function verifyToken() {
   if (!token) return false;
 
   try {
-    await api.post('/api/token/verify/', { token });
+    await api.post('https://deulbada.duckdns.org/api/token/verify/', { token });
     console.log('[AuthService] Token is valid');
     return true;
   } catch {
