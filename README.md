@@ -1,195 +1,318 @@
-# 들바다 🌱
+# 들바다 농수산물 마켓 플랫폼
 
-> 로컬 생산자와 소비자를 연결하는 **SNS 커머스 플랫폼**
+> 농수산물 판매 및 구매와 SNS 기능을 결합한 모바일 최적화 마켓 플랫폼
 
-<br>
+**[🚀 배포 사이트 바로가기](https://deulbada.netlify.app/)**
 
-## 🔍 프로젝트 소개
+**테스트 계정**
 
-‘들바다’는 농산물·수산물을 생산하는 소규모 생산자들이  
-자신의 상품을 직접 소개하고, 소비자와 소통하며 판매할 수 있는 **SNS 기반의 모바일 커머스 서비스**입니다.  
-생산자들은 스토리(피드) 기능을 통해 상품을 홍보하고,  
-소비자는 관심 있는 생산자와 채팅으로 직접 소통하거나 상품을 탐색해 구매할 수 있습니다.
+- ID: `test@test.com`
+- PW: `test1234!`
 
 <br>
 
-## ⏰ 프로젝트 기간
+## 목차
 
-- 2025.00.00 ~ 2025.00.00
-
-<br>
-
-## 👨‍👩‍👧‍👦 팀 소개
-
-| 이름   | 역할              | 담당 기능 구역                |
-| ------ | ----------------- | ----------------------------- |
-| 주지은 | 팀장 / 프론트엔드 | 홈, 프로필, 검색, 스토리 상세 |
-| 박다솜 | 팀원 / 프론트엔드 | 로그인, 회원가입, 제품 등록   |
-| 김태훈 | 팀원 / 프론트엔드 | 채팅, 스토리 작성/등록        |
-
-<br>
-
-## 🛠 기술 스택
-
-| 분야      | 기술                                                                                                                                                 |
-| --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Design    | Figma                                                                                                                                                |
-| Frontend  | React, Styled-components                                                                                                                             |
-| 사용 사유 | **Styled-components**는 컴포넌트 기반 구조에서 **CSS 충돌을 최소화**하고, **협업 시 스타일 격리 및 유지보수의 효율성**을 높이기 위해 도입하였습니다. |
-| Backend   | (작성 예정)                                                                                                                                          |
-| 기타      | (작성 예정)                                                                                                                                          |
+1. [프로젝트 개요](#1-프로젝트-개요)
+2. [팀원 소개](#2-팀원-소개)
+3. [프로젝트 기간](#3-프로젝트-기간)
+4. [기술 스택 및 개발 환경](#4-기술-스택-및-개발-환경)
+5. [코드 컨벤션](#5-코드-컨벤션)
+6. [커밋 컨벤션](#6-커밋-컨벤션)
+7. [Git-flow Strategy](#7-git-flow-strategy)
+8. [폴더 구조](#8-폴더-구조)
+9. [업무 분담](#9-업무-분담)
+10. [구현 페이지](#10-구현-페이지)
+11. [주요 화면 구성](#11-주요-화면-구성-figma)
+12. [프로젝트 회고](#12-프로젝트-회고)
 
 <br>
 
-## 📱 주요 기능
+## 1. 프로젝트 개요
 
-- **회원가입 / 로그인**
-  - 이메일을 통한 일반 회원 및 생산자 회원 가입
-- **홈 피드**
-  - 사용자 및 생산자들의 피드 게시글 확인 가능
-  - 농산물 / 수산물 카테고리별 상품 확인
-- **프로필**
-  - 사용자 본인의 피드, 판매 상품 목록 확인
-- **상품 등록**
-  - 생산자 전용 상품 업로드 기능
-- **스토리 등록**
-  - 이미지 + 텍스트를 활용한 게시글 작성
-- **검색**
-  - 사용자 및 생산자 계정 검색 기능
-- **채팅**
-  - 사용자 간 1:1 실시간 메시지 전송 및 이미지 전송
+들바다는 농수산물 판매 및 구매와 SNS 기능을 결합한 모바일 사이즈 최적화 플랫폼입니다.
+
+**타겟층**
+
+- 농수산물 판매 및 구매에 관심 있는 사용자
+- SNS를 통해 일상을 공유하고 소통하고자 하는 사용자
+
+React 기반으로 3명의 프론트엔드 개발자와 2명의 백엔드 개발자가 협업하여 개발한 프로젝트입니다. 효율적인 협업을 위해 코드 컨벤션과 Git-flow 전략을 도입하여 체계적으로 진행했습니다.
+
+**팀 1차 목표: 오픈 일정에 맞춘 안정적인 서비스 런칭**
 
 <br>
 
-## 📸 주요 화면 구성 (Figma)
+## 2. 팀원 소개
 
-> [🎨 Figma 디자인 링크 바로가기](https://www.figma.com/design/D9Eh2A96gnPy84rSd2gdrR/-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8--SNS%EB%A7%88%EC%BC%93_%EB%93%A4%EB%B0%94%EB%8B%A4?node-id=0-1&p=f&t=3Hb9i4nlpGeQHy3p-0)
-
-- Splash / 로그인 / 회원가입
-- 홈 / 카테고리 / 검색
-- 프로필 / 상품 등록 / 피드 상세
-- 게시글 업로드 / 댓글
-- 채팅 리스트 / 채팅방
+| 이름       | 역할     | 담당 업무                                   |
+| ---------- | -------- | ------------------------------------------- |
+| **주지은** | 팀장, FE | 전체 구조 설계, 홈화면, 검색, 프로필 페이지 |
+| **박다솜** | 팀원, FE | 로그인, 회원가입, 프로필 설정, 404 페이지   |
+| **김태훈** | 팀원, FE | 채팅, 게시글 업로드, 게시글 상세            |
 
 <br>
 
-## 📂 프로젝트 폴더 구조
+## 3. 프로젝트 기간
 
-src/
-├── api/
-│ ├── api.js
-│ ├── authApi.js
-│ ├── loginApi.js
-│ ├── postApi.js
-│ ├── productApi.js
-│ ├── signupApi.js
-│ └── userApi.js
-├── assets/
-│ └── images/
-├── auth/
-│ ├── authService.js
-│ ├── RequireAuth.jsx
-│ └── tokenStore.js
-├── components/
-│ ├── actionSheet/
-│ ├── badge/
-│ ├── bottomNavBar/
-│ ├── header/
-│ ├── icon/
-│ ├── loding/
-│ ├── modalPopup/
-│ ├── postContent/
-│ ├── scrollTop/
-│ └── userInfo/
-├── context/
-│ ├── LoadingContext.jsx
-│ ├── PageActionsContext.jsx
-│ ├── PopupContext.jsx
-│ └── ThemeContext.jsx
-├── hooks/
-│ ├── useChatWS.js
-│ ├── useFeedActions.js
-│ ├── useHeaderAction.js
-│ ├── usePopupAction.js
-│ ├── useProfileRedirect.js
-│ └── useScrollObserver.js
-├── layout/
-│ ├── commonLayout/
-│ └── loginLayout/
-├── pages/
-│ ├── chatList/
-│ ├── chatRoom/
-│ ├── followers/
-│ ├── followings/
-│ ├── guide/
-│ ├── home/
-│ ├── join-membership/
-│ ├── join-producer/
-│ ├── login/
-│ ├── login-email/
-│ ├── myProfileEdit/
-│ ├── notFound/
-│ ├── postDetail/
-│ ├── postUpload/
-│ ├── product/
-│ ├── profile/
-│ ├── profile-settings/
-│ └── search/
-├── styles/
-├── App.jsx
-└── main.jsx
+**2024년 7월 28일 ~ 8월 18일** (3주)
 
-## 🔗 API 명세
+<br>
 
-프로젝트 내에서 주로 사용하는 API 함수들의 간략한 목록입니다.
+## 4. 기술 스택 및 개발 환경
 
-### 게시물(Post)
+### Frontend
 
-- `fetchPosts(page, limit)`  
-  전체 게시물 조회 (기본: page=1, limit=4)
-- `createPost(postData)`  
-  게시물 작성
-- `getPostDetail(id)`  
-  게시물 상세 조회
-- `getUserPost(userId, page, limit)`  
-  특정 유저 게시물 목록 조회
-- `delePost(postId)`  
-  게시물 삭제
-- `togglePostLike(id)`  
-  게시물 좋아요 토글
-- `getComments(postId)`  
-  댓글 목록 조회
-- `createComment(postId, commentData)`  
-  댓글 작성
-- `deleteComment(commentId)`  
-  댓글 삭제
-- `reportComment(commentId, reason)`  
-  댓글 신고 (신고 이유 포함)
+- **React** - 컴포넌트 기반 UI 라이브러리
+- **Styled Components** - CSS-in-JS 스타일링
+- **Lucide** - 아이콘 라이브러리
 
-### 상품(Product)
+<br>
 
-- `fetchProduct()`  
-  전체 상품 조회
-- `fetchProductFilter(category, page, limit)`  
-  카테고리별 상품 조회
-- `getProductUser(user_name)`  
-  특정 유저 상품 조회
-- `createPost(productData)`  
-  상품 등록
+## 5. 코드 컨벤션
 
-### 유저(User)
+### 디렉토리 구조
 
-- `fetchUser(accountId)`  
-  유저 정보 조회
-- `SearchUser(searchString)`  
-  유저 검색
-- `fetchFollowers(accountId)`  
-  팔로워 목록 조회
-- `fetchFollowing(accountId)`  
-  팔로잉 목록 조회
-- `toggleFollow(accountId)`  
-  팔로우 토글
-- `editProfile(formData)`  
-  프로필 수정 (multipart/form-data 사용)
-- `checkAccountId(accountId)`  
-  계정 아이디 중복 체크
+- 컴포넌트, 페이지, 훅, 유틸 등 목적에 따라 폴더 분리
+- 파일명 및 폴더명은 **카멜케이스 (CamelCase)** 로 통일
+
+```
+/components/Button.jsx
+/hooks/useAuth.js
+/pages/HomePage.jsx
+```
+
+### 파일/컴포넌트 작성 규칙
+
+- 하나의 컴포넌트는 하나의 디렉토리로 분리하고, 관련 파일은 해당 폴더에 함께 관리
+- 파일 이름과 컴포넌트 이름 일치
+- **화살표 함수 사용**
+
+```jsx
+const MyComponent = () => {
+  return <div>...</div>;
+};
+
+export default MyComponent;
+```
+
+### 스타일 (styled-components)
+
+- 스타일은 컴포넌트와 같은 폴더 내 작성
+- 파일명: **컴포넌트명.style.js**
+- 스타일 이름은 `Styled` 접두사 사용
+
+```jsx
+const StyledLogin = styled.section`
+  /* styles */
+`;
+```
+
+### 코드 스타일
+
+- 세미콜론 사용 (`;`)
+- JavaScript 코드는 작은 따옴표 (`'`) 사용
+- JSX 값은 큰 따옴표 (`"`) 사용
+- 불필요한 콘솔 로그는 커밋 전 제거
+
+```jsx
+<Route path="/login" element={<LoginLayout page={'login'} />} />
+```
+
+### 기타
+
+- 주석은 필요한 곳에만 간결하게 작성
+- 공통 변수는 `constants.js`, `theme.js` 등으로 분리
+- 협업 시 PR 전 `eslint`/`prettier` 적용
+
+<br>
+
+## 6. 커밋 컨벤션
+
+### 커밋 타입 정의
+
+| 타입       | 설명                                                                |
+| ---------- | ------------------------------------------------------------------- |
+| `Add`      | 새로운 기능 추가                                                    |
+| `Fix`      | 버그 수정 (단순 수정 제외)                                          |
+| `Docs`     | 문서 수정                                                           |
+| `Edit`     | 코드 포맷팅, 누락된 세미콜론 추가 등 기능 변경 없는 단순 style 수정 |
+| `Refactor` | 리팩토링 (동작은 동일하되 코드 구조 개선 등)                        |
+| `TestEdit` | 테스트 관련 코드 추가 및 삭제 등                                    |
+| `Chore`    | 빌드 / 배포 / 환경설정 등 기능 외 작업                              |
+
+### 커밋 메시지 예시
+
+```
+Add: 상품 상세 페이지 기능 추가
+Fix: 로그인 시 에러 메시지 노출 오류 수정
+Docs: README 배포 방법 설명 추가
+Edit: 세미콜론 누락 수정 및 들여쓰기 정리
+Refactor: 유저 인증 로직 리팩토링
+TestEdit: 장바구니 기능 테스트 코드 추가
+Chore: 리액트 프로젝트 구성
+```
+
+<br>
+
+## 7. Git-flow Strategy
+
+`main`과 `dev` 브랜치를 중심으로, 기능 및 페이지 단위로 `feature` 브랜치를 생성하여 작업하는 Git-flow 전략을 사용했습니다.
+
+- 모든 코드는 **Pull Request**와 **동료 리뷰**를 한뒤 `dev` 브랜치에 병합
+- 안정적인 배포를 위해 `main` 브랜치는 검증된 코드만 병합
+
+<br>
+
+## 8. 폴더 구조
+
+```
+📦src
+┣ 📂api
+┃ ┣ 📜api.js
+┃ ┣ 📜authApi.js
+┃ ┣ 📜loginApi.js
+┃ ┣ 📜postApi.js
+┃ ┣ 📜productApi.js
+┃ ┣ 📜signupApi.js
+┃ ┗ 📜userApi.js
+┣ 📂assets
+┃ ┗ 📂images
+┣ 📂auth
+┃ ┣ 📜authService.js
+┃ ┣ 📜RequireAuth.jsx
+┃ ┗ 📜tokenStore.js
+┣ 📂components // JSX 컴포넌트와 해당 스타일이 함께 관리되는 재사용 가능한 컴포넌트들
+┃ ┣ 📂actionSheet
+┃ ┣ 📂badge
+┃ ┣ 📂bottomNavBar
+┃ ┣ 📂header
+┃ ┣ 📂icon
+┃ ┣ 📂loding
+┃ ┣ 📂modalPopup
+┃ ┣ 📂postContent
+┃ ┣ 📂scrollTop
+┃ ┗ 📂userInfo
+┣ 📂context
+┃ ┣ 📜LoadingContext.jsx
+┃ ┣ 📜PageActionsContext.jsx
+┃ ┣ 📜PopupContext.jsx
+┃ ┗ 📜ThemeContext.jsx
+┣ 📂hooks
+┃ ┣ 📜useChatWS.js
+┃ ┣ 📜useFeedActions.js
+┃ ┣ 📜useHeaderAction.js
+┃ ┣ 📜usePopupAction.js
+┃ ┣ 📜useProfileRedirect.js
+┃ ┗ 📜useScrollObserver.js
+┣ 📂layout
+┃ ┣ 📂commonLayout
+┃ ┗ 📂loginLayout
+┣ 📂pages
+┃ ┣ 📂chatList
+┃ ┣ 📂chatRoom
+┃ ┣ 📂followers
+┃ ┣ 📂followings
+┃ ┣ 📂guide
+┃ ┣ 📂home
+┃ ┣ 📂join-membership
+┃ ┣ 📂join-producer
+┃ ┣ 📂login
+┃ ┣ 📂login-email
+┃ ┣ 📂myProfileEdit
+┃ ┣ 📂notFound
+┃ ┣ 📂postDetail
+┃ ┣ 📂postUpload
+┃ ┣ 📂product
+┃ ┣ 📂profile
+┃ ┣ 📂profile-settings
+┃ ┗ 📂search
+┣ 📂styles // JSX 없이 스타일만 독립적으로 관리되는 공통 스타일 파일들
+┃ ┣ 📜Button.style.js
+┃ ┣ 📜Common.style.js
+┃ ┣ 📜Container.style.js
+┃ ┣ 📜font.js
+┃ ┣ 📜Globalstyle.style.js
+┃ ┗ 📜theme.js
+┣ 📜App.jsx
+┗ 📜main.jsx
+```
+
+<br>
+
+## 9. 업무 분담
+
+| 담당자     | 담당 업무                                                                                                                                              |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **주지은** | • 전체적인 디렉토리 구조 및 공통 스타일 정리<br>• 홈화면 구현<br>• 검색 기능 구현<br>• 프로필 페이지 (내 프로필/타인 프로필)<br>• 팔로워/팔로잉 페이지 |
+| **박다솜** | • 로그인 페이지<br>• 회원가입 (일반/생산자)<br>• 프로필 설정<br>• 404 페이지                                                                           |
+| **김태훈** | • 채팅 기능<br>• 게시글 업로드<br>• 게시글 상세 페이지                                                                                                 |
+
+<br>
+
+## 10. 구현 페이지
+
+### 회원가입 / 로그인
+
+- 이메일을 통한 일반 회원 및 생산자 회원 가입
+
+### 홈 피드
+
+- 사용자 및 생산자들의 피드 게시글 확인 가능
+- 농산물 / 수산물 카테고리별 상품 확인
+
+### 프로필
+
+- 사용자 본인의 피드, 판매 상품 목록 확인
+
+### 상품 등록
+
+- 생산자 전용 상품 업로드 기능
+
+### 스토리 등록
+
+- 이미지 + 텍스트를 활용한 게시글 작성
+
+### 검색
+
+- 사용자 및 생산자 계정 검색 기능
+
+### 채팅
+
+- 사용자 간 1:1 실시간 메시지 전송 및 이미지 전송
+
+> 💡 **주요 기능 시연 영상**
+>
+> 추후 프로젝트의 주요 기능들을 담은 시연 영상(MP4)을 추가할 예정입니다.
+
+<br>
+
+## 11. 주요 화면 구성 (Figma)
+
+**[Figma 디자인 링크 바로가기](https://www.figma.com/design/D9Eh2A96gnPy84rSd2gdrR/-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8--SNS%EB%A7%88%EC%BC%93_%EB%93%A4%EB%B0%94%EB%8B%A4?node-id=0-1&p=f&t=02CuyfnnNSbCJOuI-0)**
+
+모바일 최적화에 중점을 둔 직관적이고 사용자 친화적인 UI/UX 디자인을 적용했습니다.
+
+<br>
+
+## 12. 프로젝트 회고
+
+### 성과
+
+- **체계적인 협업**: 코드 컨벤션과 Git-flow 전략을 통해 효율적이고 안정적인 개발 프로세스 구축
+- **모바일 최적화**: 사용자 경험을 고려한 반응형 디자인과 직관적인 UI 구현
+- **기능적 완성도**: 농수산물 거래와 SNS 기능을 성공적으로 결합한 플랫폼 완성
+- **팀워크**: 역할 분담을 통한 효과적인 협업으로 일정 내 프로젝트 완료
+
+### 개선점
+
+- **기능 확장성**: 더 많은 부가 기능들을 구현하지 못한 아쉬움 (알림 시스템, 결제 기능 등)
+- **성능 최적화**: 이미지 로딩 및 데이터 캐싱 등 성능 개선 여지
+- **사용자 경험**: 더욱 세밀한 UX 개선과 접근성 향상 필요
+- **테스트 코드**: 안정성 향상을 위한 테스트 코드 작성 부족
+
+앞으로 이러한 개선점들을 보완하여 더욱 완성도 높은 서비스로 발전시켜 나갈 계획입니다.
+
+---
+
+> 들바다와 함께 신선한 농수산물의 새로운 경험을 시작하세요!
