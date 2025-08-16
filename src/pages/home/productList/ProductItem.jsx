@@ -1,6 +1,5 @@
 import * as Styled from './ProductItem.style';
 const ProductItem = ({ data }) => {
-  console.log(data);
   return (
     <Styled.ProductItem>
       <a href={data.sales_link} target="_blank">

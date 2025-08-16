@@ -40,7 +40,7 @@ export default function App() {
           <Route path="/search" element={<CommonLayout page={'search'} />} />
           <Route path="/chatList" element={<CommonLayout page={'chatList'} />} />
           <Route path="/chat" element={<CommonLayout page={'chat'} />} />
-          <Route path="/chatRoom" element={<CommonLayout page={'chatRoom'} />} />
+          <Route path="/chatRoom/:roomId" element={<CommonLayout page={'chatRoom'} />} />
           <Route path="/product" element={<CommonLayout page={'product'} />} />
           <Route path="/editProfile" element={<CommonLayout page={'editProfile'} />} />
           <Route path="/post/:postId" element={<CommonLayout page={'post'} />} />

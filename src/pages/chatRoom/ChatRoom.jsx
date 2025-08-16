@@ -7,7 +7,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getAccessToken } from '../../auth/tokenStore';
 import ActionSheet from '../../components/actionSheet/ActionSheet.jsx';
 
-const BASE_HTTP = 'http://43.201.70.73';
+const BASE_HTTP = 'https://deulbada.duckdns.org';
 
 // 날짜 라벨 포맷
 function formatDate(dateString) {
@@ -29,16 +29,15 @@ const ChatRoom = () => {
   const [roomName, setRoomName] = useState(null);
   const [partnerProfileImage, setPartnerProfileImage] = useState(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+
+  const [leaving, setLeaving] = useState(false);
+
   // 리스트 하단 스크롤용 ref
   const messagesEndRef = useRef(null);
 
-  const wsArrivedRef = useRef(false);
-  const wsFallbackTimerRef = useRef(null);
-
-  const lastPendingIdRef = useRef(null);       // 서버가 돌려준 saved.id
-  const lastPendingImgRef = useRef(null);
-
-  const tempMessageIdsRef = useRef(new Set());
+  // [B안] 내가 보낸 이미지 WS가 도착하면 임시 버블 제거할 때 매칭에 사용
+  const pendingEchoKeysRef = useRef(new Set());   // Set<string>  ex) "내닉네임|https://.../img.png"
+  const tempIdByKeyRef = useRef(new Map());   // Map<string, string>  key -> tempId
 
   // 인증 정보
   const token = getAccessToken();
@@ -161,42 +160,38 @@ const ChatRoom = () => {
   const { status, messages: liveRaw, sendText, sendJson } =
     useChatWS({ roomId, token, withToken: true });
 
-    useEffect(() => {
-      if (!liveRaw || !liveRaw.length) return;
-      const latest = liveRaw[liveRaw.length - 1];
-      
-      const sameId = lastPendingIdRef.current && latest?.id === lastPendingIdRef.current;
-      const sameImg = lastPendingImgRef.current && latest?.image_url === lastPendingImgRef.current;
-      
-      if (sameId || sameImg) {
-        wsArrivedRef.current = true;
-        if (wsFallbackTimerRef.current) {
-          clearTimeout(wsFallbackTimerRef.current);
-          wsFallbackTimerRef.current = null;
-        }
-
-        // 임시 메시지 ID가 있다면 제거 (서버 메시지로 대체됨)
-        if (latest.client_id && tempMessageIdsRef.current.has(latest.client_id)) {
-          setChatMessages(prev => prev.filter(m => m.id !== latest.client_id));
-          tempMessageIdsRef.current.delete(latest.client_id);
-        }
-
-        lastPendingIdRef.current = null;
-        lastPendingImgRef.current = null;
-      }
-    }, [liveRaw]);
-
+    
     useEffect(() => {
       console.log('[ChatRoom] liveRaw 변경됨:', liveRaw);
     }, [liveRaw]);
 
+    // [B안] WS에서 "내가 보낸 이미지"가 도착하면, 같은 이미지 URL의 임시 버블 제거
+    useEffect(() => {
+      if (!liveRaw || liveRaw.length === 0 || !myUsername) return;
+
+      for (const m of liveRaw) {
+        const rawImage = m.image_url ?? m.imageUrl ?? m.image ?? m.file_url ?? m.fileUrl ?? null;
+        const cleaned = typeof rawImage === 'string' ? rawImage.trim() : null;
+        if (!cleaned) continue;
+      
+
+        const absolute = cleaned.startsWith('http')
+        ? cleaned
+        : `${BASE_HTTP}${cleaned.startsWith('/') ? '' : '/'}${cleaned}`;
+        // const key = `${myUsername}|${cleaned}`;
+        const key = `${myUsername}|${absolute}`;
+        if (m.sender === myUsername && pendingEchoKeysRef.current.has(key)) {
+          const tempId = tempIdByKeyRef.current.get(key);
+          setChatMessages(prev => prev.filter(msg => msg.id !== tempId));
+          pendingEchoKeysRef.current.delete(key);
+          tempIdByKeyRef.current.delete(key);
+        }
+      }
+    }, [liveRaw, myUsername]);
+
   const liveMessages = useMemo(() => {
     console.log('[ChatRoom] liveRaw 메시지들:', liveRaw);
     return liveRaw
-    .filter(d => {
-      // 임시 메시지와 같은 ID면 필터링 (중복 방지)
-      return !tempMessageIdsRef.current.has(d.id);
-    })
     .map((d) => {
     // 1) 다양한 키 지원 + 공백 제거
     const rawImage =
@@ -258,31 +253,49 @@ const ChatRoom = () => {
     return () => document.removeEventListener('openChatMenu', open);
   }, []);
 
-  useEffect(() => {
-    return () => {
-      if (wsFallbackTimerRef.current) {
-        clearTimeout(wsFallbackTimerRef.current);
-        wsFallbackTimerRef.current = null;
-      }
-    };
-  }, [roomId]);
-
-
   const handleLeaveRoom = async () => {
+    if (leaving) return; // 중복 클릭 방지
     if (!window.confirm('채팅방에서 나가시겠어요?')) return;
 
-    try {
-      // TODO: 백엔드에 나가기 API가 있으면 여기서 호출
-      // await fetch(`${BASE_HTTP}/chat/chatrooms/${roomId}/leave/`, {
-      //   method: 'POST',
-      //   headers: { Authorization: `Bearer ${token}` },
-      // });
+    if (!roomId) {
+      alert('방 정보가 없어요. 잠시 후 다시 시도해 주세요.');
+      return;
+    }
 
-      navigate('/chatList'); // UX: 일단 목록으로 이동
+    console.log('[leave] DELETE start', roomId);
+    try {
+      setLeaving(true);
+
+      // ✅ Swagger 기준 정답: 방 삭제/나가기
+      const res = await fetch(`${BASE_HTTP}/chat/chatrooms/${roomId}/`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${getAccessToken()}` },
+      });
+
+      // 성공 케이스: 204 No Content
+      if (res.status === 204) {
+        // (옵션) WS로 알림 브로드캐스트 하고 싶으면 유지
+        sendJson?.({
+          type: 'leave',
+          room_id: roomId,
+          sender: myUsername,
+          sender_id: myUserId,
+        });
+
+        // 목록으로 이동 + ChatList에서 해당 방 제거 & 새로고침 트리거
+        navigate('/chatList', { state: { refresh: true, removedRoomId: roomId } });
+        return;
+      }
+
+      // 실패 시 상세 출력
+      const body = await res.text().catch(() => '');
+      console.error('나가기 실패', res.status, body);
+      alert(`나가기 실패(${res.status})`);
     } catch (e) {
-      console.error('채팅방 나가기 실패:', e);
+      console.error('채팅방 나가기 에러:', e);
       alert('나가기 중 문제가 발생했어요.');
     } finally {
+      setLeaving(false);
       setIsSheetOpen(false);
     }
   };
@@ -307,7 +320,7 @@ const ChatRoom = () => {
     }
 
     const result = await response.json();
-     const imageUrl = result.image;
+    const imageUrl = result.image;
 
     if (imageUrl && imageUrl.startsWith('/')) {
       return `${BASE_HTTP}${imageUrl}`;
@@ -376,83 +389,29 @@ const ChatRoom = () => {
 
         const uploadedUrl = await uploadImage(msg.file);
 
-        // 1) 서버에 메시지 생성 요청
-        const res = await fetch(`${BASE_HTTP}/chat/chatrooms/${roomId}/messages/`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            content: msg.content && msg.content.trim().length > 0 ? msg.content : '(사진)',
-            image_url: uploadedUrl,
-          }),
+        // [B안] WS가 도착하면 임시 버블을 제거할 수 있게 매칭키 등록
+        const keyForEcho = `${myUsername}|${uploadedUrl}`;
+        tempIdByKeyRef.current.set(keyForEcho, tempId);
+        pendingEchoKeysRef.current.add(keyForEcho);
+
+        // 미리보기(blob)이면 화면에 보이는 임시 버블의 이미지도 최종 URL로 교체(선택사항)
+        setChatMessages((prev) =>
+          prev.map(m => m.id === tempId ? { ...m, image: uploadedUrl } : m)
+        );
+
+        // 상대가 실시간으로 보게 WS 브로드캐스트 전송
+        sendJson?.({
+          type: 'message',
+          room_id: roomId,
+          // 서버 consumer가 읽는 필드명에 맞춰 content/message 둘 다 넣어줌
+          message: (msg.content && msg.content.trim()) || '(사진)',
+          content: (msg.content && msg.content.trim()) || '(사진)',
+          image_url: uploadedUrl,
+          sender: myUsername,
+          sender_id: myUserId,
+          created_at: new Date().toISOString(),
+          // client_id: tempId, // 서버가 그대로 에코해주면 중복제거에 더 안전(선택)
         });
-        
-        // 2) 응답 바디는 한 번만 읽기 (이전 코드처럼 두 번 읽으면 에러!)
-        let saved = null;
-        let raw = null;
-        try {
-          raw = await res.text();                     // 문자열로 먼저 읽고
-          saved = raw ? JSON.parse(raw) : null;       // 가능하면 JSON 파싱
-        } catch { /* noop */ }
-        
-        // 3) 에러면 상세를 로그로 남기고 종료
-        if (!res.ok) {
-          console.error('메시지 생성 실패 상세:', saved ?? raw);
-          throw new Error(`메시지 전송 실패: ${res.status}`);
-        }
-        
-        // 4) 성공 → "임시"를 "확정"으로 치환 (삭제 X)
-        if (saved) {
-          // 서버가 저장된 메시지 정보를 돌려준 경우
-          const serverMsg = {
-            id: saved.id,
-            sender: 'me',
-            type: saved.image_url ? 'image' : 'text',
-            content: saved.content || '',
-            image: saved.image_url || null,
-            profileImage: null,
-            createdTime: saved.created_at || new Date().toISOString(),
-          };
-          setChatMessages((prev) => prev.map(m => (m.id === tempId ? serverMsg : m)));
-
-          lastPendingIdRef.current = saved?.id ?? null;
-          lastPendingImgRef.current = saved?.image_url ?? null;
-
-          // ★ 폴백 준비: WS가 곧 올 것으로 기대
-          wsArrivedRef.current = false;
-
-          // 기존에 걸린 타이머 있으면 정리
-          if (wsFallbackTimerRef.current) {
-            clearTimeout(wsFallbackTimerRef.current);
-            wsFallbackTimerRef.current = null;
-          }
-        
-          // 700ms 동안 WS가 안 오면 프론트가 대신 WS로 한 번 전파
-          wsFallbackTimerRef.current = setTimeout(() => {
-            if (wsArrivedRef.current) return; // 이미 WS 도착 → 아무 것도 안 함
-            // 서버 consumer가 이해하는 포맷에 맞춰 보내세요
-            sendJson?.({
-              type: 'message',
-              id: saved.id,
-              room_id: roomId,
-              message: saved.content || '(사진)',
-              content: saved.content || '(사진)',
-              image_url: saved.image_url,
-              sender_id: myUserId,
-              sender: myUsername,
-              created_at: serverMsg.createdTime,
-              client_id: tempId, // 있으면 중복 제거에 도움
-            });
-          }, 700);
-        
-        } else {
-          // 혹시 응답 바디가 비어 있다면, 최소한 이미지 URL만 확정해 치환
-          setChatMessages((prev) =>
-            prev.map(m => (m.id === tempId ? { ...m, image: uploadedUrl, isUploading: false } : m))
-          );
-        }
         
         // 5) blob URL 정리
         if (previewUrl?.startsWith('blob:')) {
@@ -474,7 +433,13 @@ const ChatRoom = () => {
   <ActionSheet
     setIsPopupOpen={setIsSheetOpen}
     list={[
-      { label: '채팅방 나가기', action: handleLeaveRoom },
+      {  label: leaving ? '나가는 중…' : '채팅방 나가기', action: () => {
+          // 시트 먼저 닫고
+          setIsSheetOpen(false);
+          // 실제 나가기 로직 실행
+          handleLeaveRoom();
+        },
+      }
     ]}
   />
 )}

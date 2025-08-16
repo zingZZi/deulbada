@@ -5,8 +5,14 @@ import { BasicBtn, LineBtn, LineLink } from '../../styles/Button.style';
 import { MessageCircleIcon, Share2Icon } from '../../components/icon/Icon.style';
 import { toggleFollow } from '../../api/userApi'; // API 파일 경로에 맞게 수정
 import defaultProfileImg from './../../assets/images/defaultProfileImg.png';
+import { useNavigate } from 'react-router-dom';
+import { getAccessToken } from '../../auth/tokenStore';
+
+const BASE_HTTP = 'http://43.201.70.73';
 
 const ProfileInfo = ({ accountId, isMyProfile, userInfo }) => {
+  const navigate = useNavigate();
+
   // 팔로우 상태와 팔로워 수를 로컬 상태로 관리
   const [isFollowing, setIsFollowing] = useState(false);
   const [followerCount, setFollowerCount] = useState(0);
@@ -62,6 +68,42 @@ const ProfileInfo = ({ accountId, isMyProfile, userInfo }) => {
       alert('팔로우 처리 중 오류가 발생했습니다.');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // 상대와 채팅방 생성(또는 기존 방 가져오기) 후 입장
+  const handleStartChat = async () => {
+    if (!userInfo) return;
+    const token = getAccessToken();
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+    try {
+      // 1차 시도: user_id로 생성/획득
+      let res = await fetch(`${BASE_HTTP}/chat/chatrooms/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ user2: userInfo.id }),
+      });
+    
+      const data = await res.json().catch(() => ({}));
+      const roomId = data?.id ?? data?.room_id ?? data?.roomId;
+      if (!roomId) {
+        console.error('채팅방 ID 파싱 실패:', data);
+        alert('채팅방 정보를 불러올 수 없습니다.');
+        return;
+      }
+    
+      navigate(`/chatRoom/${roomId}`, {
+        state: { headerTitle: userInfo.username || userInfo.account_id },
+      });
+    } catch (e) {
+      console.error('채팅 시작 중 오류:', e);
+      alert('채팅을 시작할 수 없습니다.');
     }
   };
 
@@ -124,7 +166,7 @@ const ProfileInfo = ({ accountId, isMyProfile, userInfo }) => {
             </LineLink>
           </li>
           <li>
-            <LineLink radius={'medium'} padding={'.8rem 2.6rem'} fontSize={'base'}>
+            <LineLink radius={'medium'} padding={'.8rem 2.6rem'} fontSize={'base'} to="/product">
               상품등록
             </LineLink>
           </li>
@@ -132,7 +174,13 @@ const ProfileInfo = ({ accountId, isMyProfile, userInfo }) => {
       ) : (
         <Styled.ProfileActions>
           <li>
-            <LineLink to="" radius={'round'} padding={'.7rem'} fontSize={'icon'}>
+            <LineLink 
+              to="" 
+              radius={'round'} 
+              padding={'.7rem'} 
+              fontSize={'icon'} 
+              onClick={(e) => { e.preventDefault(); handleStartChat(); }} 
+            >
               <span className="text-ir">채팅하기</span>
               <MessageCircleIcon />
             </LineLink>
