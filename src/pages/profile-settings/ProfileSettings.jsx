@@ -74,7 +74,7 @@ const ProfileSettings = () => {
     }
   }, [navigate, isFromSignup]);
 
-  const isFormValid = name && userId; // info 조건 제거
+  const isFormValid = name && userId && info; // info 조건 추가
 
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -88,7 +88,7 @@ const ProfileSettings = () => {
 
     let isValid = true;
 
-    // 소개글 유효성 검사를 먼저 실행
+    // 소개글 유효성 검사 (폼 제출 시)
     if (!info.trim()) {
       setInfoError('소개글을 입력해주세요.');
       isValid = false;
@@ -282,7 +282,21 @@ const ProfileSettings = () => {
           type="text" 
           placeholder="소개글을 작성해주세요!" 
           value={info}
-          onChange={(e) => setInfo(e.target.value)}
+          onChange={(e) => {
+            setInfo(e.target.value);
+            // 입력 시 에러 메시지 제거 (실시간 피드백)
+            if (infoError) {
+              setInfoError('');
+            }
+          }}
+          onBlur={() => {
+            // 포커스를 잃었을 때 유효성 검사 (실시간 피드백)
+            if (!info.trim()) {
+              setInfoError('소개글을 입력해주세요.');
+            } else {
+              setInfoError('');
+            }
+          }}
         />
         {infoError && <Styled.ErrorMessage>{infoError}</Styled.ErrorMessage>}
       </Styled.InputGroup>
