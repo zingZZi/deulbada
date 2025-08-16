@@ -1,5 +1,5 @@
 import * as Styled from './JoinProducer.style';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { registerProducer, isEmailAvailable, isAccountIdAvailable } from '../../api/authApi';
 import { login } from '../../auth/authService';
@@ -9,7 +9,7 @@ const JoinProducer = () => {
   // 기본 회원가입 정보
   const [formData, setFormData] = useState({
     account_id: '',
-    nickname: '',
+    username: '',
     email: '',
     password: '',
     rePassword: '',
@@ -30,9 +30,91 @@ const JoinProducer = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [emailStatus, setEmailStatus] = useState(null);
   const [accountIdStatus, setAccountIdStatus] = useState(null);
-  const [nicknameStatus, setNicknameStatus] = useState(null);
+  const [usernameStatus, setusernameStatus] = useState(null);
 
   const navigate = useNavigate();
+
+  // 폼 유효성 검사 및 버튼 활성화 상태 계산
+  const isFormValid = useMemo(() => {
+    // 기본 회원가입 정보 확인
+    const isBasicFieldsFilled = 
+      formData.email.trim() &&
+      formData.password.trim() &&
+      formData.rePassword.trim() &&
+      formData.account_id.trim() &&
+      formData.username.trim();
+
+    // 프로듀서 전용 정보 확인
+    const isProducerFieldsFilled = 
+      ceoName.trim() &&
+      phone.trim() &&
+      businessNumber.trim() &&
+      postalCode &&
+      address.trim() &&
+      businessType;
+
+    if (!isBasicFieldsFilled || !isProducerFieldsFilled) return false;
+
+    // 이메일 형식 검사
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const isEmailValid = emailRegex.test(formData.email);
+
+    // 비밀번호 유효성 검사
+    const isPasswordValid = formData.password.length >= 8;
+    const hasLetter = /[a-zA-Z]/.test(formData.password);
+    const hasNumber = /[0-9]/.test(formData.password);
+    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(formData.password);
+    const isPasswordStrong = hasLetter && hasNumber && hasSpecial;
+
+    // 비밀번호 확인
+    const isPasswordMatch = formData.password === formData.rePassword;
+
+    // 최소 길이 검사
+    const isAccountIdValid = formData.account_id.length >= 2;
+    const isUsernameValid = formData.username.length >= 2;
+
+    // 전화번호 형식 검사
+    const isPhoneValid = /^01[0-9]-\d{3,4}-\d{4}$/.test(phone);
+
+    // 사업자번호 형식 검사
+    const isBusinessNumberValid = /^\d{3}-\d{2}-\d{5}$/.test(businessNumber);
+
+    // 중복 확인 상태 검사
+    const isDuplicateCheckPassed = 
+      emailStatus === 'available' &&
+      accountIdStatus === 'available' &&
+      usernameStatus === 'available';
+
+    // 중복 확인 중이 아닌지 검사
+    const isNotChecking = 
+      emailStatus !== 'checking' &&
+      accountIdStatus !== 'checking' &&
+      usernameStatus !== 'checking';
+
+    return (
+      isEmailValid &&
+      isPasswordValid &&
+      isPasswordStrong &&
+      isPasswordMatch &&
+      isAccountIdValid &&
+      isUsernameValid &&
+      isPhoneValid &&
+      isBusinessNumberValid &&
+      isDuplicateCheckPassed &&
+      isNotChecking
+    );
+  }, [
+    formData,
+    ceoName,
+    phone,
+    businessNumber,
+    postalCode,
+    address,
+    businessType,
+    emailStatus,
+    accountIdStatus,
+    usernameStatus
+  ]);
 
   // 다음 주소 API 스크립트 로드
   useEffect(() => {
@@ -47,23 +129,23 @@ const JoinProducer = () => {
   }, []);
 
   // 중복 확인 함수들
-  const checkNickname = async (nickname) => {
-    if (!nickname || nickname.length < 2) return;
+  const checkusername = async (username) => {
+    if (!username || username.length < 2) return;
 
-    setNicknameStatus('checking');
+    setusernameStatus('checking');
 
     try {
-      const available = await isAccountIdAvailable(nickname);
-      setNicknameStatus(available ? 'available' : 'taken');
+      const available = await isAccountIdAvailable(username);
+      setusernameStatus(available ? 'available' : 'taken');
 
       if (!available) {
-        setErrors((prev) => ({ ...prev, nickname: '이미 사용중인 닉네임입니다.' }));
+        setErrors((prev) => ({ ...prev, username: '이미 사용중인 닉네임입니다.' }));
       } else {
-        setErrors((prev) => ({ ...prev, nickname: '' }));
+        setErrors((prev) => ({ ...prev, username: '' }));
       }
     } catch (error) {
       console.error('닉네임 확인 실패:', error);
-      setNicknameStatus(null);
+      setusernameStatus(null);
     }
   };
 
@@ -139,23 +221,23 @@ const JoinProducer = () => {
   };
 
   // 닉네임 입력 처리
-  const handleNicknameChange = (value) => {
+  const handleusernameChange = (value) => {
     const filteredValue = value.replace(/[^가-힣ㄱ-ㅎㅏ-ㅣ0-9]/g, '');
 
-    setFormData((prev) => ({ ...prev, nickname: filteredValue }));
+    setFormData((prev) => ({ ...prev, username: filteredValue }));
 
-    if (errors.nickname) {
-      setErrors((prev) => ({ ...prev, nickname: '' }));
+    if (errors.username) {
+      setErrors((prev) => ({ ...prev, username: '' }));
     }
 
-    if (nicknameStatus === 'available') {
-      setNicknameStatus(null);
+    if (usernameStatus === 'available') {
+      setusernameStatus(null);
     }
 
-    clearTimeout(window.nicknameCheckTimer);
+    clearTimeout(window.usernameCheckTimer);
     if (filteredValue.length >= 2) {
-      window.nicknameCheckTimer = setTimeout(() => {
-        checkNickname(filteredValue);
+      window.usernameCheckTimer = setTimeout(() => {
+        checkusername(filteredValue);
       }, 500);
     }
   };
@@ -265,14 +347,14 @@ const JoinProducer = () => {
       newErrors.account_id = '계정ID 중복 확인을 완료해주세요.';
     }
 
-    if (!formData.nickname.trim()) {
-      newErrors.nickname = '닉네임을 입력해주세요.';
-    } else if (formData.nickname.length < 2) {
-      newErrors.nickname = '닉네임은 2자 이상이어야 합니다.';
-    } else if (nicknameStatus === 'taken') {
-      newErrors.nickname = '이미 사용중인 닉네임입니다.';
-    } else if (nicknameStatus !== 'available') {
-      newErrors.nickname = '닉네임 중복 확인을 완료해주세요.';
+    if (!formData.username.trim()) {
+      newErrors.username = '닉네임을 입력해주세요.';
+    } else if (formData.username.length < 2) {
+      newErrors.username = '닉네임은 2자 이상이어야 합니다.';
+    } else if (usernameStatus === 'taken') {
+      newErrors.username = '이미 사용중인 닉네임입니다.';
+    } else if (usernameStatus !== 'available') {
+      newErrors.username = '닉네임 중복 확인을 완료해주세요.';
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -333,7 +415,7 @@ const JoinProducer = () => {
     if (
       emailStatus === 'checking' ||
       accountIdStatus === 'checking' ||
-      nicknameStatus === 'checking'
+      usernameStatus === 'checking'
     ) {
       setErrors({ general: '중복 확인을 완료해주세요.' });
       return;
@@ -346,7 +428,7 @@ const JoinProducer = () => {
 
     const result = await registerProducer({
       account_id: formData.account_id,
-      nickname: formData.nickname,
+      username: formData.username,
       email: formData.email,
       password: formData.password,
       ceo_name: ceoName,
@@ -367,7 +449,7 @@ const JoinProducer = () => {
     navigate('/profile-settings', {
       state: {
         account_id: formData.account_id,
-        nickname: formData.nickname,
+        username: formData.username,
         isFromProducerSignup: true
       }
     });
@@ -443,20 +525,20 @@ const JoinProducer = () => {
       </Styled.InputGroup>
 
       <Styled.InputGroup>
-        <Styled.Label htmlFor="nickname">사용자 이름</Styled.Label>
+        <Styled.Label htmlFor="username">사용자 이름</Styled.Label>
         <Styled.InputEmail
-          id="nickname"
+          id="username"
           type="text"
           placeholder="한글과 숫자만 입력 가능합니다"
-          value={formData.nickname}
-          onChange={(e) => handleNicknameChange(e.target.value)}
+          value={formData.username}
+          onChange={(e) => handleusernameChange(e.target.value)}
         />
-        {nicknameStatus === 'available' && (
+        {usernameStatus === 'available' && (
           <div style={{ fontSize: '12px', marginTop: '4px', color: 'green' }}>
             ✓ 사용 가능한 사용자 이름입니다
           </div>
         )}
-        {errors.nickname && <Styled.Error>{errors.nickname}</Styled.Error>}
+        {errors.username && <Styled.Error>{errors.username}</Styled.Error>}
       </Styled.InputGroup>
 
       {/* 프로듀서 전용 정보 */}
@@ -570,7 +652,11 @@ const JoinProducer = () => {
 
       {errors.general && <Styled.Error>{errors.general}</Styled.Error>}
 
-      <Styled.Button type="submit" disabled={isLoading}>
+      <Styled.Button 
+        type="submit" 
+        disabled={isLoading || !isFormValid}
+        $isActive={isFormValid}
+      >
         {isLoading ? '가입 중...' : '다음'}
       </Styled.Button>
 

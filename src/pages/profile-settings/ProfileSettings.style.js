@@ -109,7 +109,7 @@ export const InputInfo = styled.input`
   border-bottom: 1px solid #ccc;
   background: transparent;
   font-size: 1.2rem;
-  margin-bottom: 3rem;
+  margin-bottom: 0.8rem;
   color: ${({ theme }) => theme.colors.black};
 
   &::placeholder {
@@ -128,6 +128,7 @@ export const Button = styled.button`
   color: white;
   border: none;
   border-radius: 44px;
+  margin-top: 1.8rem;
   margin-bottom: 1.0rem;
 `;
 

@@ -15,7 +15,7 @@ const ProfileSettings = () => {
   const signupData = location.state || {};
   const [image, setImage] = useState(null);
   const [imageFile, setImageFile] = useState(null);
-  const [name, setName] = useState(signupData.nickname || '');
+  const [name, setName] = useState(signupData.username || '');
   const [userId, setUserId] = useState(signupData.account_id || '');
   const [info, setInfo] = useState('');
   const [nameError, setNameError] = useState('');
@@ -25,7 +25,7 @@ const ProfileSettings = () => {
   
   // 회원가입에서 온 데이터가 있으면 필드를 비활성화
   const isFromSignup = Boolean(
-    (signupData.account_id && signupData.nickname) || // 일반 회원가입
+    (signupData.account_id && signupData.username) || // 일반 회원가입
     signupData.isFromProducerSignup // 생산자 회원가입
   );
   
@@ -74,7 +74,7 @@ const ProfileSettings = () => {
     }
   }, [navigate, isFromSignup]);
 
-  const isFormValid = name && userId; // info 조건 제거
+  const isFormValid = name && userId && info; // info 조건 추가
 
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -88,7 +88,7 @@ const ProfileSettings = () => {
 
     let isValid = true;
 
-    // 소개글 유효성 검사를 먼저 실행
+    // 소개글 유효성 검사 (폼 제출 시)
     if (!info.trim()) {
       setInfoError('소개글을 입력해주세요.');
       isValid = false;
@@ -282,7 +282,21 @@ const ProfileSettings = () => {
           type="text" 
           placeholder="소개글을 작성해주세요!" 
           value={info}
-          onChange={(e) => setInfo(e.target.value)}
+          onChange={(e) => {
+            setInfo(e.target.value);
+            // 입력 시 에러 메시지 제거 (실시간 피드백)
+            if (infoError) {
+              setInfoError('');
+            }
+          }}
+          onBlur={() => {
+            // 포커스를 잃었을 때 유효성 검사 (실시간 피드백)
+            if (!info.trim()) {
+              setInfoError('소개글을 입력해주세요.');
+            } else {
+              setInfoError('');
+            }
+          }}
         />
         {infoError && <Styled.ErrorMessage>{infoError}</Styled.ErrorMessage>}
       </Styled.InputGroup>

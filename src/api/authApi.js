@@ -25,7 +25,7 @@ export async function registerUser(userData) {
  * 프로듀서 회원가입
  * @param {Object} userData - 프로듀서 회원가입 데이터
  * @param {string} userData.account_id - 계정 ID (영문으로만 구성)
- * @param {string} userData.nickname - 닉네임
+ * @param {string} userData.username - 닉네임
  * @param {string} userData.email - 이메일
  * @param {string} userData.password - 비밀번호
  * @param {string} userData.ceo_name - 대표자명

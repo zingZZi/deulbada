@@ -72,10 +72,15 @@ export const Error = styled.p`
 export const Button = styled.button`
   padding: 1.1rem 0;
   background: #A2D098;
+  background-color: ${props => props.$isActive ? '#5CA14E' : '#A2D098'};
   color: white;
   border: none;
   border-radius: 44px;
   margin-bottom: 1.0rem;
+
+    &:disabled {
+    background-color: #your-disabled-color;
+    cursor: not-allowed;
 `;
 
 export const Signup = styled.span`
