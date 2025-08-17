@@ -52,72 +52,69 @@ React 기반으로 3명의 프론트엔드 개발자와 2명의 백엔드 개발
 
 ### 서버 및 문서
 
-| 기능                   | HTTP Method | URL                 | 인증 필요 여부 |
-| ---------------------- | ----------- | ------------------- | -------------- |
-| 서버 상태 확인         | GET         | /                   | ❌             |
-| JWT 토큰 발급 (로그인) | POST        | /api/token/         | ❌             |
-| JWT 토큰 갱신          | POST        | /api/token/refresh/ | ❌             |
-| JWT 토큰 유효성 검증   | POST        | /api/token/verify/  | ❌             |
-| Swagger API 문서       | GET         | /swagger/           | ❌             |
-| Redoc API 문서         | GET         | /redoc/             | ❌             |
+| 기능                   | HTTP Method | URL                 |
+| ---------------------- | ----------- | ------------------- |
+| JWT 토큰 발급 (로그인) | POST        | /api/token/         |
+| JWT 토큰 갱신          | POST        | /api/token/refresh/ |
+| JWT 토큰 유효성 검증   | POST        | /api/token/verify/  |
 
 ### 👤 사용자
 
-| 기능                    | HTTP Method | URL                                         | 인증 필요 여부 |
-| ----------------------- | ----------- | ------------------------------------------- | -------------- |
-| 회원가입                | POST        | /api/users/signup/                          | ❌             |
-| 생산자 회원가입         | POST        | /api/users/signup/producer/                 | ❌             |
-| 로그인 (사용자 앱)      | POST        | /api/users/login/                           | ❌             |
-| 토큰 갱신 (사용자 앱)   | POST        | /api/users/token/refresh/                   | ❌             |
-| 이메일 중복 확인        | POST        | /api/users/check-email/                     | ❌             |
-| 계정 ID 중복 확인       | POST        | /api/users/check-account-id/                | ❌             |
-| 내 프로필 조회          | GET         | /api/users/mypage/                          | ✅             |
-| 프로필 초기 설정        | PUT/PATCH   | /api/users/mypage/profile/setup/            | ✅             |
-| 프로필 수정             | PUT/PATCH   | /api/users/mypage/profile/                  | ✅             |
-| 농장주 프로필           | GET         | /api/users/mypage/farm/                     | ✅             |
-| 사용자 프로필 상세 조회 | GET         | /api/users/profiles/{account_id}/           | ✅             |
-| 사용자 팔로워 목록      | GET         | /api/users/profiles/{account_id}/followers/ | ✅             |
-| 사용자 팔로잉 목록      | GET         | /api/users/profiles/{account_id}/following/ | ✅             |
-| 팔로우/언팔로우 토글    | POST        | /api/users/profiles/{account_id}/follow/    | ✅             |
-| 사용자 검색             | GET         | /api/users/search/                          | ✅             |
-| 내 게시글 목록          | GET         | /api/users/myposts/                         | ✅             |
-| 사용자 신고             | POST        | /api/users/report/                          | ✅             |
+| 기능                    | HTTP Method | URL                                         |
+| ----------------------- | ----------- | ------------------------------------------- |
+| 회원가입                | POST        | /api/users/signup/                          |
+| 생산자 회원가입         | POST        | /api/users/signup/producer/                 |
+| 로그인 (사용자 앱)      | POST        | /api/users/login/                           |
+| 토큰 갱신 (사용자 앱)   | POST        | /api/users/token/refresh/                   |
+| 이메일 중복 확인        | POST        | /api/users/check-email/                     |
+| 계정 ID 중복 확인       | POST        | /api/users/check-account-id/                |
+| 내 프로필 조회          | GET         | /api/users/mypage/                          |
+| 프로필 초기 설정        | PUT/PATCH   | /api/users/mypage/profile/setup/            |
+| 프로필 수정             | PUT/PATCH   | /api/users/mypage/profile/                  |
+| 농장주 프로필           | GET         | /api/users/mypage/farm/                     |
+| 사용자 프로필 상세 조회 | GET         | /api/users/profiles/{account_id}/           |
+| 사용자 팔로워 목록      | GET         | /api/users/profiles/{account_id}/followers/ |
+| 사용자 팔로잉 목록      | GET         | /api/users/profiles/{account_id}/following/ |
+| 팔로우/언팔로우 토글    | POST        | /api/users/profiles/{account_id}/follow/    |
+| 사용자 검색             | GET         | /api/users/search/                          |
+| 내 게시글 목록          | GET         | /api/users/myposts/                         |
+| 사용자 신고             | POST        | /api/users/report/                          |
 
 ### 📦 상품
 
-| 기능                      | HTTP Method | URL                                 | 인증 필요 여부 |
-| ------------------------- | ----------- | ----------------------------------- | -------------- |
-| 태그 목록 조회            | GET         | /products/tags/                     | ❌             |
-| 상품 목록 조회            | GET         | /products/                          | ❌             |
-| 상품 생성                 | POST        | /products/                          | ✅             |
-| 카테고리별 상품 목록 조회 | GET         | /products/category/{category_name}/ | ❌             |
-| 사용자별 상품 목록 조회   | GET         | /products/user/{account_id}/        | ❌             |
-| 상품 상세 조회            | GET         | /products/{pk}/                     | ❌             |
-| 상품 수정                 | PUT/PATCH   | /products/{pk}/                     | ✅             |
-| 상품 삭제                 | DELETE      | /products/{pk}/                     | ✅             |
+| 기능                      | HTTP Method | URL                                 |
+| ------------------------- | ----------- | ----------------------------------- |
+| 태그 목록 조회            | GET         | /products/tags/                     |
+| 상품 목록 조회            | GET         | /products/                          |
+| 상품 생성                 | POST        | /products/                          |
+| 카테고리별 상품 목록 조회 | GET         | /products/category/{category_name}/ |
+| 사용자별 상품 목록 조회   | GET         | /products/user/{account_id}/        |
+| 상품 상세 조회            | GET         | /products/{pk}/                     |
+| 상품 수정                 | PUT/PATCH   | /products/{pk}/                     |
+| 상품 삭제                 | DELETE      | /products/{pk}/                     |
 
 ### 💬 채팅
 
-| 기능             | HTTP Method | URL                                 | 인증 필요 여부 |
-| ---------------- | ----------- | ----------------------------------- | -------------- |
-| 채팅방 목록 조회 | GET         | /chat/chatrooms/                    | ✅             |
-| 채팅방 생성      | POST        | /chat/chatrooms/                    | ✅             |
-| 채팅방 상세 조회 | GET         | /chat/chatrooms/{pk}/               | ✅             |
-| 채팅방 수정      | PUT/PATCH   | /chat/chatrooms/{pk}/               | ✅             |
-| 채팅방 삭제      | DELETE      | /chat/chatrooms/{pk}/               | ✅             |
-| 메시지 목록 조회 | GET         | /chat/chatrooms/{room_id}/messages/ | ✅             |
-| 메시지 생성      | POST        | /chat/chatrooms/{room_id}/messages/ | ✅             |
-| 채팅 테스트 뷰   | GET         | /chat/chat-test/                    | ❌             |
+| 기능             | HTTP Method | URL                                 |
+| ---------------- | ----------- | ----------------------------------- |
+| 채팅방 목록 조회 | GET         | /chat/chatrooms/                    |
+| 채팅방 생성      | POST        | /chat/chatrooms/                    |
+| 채팅방 상세 조회 | GET         | /chat/chatrooms/{pk}/               |
+| 채팅방 수정      | PUT/PATCH   | /chat/chatrooms/{pk}/               |
+| 채팅방 삭제      | DELETE      | /chat/chatrooms/{pk}/               |
+| 메시지 목록 조회 | GET         | /chat/chatrooms/{room_id}/messages/ |
+| 메시지 생성      | POST        | /chat/chatrooms/{room_id}/messages/ |
+| 채팅 테스트 뷰   | GET         | /chat/chat-test/                    |
 
 ### 🏷️ 카테고리
 
-| 기능               | HTTP Method | URL               | 인증 필요 여부 |
-| ------------------ | ----------- | ----------------- | -------------- |
-| 카테고리 목록 조회 | GET         | /categories/      | ❌             |
-| 카테고리 생성      | POST        | /categories/      | ✅             |
-| 카테고리 상세 조회 | GET         | /categories/{pk}/ | ❌             |
-| 카테고리 수정      | PUT/PATCH   | /categories/{pk}/ | ✅             |
-| 카테고리 삭제      | DELETE      | /categories/{pk}/ | ✅             |
+| 기능               | HTTP Method | URL               |
+| ------------------ | ----------- | ----------------- |
+| 카테고리 목록 조회 | GET         | /categories/      |
+| 카테고리 생성      | POST        | /categories/      |
+| 카테고리 상세 조회 | GET         | /categories/{pk}/ |
+| 카테고리 수정      | PUT/PATCH   | /categories/{pk}/ |
+| 카테고리 삭제      | DELETE      | /categories/{pk}/ |
 
 **Base URL**: `https://deulbada.duckdns.org`
 
