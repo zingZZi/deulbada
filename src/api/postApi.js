@@ -10,6 +10,11 @@ export const getPostDetail = (id) => api.get(`/posts/${id}/`);
 // GET: user  postList조회
 export const getUserPost = (userId, page = 1, limit = 2) =>
   api.get(`/posts/by/${userId}/?page=${page}&page_size=${limit}`);
+
+// 게시글 수정
+export const updatePost = (postId, formData) =>
+  api.patch(`/posts/${postId}/edit/`, formData); 
+
 // Delete: user  post 삭제
 export const delePost = (postId) => api.delete(`/posts/${postId}/edit/`);
 

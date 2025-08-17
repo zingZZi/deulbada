@@ -13,12 +13,21 @@ const ChatList = () => {
   const location = useLocation();
 
   const fetchRooms = useCallback(async () => {
-    const effectiveUserId = Number(localStorage.getItem('userId'));
-    try {
-      const res = await fetch(`${BASE_HTTP}/chat/chatrooms/`, {
-        headers: { Authorization: `Bearer ${token}` },
+  const effectiveUserId = Number(localStorage.getItem('userId'));
+  try {
+    const timestamp = new Date().getTime();
+    let allRooms = [];
+    let nextUrl = `${BASE_HTTP}/chat/chatrooms/?t=${timestamp}`;
+    
+    // 모든 페이지의 데이터를 가져오기
+    while (nextUrl) {
+      const res = await fetch(nextUrl, {
+        headers: { 
+          Authorization: `Bearer ${token}`
+        },
         cache: 'no-store',
       });
+      
       if (!res.ok) {
         if (res.status === 401) navigate('/login');
         return [];
@@ -28,44 +37,55 @@ const ChatList = () => {
       const list = Array.isArray(payload?.results) ? payload.results
         : Array.isArray(payload) ? payload
         : [];
-    
-      const normalized = list
-        .map((room) => {
-          const u1 = room.user1_info;
-          const u2 = room.user2_info;
-          const meIsU1 = room.user1 === effectiveUserId || u1?.id === effectiveUserId;
-          const meIsU2 = room.user2 === effectiveUserId || u2?.id === effectiveUserId;
-          if (!meIsU1 && !meIsU2) return null;
-        
-          const partner = meIsU1 ? u2 : u1;
-          const msgs = Array.isArray(room.messages) ? room.messages : [];
-          const last = msgs.length ? msgs[msgs.length - 1] : null;
-        
-          return {
-            roomId: room.id,
-            roomName: room.room_name || room.name || String(room.id),
-            partnerId: partner?.id,
-            partnerName: partner?.username || partner?.account_id || '알 수 없는 사용자',
-            partnerImage: partner?.profile_image || partner?.avatar_url || '',
-            lastMessage: last?.content || '',
-            lastTime: last?.created_at || room.created_at,
-          };
-        })
-        .filter(r => r && !!r.partnerId);
       
-        
-      
-      let next = normalized;
-      if (location.state?.removedRoomId) {
-        next = next.filter(r => r.roomId !== location.state.removedRoomId);
-      }
-      setRooms(next);
-      return next;
-    } catch (e) {
-      console.error('load chatrooms failed', e);
-      return [];
+      allRooms = [...allRooms, ...list];
+      nextUrl = payload.next; // 다음 페이지 URL
     }
-  }, [token, navigate, location]);
+
+    const normalized = allRooms
+      .map((room) => {
+        const u1 = room.user1_info;
+        const u2 = room.user2_info;
+      
+        const meIsU1 = room.user1 === effectiveUserId || u1?.id === effectiveUserId;
+        const meIsU2 = room.user2 === effectiveUserId || u2?.id === effectiveUserId;
+        if (!meIsU1 && !meIsU2) return null;
+      
+        const partnerRaw = meIsU1 ? (u2 ?? {}) : (u1 ?? {});
+        const partnerId   = partnerRaw.id ?? (meIsU1 ? room.user2 : room.user1);
+        const partnerName = partnerRaw.username || partnerRaw.account_id || `사용자 ${partnerId ?? ''}`;
+        const partnerImage = partnerRaw.profile_image || partnerRaw.avatar_url || '';
+      
+        const msgs = Array.isArray(room.messages) ? room.messages : [];
+        const last = msgs.length ? msgs[msgs.length - 1] : null;
+      
+        return {
+          roomId: room.id,
+          roomName: room.room_name || room.name || String(room.id),
+          partnerId,
+          partnerName,
+          partnerImage,
+          lastMessage: last?.content || '',
+          lastTime: last?.created_at || room.created_at,
+        };
+      })
+      .filter(r => r !== null);
+    
+    // 디버깅용 콘솔 추가
+    console.log('=== fetchRooms 디버깅 ===');
+    console.log('전체 가져온 방 개수:', allRooms.length);
+    console.log('내가 속한 방 개수:', normalized.length);
+    console.log('========================');
+    
+    setRooms(normalized);
+    return normalized;
+  } catch (e) {
+    console.error('load chatrooms failed', e);
+    return [];
+  }
+}, [token, navigate]);
+
+
 
   useEffect(() => {
     if (!token) { 
@@ -101,13 +121,33 @@ const ChatList = () => {
     });
   }, [rooms]);
 
+  // location.state 변화 감지하여 적절한 액션 수행
   useEffect(() => {
-    if (location.state?.refresh) {
-      (async () => {
+    const handleLocationState = async () => {
+      const { refresh, removedRoomId } = location.state || {};
+
+      if (removedRoomId) {
+        // 제거된 방만 로컬 상태에서 먼저 제거
+        setRooms(prev => prev.filter(r => r.roomId !== removedRoomId));
+
+        // 그 후 전체 목록을 다시 불러와서 최신 상태로 동기화
+        setTimeout(async () => {
+          await fetchRooms();
+        }, 500); // 서버 상태 반영을 위한 약간의 지연
+      }
+
+      if (refresh) {
+        // 새로운 채팅방 생성 등으로 인한 새로고침
         await fetchRooms();
+      }
+
+      // state 정리
+      if (refresh || removedRoomId) {
         window.history.replaceState({}, document.title);
-      })();
-    }
+      }
+    };
+
+    handleLocationState();
   }, [location.state, fetchRooms]);
 
   return (

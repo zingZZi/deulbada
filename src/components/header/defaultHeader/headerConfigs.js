@@ -92,6 +92,14 @@ export const defaultHeaderMap = (pathname) => {
     };
   }
 
+  // 동적 경로 처리
+  if (pathname.startsWith('/postEdit/')) {
+    return {
+      leftText: '',
+      rightButton: { type: 'text', text: '수정', actionKey: 'update-post' },
+    };
+  }
+
   if (pathname.startsWith('/profile/') && pathname !== '/profile/edit') {
     return {
       leftText: false,
