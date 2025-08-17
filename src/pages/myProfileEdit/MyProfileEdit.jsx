@@ -1,9 +1,9 @@
 import * as Styled from './MyPrifleEdit.style';
 import React, { useEffect, useState } from 'react';
-import { Camera } from 'lucide-react';
+import { CameraIcon } from '../../components/icon/Icons';
 import ImagePreview from '../../assets/images/image-preview.png';
 import { usePageActions } from '../../context/PageActionsContext';
-import { fetchUser, editProfile, checkAccountId } from '../../api/userApi'; // checkAccountId 추가
+import { fetchUser, editProfile, checkAccountId } from '../../api/userApi';
 
 const MyProfileEdit = () => {
   const [myData, setMyData] = useState();
@@ -14,21 +14,18 @@ const MyProfileEdit = () => {
   const [info, setInfo] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // 유효성 검사 상태
   const [nameError, setNameError] = useState('');
   const [userIdError, setUserIdError] = useState('');
   const [isCheckingUserId, setIsCheckingUserId] = useState(false);
 
   const useraccountId = window.localStorage.getItem('account_id');
 
-  // 초기 data값 가져오기
   useEffect(() => {
     const getMyData = async () => {
       try {
         const response = await fetchUser(useraccountId);
         const data = response.data;
         setMyData(data);
-        // 기존 이미지가 있다면 설정
         if (data.profile_image) {
           setImage(data.profile_image);
         }
@@ -40,7 +37,6 @@ const MyProfileEdit = () => {
     getMyData();
   }, []);
 
-  // myData가 업데이트될 때마다 form state도 업데이트
   useEffect(() => {
     if (myData) {
       setName(myData.username || '');
@@ -51,9 +47,7 @@ const MyProfileEdit = () => {
 
   const { registerAction } = usePageActions();
 
-  // 사용자 이름 유효성 검사
   const validateName = (value) => {
-    // 한글 정규식 (완성형 한글 + 자음/모음 조합)
     const koreanRegex = /^[가-힣]+$/;
 
     if (!koreanRegex.test(value)) {
@@ -68,7 +62,6 @@ const MyProfileEdit = () => {
     return '';
   };
 
-  // 계정 ID 유효성 검사 (정규식)
   const validateUserId = (value) => {
     const regex = /^[a-zA-Z0-9._]+$/;
     if (!regex.test(value)) {
@@ -83,7 +76,6 @@ const MyProfileEdit = () => {
     return '';
   };
 
-  // 계정 ID 중복 체크 (디바운싱 적용)
   useEffect(() => {
     const checkUserIdAvailability = async () => {
       if (!userId || userId === myData?.account_id) {
@@ -114,7 +106,6 @@ const MyProfileEdit = () => {
       }
     };
 
-    // 디바운싱: 500ms 후에 중복 체크 실행
     const timeoutId = setTimeout(checkUserIdAvailability, 500);
 
     return () => clearTimeout(timeoutId);
@@ -123,12 +114,10 @@ const MyProfileEdit = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // 파일 크기 체크 (5MB 제한)
       if (file.size > 5 * 1024 * 1024) {
         alert('이미지 크기는 5MB 이하여야 합니다.');
         return;
       }
-      // 파일 타입 체크
       if (!file.type.startsWith('image/')) {
         alert('이미지 파일만 업로드 가능합니다.');
         return;
@@ -147,7 +136,6 @@ const MyProfileEdit = () => {
   const handleUserIdChange = (e) => {
     const value = e.target.value;
     setUserId(value);
-    // 입력 즉시 기본 유효성 검사
     const validationError = validateUserId(value);
     if (validationError) {
       setUserIdError(validationError);
@@ -155,9 +143,8 @@ const MyProfileEdit = () => {
   };
 
   const EditProfile = async () => {
-    if (isLoading || isCheckingUserId) return; // 중복 요청 방지
+    if (isLoading || isCheckingUserId) return;
 
-    // 최종 유효성 검사
     const currentNameError = validateName(name);
     const currentUserIdError = validateUserId(userId);
 
@@ -174,7 +161,6 @@ const MyProfileEdit = () => {
       return;
     }
 
-    // 중복 체크 에러가 있는 경우
     if (userIdError && userId !== myData?.account_id) {
       alert('계정 ID를 확인해주세요.');
       return;
@@ -183,10 +169,8 @@ const MyProfileEdit = () => {
     try {
       setIsLoading(true);
 
-      // FormData 생성 (이미지 업로드를 위해)
       const formData = new FormData();
 
-      // 변경된 데이터만 추가
       if (name !== myData?.username) {
         formData.append('username', name);
       }
@@ -200,7 +184,6 @@ const MyProfileEdit = () => {
         formData.append('profile_image', imageFile);
       }
 
-      // 수정할 데이터가 없는 경우
       if (formData.entries().next().done) {
         alert('변경된 내용이 없습니다.');
         return;
@@ -210,8 +193,7 @@ const MyProfileEdit = () => {
 
       if (response.status === 200 || response.status === 204) {
         alert('프로필이 성공적으로 수정되었습니다.');
-        // 수정된 데이터로 상태 업데이트
-        setMyData((prev) => ({
+        setMyData(prev => ({
           ...prev,
           username: name,
           account_id: userId,
@@ -219,7 +201,6 @@ const MyProfileEdit = () => {
           profile_image: response.data?.profile_image || image,
         }));
 
-        // localStorage의 account_id도 업데이트 (만약 변경되었다면)
         if (userId !== useraccountId) {
           window.localStorage.setItem('account_id', userId);
         }
@@ -265,14 +246,14 @@ const MyProfileEdit = () => {
           src={
             image
               ? image.startsWith('blob:')
-                ? image // 새로 선택한 이미지 (blob URL)
-                : `${image}` // 서버 이미지
-              : ImagePreview // 기본 이미지
+                ? image
+                : `${image}`
+              : ImagePreview
           }
           alt="프로필 이미지"
         />
         <Styled.FileInputLabel htmlFor="profile-upload">
-          <Camera color="#fff" size={22} />
+          <CameraIcon color="#fff" size={22} />
         </Styled.FileInputLabel>
         <input
           id="profile-upload"

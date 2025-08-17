@@ -1,16 +1,14 @@
 import * as Styled from './Product.style';
 import React, { useState, useEffect, useCallback } from 'react';
-import { Camera } from 'lucide-react';
+import { CameraIcon } from '../../components/icon/Icons';
 import { createPost } from '../../api/productApi';
 import { usePageActions } from '../../context/PageActionsContext';
 import { getAccessToken } from '../../auth/tokenStore';
 
 const Product = () => {
   const { registerAction, unregisterAction } = usePageActions();
-
   const baseUrl = 'https://deulbada.duckdns.org';
 
-  // 상태 관리
   const [preview, setPreview] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [businessType, setBusinessType] = useState('');
@@ -22,17 +20,14 @@ const Product = () => {
   const [link, setLink] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // 백엔드 카테고리 관련 상태
   const [categories, setCategories] = useState([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [secondaryCategories, setSecondaryCategories] = useState([]);
 
-  // 컴포넌트 마운트 시 카테고리 목록 가져오기
   useEffect(() => {
     fetchCategories();
   }, []);
 
-  // 카테고리 가져오기 함수
   const fetchCategories = async () => {
     try {
       const token = getAccessToken();
@@ -41,7 +36,6 @@ const Product = () => {
       let nextUrl = `${baseUrl}/categories/`;
       let pageCount = 0;
       
-      // 모든 페이지의 데이터를 가져오기
       while (nextUrl && pageCount < 10) {
         pageCount++;
         
@@ -76,7 +70,6 @@ const Product = () => {
     }
   };
 
-  // 카테고리 ID 찾기 함수
   const findCategoryId = (categoryType, categoryName) => {
     const category = categories.find(cat => 
       cat.type === categoryType && cat.name === categoryName
@@ -85,7 +78,6 @@ const Product = () => {
     return category ? category.id : null;
   };
 
-  // 1차 카테고리 타입 변환 함수
   const getTypeOptions = () => {
     const uniqueTypes = [...new Set(categories.map(cat => cat.type))];
     
@@ -102,7 +94,6 @@ const Product = () => {
     }));
   };
 
-  // 1차 카테고리 변경 시 2차 카테고리 업데이트
   const handleBusinessTypeChange = (e) => {
     const selectedType = e.target.value;
     
@@ -119,7 +110,6 @@ const Product = () => {
     }
   };
 
-  // 2차 카테고리 변경 시 카테고리 ID 설정
   const handleBusinessNameChange = (e) => {
     const selectedName = e.target.value;
     
@@ -133,52 +123,45 @@ const Product = () => {
     }
   };
 
-  // 가격 포맷팅
   const formatPrice = (value) => {
     const onlyNumber = value.replace(/[^0-9]/g, '');
     return onlyNumber.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   };
 
-  // 가격 변경 처리
   const handlePriceChange = (e) => {
     const formatted = formatPrice(e.target.value);
     setPrice(formatted);
   };
 
-  // URL 변경 처리 (200자 제한 체크 포함)
   const handleLinkChange = useCallback((e) => {
     const newLink = e.target.value;
     
     if (newLink.length > 200) {
-      alert(`판매링크가 너무 깁니다.\n현재: ${newLink.length}자 / 최대: 200자\n\n단축 URL 서비스를 이용해주세요.\n(예: bit.ly, tinyurl.com 등)`);
-      return; // 200자 초과 시 입력을 막음
+      alert(`판매링크가 너무 깁니다.\n현재: ${newLink.length}자 / 최대: 200자\n\n단축 URL 서비스를 이용해주세요.`);
+      return;
     }
     
     setLink(newLink);
   }, []);
 
-  // 태그 입력 처리
   const handleTagKeyDown = (e) => {
     if (e.key === ',' || e.key === 'Enter') {
       e.preventDefault();
       const trimmed = tagInput.trim();
       if (trimmed && !tags.includes(trimmed)) {
-        setTags((prev) => [...prev, trimmed]);
+        setTags(prev => [...prev, trimmed]);
       }
       setTagInput('');
     }
   };
 
-  // 태그 제거
   const handleTagRemove = (removeTag) => {
-    setTags((prev) => prev.filter((tag) => tag !== removeTag));
+    setTags(prev => prev.filter(tag => tag !== removeTag));
   };
 
-  // 이미지 변경 처리
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // 이전 미리보기 URL 해제
       if (preview) {
         URL.revokeObjectURL(preview);
       }
@@ -188,7 +171,6 @@ const Product = () => {
     }
   };
 
-  // 이미지 업로드 함수
   const uploadImage = async (file) => {
     const token = getAccessToken();
     if (!token) {
@@ -220,13 +202,9 @@ const Product = () => {
     }
   };
 
-  // 폼 제출 처리 함수
   const handleSubmitForm = async () => {
-    if (isSubmitting) {
-      return;
-    }
+    if (isSubmitting) return;
 
-    // 유효성 검사
     if (!name?.trim()) {
       alert('상품명을 입력해 주세요.');
       return;
@@ -242,13 +220,11 @@ const Product = () => {
       return;
     }
 
-    // URL 길이 검사 (200자 제한)
     if (link.trim().length > 200) {
-      alert(`판매링크가 너무 깁니다. (현재: ${link.trim().length}자, 최대: 200자)\n\n단축 URL을 사용해주세요.\n예: bit.ly, tinyurl.com 등`);
+      alert(`판매링크가 너무 깁니다. (현재: ${link.trim().length}자, 최대: 200자)`);
       return;
     }
 
-    // URL 유효성 검사
     try {
       new URL(link.trim());
     } catch {
@@ -266,7 +242,6 @@ const Product = () => {
     try {
       let imageUrl = null;
 
-      // 이미지가 있으면 업로드 시도
       if (imageFile) {
         try {
           imageUrl = await uploadImage(imageFile);
@@ -276,7 +251,6 @@ const Product = () => {
         }
       }
 
-      // 상품 데이터 준비
       const productData = {
         name: name.trim(),
         description: `${name.trim()} 상품입니다.`,
@@ -287,22 +261,17 @@ const Product = () => {
         tag_input: tags.join(','),
       };
 
-      // API 호출
       await createPost(productData);
       
       alert('상품이 등록되었습니다!');
-
-      // 폼 초기화
       resetForm();
     } catch (error) {
       console.error('상품 등록 실패:', error);
 
       if (error.response?.data) {
-        // 백엔드 유효성 검사 오류 처리
         const errorData = error.response.data;
         let errorMessage = '상품 등록에 실패했습니다:\n\n';
         
-        // 각 필드별 오류 메시지 구성
         Object.keys(errorData).forEach(field => {
           const fieldErrors = errorData[field];
           if (Array.isArray(fieldErrors)) {
@@ -321,13 +290,11 @@ const Product = () => {
     }
   };
 
-  // 폼 제출 처리 (폼 이벤트용)
   const handleSubmit = async (e) => {
     e.preventDefault();
     await handleSubmitForm();
   };
 
-  // 폼 초기화
   const resetForm = () => {
     setName('');
     setPrice('');
@@ -342,7 +309,6 @@ const Product = () => {
     setSecondaryCategories([]); 
   };
 
-  // 헤더 액션 등록/해제
   useEffect(() => {
     const saveAction = () => {
       handleSubmitForm();
@@ -353,10 +319,8 @@ const Product = () => {
     return () => {
       unregisterAction('saveProfile');
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [name, price, link, businessType, businessName, imageFile, tags, selectedCategoryId]); 
 
-  // 컴포넌트 언마운트 시 미리보기 URL 해제
   useEffect(() => {
     return () => {
       if (preview) {
@@ -369,7 +333,6 @@ const Product = () => {
     <Styled.Form onSubmit={handleSubmit}>
       <Styled.H2 className="text-ir">상품등록</Styled.H2>
 
-      {/* 이미지 업로드 */}
       <Styled.InputGroup>
         <Styled.ImageLabel>이미지 등록</Styled.ImageLabel>
 
@@ -385,12 +348,11 @@ const Product = () => {
           {preview && <img src={preview} alt="업로드 미리보기" />}
 
           <Styled.IconWrapper>
-            <Camera color="#fff" size={22} />
+            <CameraIcon color="#fff" size={22} />
           </Styled.IconWrapper>
         </Styled.ImageUploadWrapper>
       </Styled.InputGroup>
 
-      {/* 상품명 */}
       <Styled.InputGroup>
         <Styled.Label htmlFor="name">상품명</Styled.Label>
         <Styled.InputText
@@ -403,7 +365,6 @@ const Product = () => {
         />
       </Styled.InputGroup>
 
-      {/* 가격 */}
       <Styled.InputGroup>
         <Styled.Label htmlFor="price">가격</Styled.Label>
         <Styled.InputText
@@ -416,7 +377,6 @@ const Product = () => {
         />
       </Styled.InputGroup>
 
-      {/* 판매링크 */}
       <Styled.InputGroup>
         <Styled.Label htmlFor="link">판매링크</Styled.Label>
         <Styled.InputText
@@ -428,7 +388,6 @@ const Product = () => {
         />
       </Styled.InputGroup>
 
-      {/* 1차 카테고리 */}
       <Styled.InputGroup>
         <Styled.Label htmlFor="business-type">1차 카테고리</Styled.Label>
         <Styled.Select id="business-type" value={businessType} onChange={handleBusinessTypeChange}>
@@ -441,7 +400,6 @@ const Product = () => {
         </Styled.Select>
       </Styled.InputGroup>
 
-      {/* 2차 카테고리 */}
       <Styled.InputGroup>
         <Styled.Label htmlFor="business-name">2차 카테고리</Styled.Label>
         <Styled.Select
@@ -459,7 +417,6 @@ const Product = () => {
         </Styled.Select>
       </Styled.InputGroup>
 
-      {/* 태그 */}
       <Styled.InputTag>
         <Styled.Label htmlFor="tag">태그</Styled.Label>
         <Styled.InputText
