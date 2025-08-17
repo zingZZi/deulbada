@@ -6,7 +6,9 @@ const NotFound = () => {
     <Styled.NotFound>
       <Styled.NotFoundImg src={notfoundImg} alt="404이미지" />
       <Styled.NotFoundTitle>페이지를 찾을 수 없습니다</Styled.NotFoundTitle>
-      <BasicBtn padding={'13px 26px'}>이전페이지</BasicBtn>
+      <BasicBtn onClick={() => window.history.back()} padding={'13px 26px'}>
+        이전페이지
+      </BasicBtn>
     </Styled.NotFound>
   );
 };
