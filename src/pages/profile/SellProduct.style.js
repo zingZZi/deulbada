@@ -28,6 +28,10 @@ export const ProductName = styled.p`
   font-weight: ${({ theme }) => theme.fonts.weights.regular};
   color: ${({ theme }) => theme.colors.black};
   font-size: ${({ theme }) => theme.fontSize.base};
+  width: 14rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   margin: 0.6rem 0 0.4rem;
 `;
 export const ProductPrice = styled.b`

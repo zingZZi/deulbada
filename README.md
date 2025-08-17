@@ -311,7 +311,7 @@ Chore: 리액트 프로젝트 구성
 
 ### 홈 피드
 
-<div align="center">
+<div align="left">
   <img src="./docs/images/home.gif" width="200" alt="홈피드"/>
 </div>
 
@@ -320,13 +320,15 @@ Chore: 리액트 프로젝트 구성
 
 ### 프로필
 
-- 상대방 프로필
-
-- 사용자 본인의 프로필
+<div align="left">
+  <img src="./docs/images/search.gif" width="200" alt="프로필"/>
+</div>
+- 상대방 프로필/사용자 본인의 프로필
+- 팔로우버튼 기능(팔로우/언팔로우)
 
 ### 검색
 
-<div align="center">
+<div align="left">
   <img src="./docs/images/search.gif" width="200" alt="검색"/>
 </div>
 
