@@ -484,7 +484,7 @@ const JoinProducer = () => {
 
       alert('프로듀서 회원가입이 완료되었습니다!');
       
-      navigate('/ProfileSettings', {
+      navigate('/profileSettings', {
         state: {
           account_id: formData.account_id,
           username: formData.username,
@@ -698,7 +698,7 @@ const JoinProducer = () => {
         {isLoading ? '가입 중...' : '다음'}
       </Styled.Button>
 
-      <Link to="/JoinMembership">
+      <Link to="/joinMembership">
         <Styled.Signup>일반 회원 가입하기</Styled.Signup>
       </Link>
     </Styled.Form>
