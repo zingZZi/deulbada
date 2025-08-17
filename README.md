@@ -305,9 +305,35 @@ Chore: 리액트 프로젝트 구성
 
 ## 10. 구현 페이지
 
-### 회원가입 / 로그인
+### 프로필 초기세팅 / 수정
 
-- 이메일을 통한 일반 회원 및 생산자 회원 가입
+  <div align="left">
+    <img src="./docs/images/ProfileSettings.gif" width="200"/>
+    <img src="./docs/images/MyProfileEdit.gif" width="200"/>
+  </div>
+- 회원가입 후 초기 프로필 설정 및 프로필 수정
+
+### 로그인 / 회원가입
+
+- 이메일을 통한 로그인과 일반 회원 및 생산자 회원 가입
+
+  <br>
+  <img src="./docs/images/Login.gif" width="200"/>
+  <img src="./docs/images/LoginValidator.gif" width="200"/>
+  <br>
+  <img src="./docs/images/JoinMembership.gif" width="200"/>
+  <img src="./docs/images/JoinMembershipValidator.gif" width="200"/>
+  <br>
+  <img src="./docs/images/JoinProducer.gif" width="200"/>
+  <img src="./docs/images/JoinProducerValidator.gif" width="200"/>
+
+  ### 프로필 초기세팅 / 수정
+
+- 회원가입 후 초기 프로필 설정 및 프로필 수정
+
+  <br>
+  <img src="./docs/images/ProfileSettings.gif" width="200"/>
+  <img src="./docs/images/MyProfileEdit.gif" width="200"/>
 
 ### 홈 피드
 
@@ -317,6 +343,8 @@ Chore: 리액트 프로젝트 구성
 
 - 사용자 및 생산자들의 피드 게시글 확인 가능
 - 농산물 / 수산물 카테고리별 상품 확인
+- 데이터 무한 스크롤 구현
+- 각 피드에 대한 좋아요버튼 구현
 
 ### 프로필
 
@@ -324,8 +352,20 @@ Chore: 리액트 프로젝트 구성
   <img src="./docs/images/profile1.gif" width="200" alt="상대방 프로필"/>
   <img src="./docs/images/profile2.gif" width="200" alt="본인 프로필"/>
 </div>
+
 - 상대방 프로필/사용자 본인의 프로필
 - 팔로우버튼 기능(팔로우/언팔로우)
+- 게시판 리스트형/갤러리형 타입구분
+
+### 팔로우/팔로잉 리스트
+
+<div align="left">
+  <img src="./docs/images/follow.gif" width="200" alt="팔로우/팔로잉리스트" />
+</div>
+
+- 팔로워리스트 내가 팔로우 안한경우 버튼 누를시 팔로우 처리 기능
+- 팔로우 취소 시 팔로잉버튼으로 바뀌게 처리
+- 팔로워가 나인 경우 버튼 안보이게 케이스처리
 
 ### 검색
 
@@ -349,10 +389,6 @@ Chore: 리액트 프로젝트 구성
 ### 채팅
 
 - 사용자 간 1:1 실시간 메시지 전송 및 이미지 전송
-
-> 💡 **주요 기능 시연 영상**
->
-> 추후 프로젝트의 주요 기능들을 담은 시연 영상(MP4)을 추가할 예정입니다.
 
 <br>
 
