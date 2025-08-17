@@ -300,6 +300,8 @@ export const Signup = styled.span`
   display: flex;
   justify-content: center;
   font-size: 1.2rem;
+  padding-top: 1.0rem;
+  padding-bottom: 6.0rem;
   color: ${({ theme }) => theme.colors.white700};
   font-weight: ${({ theme }) => theme.fonts.weights.regular};
 `;

@@ -1,7 +1,7 @@
 import Login from '../../pages/login/Login';
-import LoginEmail from '../../pages/login-email/LoginEmail';
-import JoinMembership from '../../pages/join-membership/JoinMembership';
-import JoinProducer from '../../pages/join-producer/JoinProducer';
+import LoginEmail from '../../pages/LoginEmail/LoginEmail';
+import JoinMembership from '../../pages/JoinMembership/JoinMembership';
+import JoinProducer from '../../pages/JoinProducer/JoinProducer';
 import Product from '../../pages/product/Product';
 import { StyledLoginLayout } from './LoginLayout.style';
 
@@ -12,9 +12,9 @@ function Content({ page }) {
       return <Login />;
     case 'loginEmail':
       return <LoginEmail />;
-        case 'join-membership':
+        case 'JoinMembership':
       return <JoinMembership />;
-        case 'join-producer':
+        case 'JoinProducer':
       return <JoinProducer />;
         case 'product':
       return <Product />;
