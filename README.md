@@ -322,7 +322,7 @@ Chore: 리액트 프로젝트 구성
 
 - 이메일을 통한 로그인과 일반 회원 및 생산자 회원 가입
 
-  ### 프로필 초기세팅 / 수정
+### 프로필 초기세팅 / 수정
 
   <div align="left">
     <img src="./docs/images/ProfileSettings.gif" width="200"/>
