@@ -393,7 +393,7 @@ Chore: 리액트 프로젝트 구성
 ### 스토리 등록
 
 <div align="left">
- <img src="./docs/post.gif.gif" width="200" alt="포스트 등록"/>
+ <img src="./docs/post.gif" width="200" alt="포스트 등록"/>
 </div>
 
 - 텍스트 + 이미지 업로드 가능
