@@ -23,6 +23,7 @@ import LoadingComponent from '../../components/loding/Loding';
 import { LoadingProvider, useLoading } from '../../context/LoadingContext';
 import MyProfileEdit from '../../pages/myProfileEdit/MyProfileEdit';
 import { CustomThemeProvider } from '../../context/ThemeContext';
+import ProfileSettings from '../../pages/profileSettings/ProfileSettings';
 
 function Content({ page, searchQuery }) {
   switch (page) {
