@@ -34,7 +34,31 @@ const JoinProducer = () => {
 
   const navigate = useNavigate();
 
-  // 폼 유효성 검사 및 버튼 활성화 상태 계산
+  // 비밀번호 유효성 검사 함수 (제출 시에만 사용)
+  const validatePassword = (password) => {
+    if (!password) return '비밀번호를 입력해주세요.';
+    
+    const hasLetter = /[a-zA-Z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    const isLengthValid = password.length >= 8;
+
+    if (!isLengthValid || !hasLetter || !hasNumber || !hasSpecial) {
+      return '영문자, 숫자, 특수문자를 포함해 8자 이상 입력해주세요.';
+    }
+    return null; // 유효함
+  };
+
+  // 비밀번호 확인 검사 함수 (제출 시에만 사용)
+  const validatePasswordConfirmation = (password, rePassword) => {
+    if (!rePassword) return '비밀번호 확인을 입력해주세요.';
+    if (password !== rePassword) {
+      return '비밀번호가 일치하지 않습니다.';
+    }
+    return null; // 일치함
+  };
+
+  // 폼 유효성 검사 및 버튼 활성화 상태 계산 (기본 입력만 확인)
   const isFormValid = useMemo(() => {
     // 기본 회원가입 정보 확인
     const isBasicFieldsFilled = 
@@ -58,16 +82,6 @@ const JoinProducer = () => {
     // 이메일 형식 검사
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const isEmailValid = emailRegex.test(formData.email);
-
-    // 비밀번호 유효성 검사
-    const isPasswordValid = formData.password.length >= 8;
-    const hasLetter = /[a-zA-Z]/.test(formData.password);
-    const hasNumber = /[0-9]/.test(formData.password);
-    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(formData.password);
-    const isPasswordStrong = hasLetter && hasNumber && hasSpecial;
-
-    // 비밀번호 확인
-    const isPasswordMatch = formData.password === formData.rePassword;
 
     // 최소 길이 검사
     const isAccountIdValid = formData.account_id.length >= 2;
@@ -93,9 +107,6 @@ const JoinProducer = () => {
 
     return (
       isEmailValid &&
-      isPasswordValid &&
-      isPasswordStrong &&
-      isPasswordMatch &&
       isAccountIdValid &&
       isUsernameValid &&
       isPhoneValid &&
@@ -196,6 +207,31 @@ const JoinProducer = () => {
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: '' }));
     }
+  };
+
+  // 비밀번호 입력 처리
+  const handlePasswordChange = (value) => {
+    setFormData((prev) => ({ ...prev, password: value }));
+    
+    // 기존 에러 제거 (안전한 방식)
+    setErrors((prev) => {
+      const newErrors = { ...prev };
+      delete newErrors.password;
+      delete newErrors.rePassword;
+      return newErrors;
+    });
+  };
+
+  // 비밀번호 확인 입력 처리
+  const handlePasswordConfirmChange = (value) => {
+    setFormData((prev) => ({ ...prev, rePassword: value }));
+    
+    // 기존 에러 제거 (안전한 방식)
+    setErrors((prev) => {
+      const newErrors = { ...prev };
+      delete newErrors.rePassword;
+      return newErrors;
+    });
   };
 
   // 계정ID 입력 처리
@@ -334,6 +370,10 @@ const JoinProducer = () => {
   // 폼 제출 처리
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // 로딩 중이면 중단
+    if (isLoading) return;
+    
     const newErrors = {};
 
     // 기본 정보 유효성 검사
@@ -367,20 +407,15 @@ const JoinProducer = () => {
     }
 
     // 비밀번호 유효성 검사
-    if (formData.password.length < 8) {
-      newErrors.password = '영문자, 숫자, 특수문자를 포함해 8자 이상 입력해주세요.';
-    } else {
-      const hasLetter = /[a-zA-Z]/.test(formData.password);
-      const hasNumber = /[0-9]/.test(formData.password);
-      const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(formData.password);
-
-      if (!hasLetter || !hasNumber || !hasSpecial) {
-        newErrors.password = '영문자, 숫자, 특수문자를 포함해 8자 이상 입력해주세요.';
-      }
+    const passwordError = validatePassword(formData.password);
+    if (passwordError) {
+      newErrors.password = passwordError;
     }
 
-    if (formData.password !== formData.rePassword) {
-      newErrors.rePassword = '비밀번호가 일치하지 않습니다.';
+    // 비밀번호 확인
+    const passwordConfirmError = validatePasswordConfirmation(formData.password, formData.rePassword);
+    if (passwordConfirmError) {
+      newErrors.rePassword = passwordConfirmError;
     }
 
     // 프로듀서 정보 유효성 검사
@@ -408,58 +443,61 @@ const JoinProducer = () => {
       newErrors.businessType = '업태를 선택해주세요.';
     }
 
-    setErrors(newErrors);
-    if (Object.keys(newErrors).length > 0) return;
-
     // 중복 확인 대기 중이면 에러
     if (
       emailStatus === 'checking' ||
       accountIdStatus === 'checking' ||
       usernameStatus === 'checking'
     ) {
-      setErrors({ general: '중복 확인을 완료해주세요.' });
+      newErrors.general = '중복 확인을 완료해주세요.';
+    }
+
+    // 에러가 있으면 설정하고 함수 종료
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
       return;
     }
 
+    // 모든 검사를 통과한 경우에만 회원가입 진행
     setIsLoading(true);
 
-  try {
-    const fullAddress = detailAddress ? `${address} ${detailAddress}` : address;
+    try {
+      const fullAddress = detailAddress ? `${address} ${detailAddress}` : address;
 
-    const result = await registerProducer({
-      account_id: formData.account_id,
-      username: formData.username,
-      email: formData.email,
-      password: formData.password,
-      ceo_name: ceoName,
-      phone: phone,
-      business_number: businessNumber.replace(/-/g, ''),
-      address_postcode: postalCode,
-      address_line1: fullAddress,
-    });
-
-    console.log('프로듀서 회원가입 성공:', result);
-    setAccountId(formData.account_id);
-    
-    const loginResult = await login(formData.email, formData.password);
-    console.log('자동 로그인 성공:', loginResult);
-
-    alert('프로듀서 회원가입이 완료되었습니다!');
-    
-    navigate('/ProfileSettings', {
-      state: {
+      const result = await registerProducer({
         account_id: formData.account_id,
         username: formData.username,
-        isFromProducerSignup: true
-      }
-    });
-  } catch (error) {
-    console.error('프로듀서 회원가입 실패:', error);
-    setErrors({ general: '회원가입에 실패했습니다. 다시 시도해주세요.' });
-  } finally {
-    setIsLoading(false);
-  }
-}; // handleSubmit 함수 끝
+        email: formData.email,
+        password: formData.password,
+        ceo_name: ceoName,
+        phone: phone,
+        business_number: businessNumber.replace(/-/g, ''),
+        address_postcode: postalCode,
+        address_line1: fullAddress,
+      });
+
+      console.log('프로듀서 회원가입 성공:', result);
+      setAccountId(formData.account_id);
+      
+      const loginResult = await login(formData.email, formData.password);
+      console.log('자동 로그인 성공:', loginResult);
+
+      alert('프로듀서 회원가입이 완료되었습니다!');
+      
+      navigate('/ProfileSettings', {
+        state: {
+          account_id: formData.account_id,
+          username: formData.username,
+          isFromProducerSignup: true
+        }
+      });
+    } catch (error) {
+      console.error('프로듀서 회원가입 실패:', error);
+      setErrors({ general: '회원가입에 실패했습니다. 다시 시도해주세요.' });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Styled.Form onSubmit={handleSubmit}>
@@ -490,7 +528,7 @@ const JoinProducer = () => {
           type="password"
           placeholder="영문자, 숫자, 특수문자를 포함해 8자 이상"
           value={formData.password}
-          onChange={(e) => handleInputChange('password', e.target.value)}
+          onChange={(e) => handlePasswordChange(e.target.value)}
         />
         {errors.password && <Styled.Error>{errors.password}</Styled.Error>}
       </Styled.InputGroup>
@@ -502,7 +540,7 @@ const JoinProducer = () => {
           type="password"
           placeholder="한번 더 입력해주세요"
           value={formData.rePassword}
-          onChange={(e) => handleInputChange('rePassword', e.target.value)}
+          onChange={(e) => handlePasswordConfirmChange(e.target.value)}
         />
         {errors.rePassword && <Styled.Error>{errors.rePassword}</Styled.Error>}
       </Styled.InputGroup>
