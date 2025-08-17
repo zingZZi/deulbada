@@ -307,9 +307,10 @@ Chore: 리액트 프로젝트 구성
 ### 회원가입 / 로그인 / 프로필설정
 
 - 이메일을 통한 일반 회원 및 생산자 회원 가입 및 초기 프로필 설정
-  <img src="./docs/images/login.gif" width="300"/>
-  <img src="./docs/images/joinMembership_profile.gif" width="300"/>
-  <img src="./docs/images/joinProducer_profile.gif" width="300"/>
+  <br>
+  <img src="./docs/images/login.gif" width="200"/>
+  <img src="./docs/images/joinMembership_profile.gif" width="200"/>
+  <img src="./docs/images/joinProducer_profile.gif" width="200"/>
 
 ### 홈 피드
 
@@ -323,7 +324,8 @@ Chore: 리액트 프로젝트 구성
 ### 상품 등록
 
 - 생산자 전용 상품 업로드 기능
-  <img src="./docs/images/product.gif" width="300"/>
+  <br>
+  <img src="./docs/images/product.gif" width="200"/>
 
 ### 스토리 등록
 
