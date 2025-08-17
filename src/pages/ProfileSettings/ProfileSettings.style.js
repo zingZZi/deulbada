@@ -129,7 +129,7 @@ export const Button = styled.button`
   border: none;
   border-radius: 44px;
   margin-top: 1.8rem;
-  margin-bottom: 1.0rem;
+  margin-bottom: 12rem;
 `;
 
 export const ErrorMessage = styled.div`

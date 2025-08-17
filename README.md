@@ -123,17 +123,17 @@ src/
 │ ├── followings/
 │ ├── guide/
 │ ├── home/
-│ ├── join-membership/
-│ ├── join-producer/
+│ ├── JoinMembership/
+│ ├── JoinProducer/
 │ ├── login/
-│ ├── login-email/
+│ ├── LoginEmail/
 │ ├── myProfileEdit/
 │ ├── notFound/
 │ ├── postDetail/
 │ ├── postUpload/
 │ ├── product/
 │ ├── profile/
-│ ├── profile-settings/
+│ ├── ProfileSettings/
 │ └── search/
 ├── styles/
 ├── App.jsx

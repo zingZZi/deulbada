@@ -22,9 +22,9 @@ export default function App() {
 
         {/* 공개 라우트 */}
         <Route path="/login" element={<LoginLayout page={'login'} />} />
-        <Route path="/login-email" element={<LoginLayout page={'loginEmail'} />} />
-        <Route path="/join-membership" element={<LoginLayout page={'join-membership'} />} />
-        <Route path="/join-producer" element={<LoginLayout page={'join-producer'} />} />
+        <Route path="/LoginEmail" element={<LoginLayout page={'loginEmail'} />} />
+        <Route path="/JoinMembership" element={<LoginLayout page={'JoinMembership'} />} />
+        <Route path="/JoinProducer" element={<LoginLayout page={'JoinProducer'} />} />
 
         {/* 루트 접근 시 홈으로 이동 (홈은 보호 처리됨) */}
         <Route path="/" element={<Navigate to="/home" replace />} />
@@ -44,7 +44,7 @@ export default function App() {
           <Route path="/product" element={<CommonLayout page={'product'} />} />
           <Route path="/editProfile" element={<CommonLayout page={'editProfile'} />} />
           <Route path="/post/:postId" element={<CommonLayout page={'post'} />} />
-          <Route path="/profile-settings" element={<CommonLayout page={'profile-settings'} />} />
+          <Route path="/ProfileSettings" element={<CommonLayout page={'ProfileSettings'} />} />
           <Route path="/postDetail/:postId" element={<CommonLayout page={'postDetail'} />} />
           <Route path="/postUpload" element={<CommonLayout page={'postUpload'} />} />
         </Route>

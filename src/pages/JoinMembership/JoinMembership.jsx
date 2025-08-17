@@ -299,7 +299,7 @@ const JoinMembership = () => {
       console.log('자동 로그인 성공:', loginResult);
 
       alert('회원가입이 완료되었습니다!');
-      navigate('/profile-settings', {
+      navigate('/ProfileSettings', {
         state: {
           account_id: formData.account_id,
           username: formData.username,
@@ -403,7 +403,7 @@ const JoinMembership = () => {
         {isLoading ? '가입 중...' : '다음'}
       </Styled.Button>
 
-      <Link to="/join-producer">
+      <Link to="/JoinProducer">
         <Styled.Signup>생산자 인증 가입하기</Styled.Signup>
       </Link>
     </Styled.Form>

@@ -11,6 +11,7 @@ const Login = () => {
     <Styled.LoginContainer>
       <Styled.Login>
         <Styled.Logo src={logoSymbolWhite} alt="들바다 로고" />
+
         <Styled.SocialSection>
 
             <Styled.KakaoButton>
@@ -29,15 +30,16 @@ const Login = () => {
             </Styled.FacebookButton>
 
             <Styled.AuthLinks>
-              <Link to="/login-email">
+              <Link to="/LoginEmail">
                 <Styled.EmailLogin>이메일로 로그인</Styled.EmailLogin>
               </Link>
-              <Link to="/join-membership">
+              <Link to="/JoinMembership">
                 <Styled.Signup>회원가입</Styled.Signup>
               </Link>
             </Styled.AuthLinks>
 
         </Styled.SocialSection>
+
       </Styled.Login>
     </Styled.LoginContainer>
   );
