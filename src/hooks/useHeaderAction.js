@@ -81,6 +81,10 @@ const useHeaderActions = () => {
         console.log('Executing submit-post action');
         executeAction('submit-post');
         break;
+      case 'update-post':
+        console.log('Executing update-post action');
+        executeAction('update-post');
+        break;
 
       default:
         console.warn('Unknown action:', actionKey);

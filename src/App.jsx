@@ -8,6 +8,7 @@ import NotFound from './pages/notFound/NotFound';
 import RequireAuth from './auth/RequireAuth';
 import { useEffect } from 'react';
 import { verifyToken } from './auth/authService';
+import PostUpload from './pages/postUpload/PostUpload';
 
 export default function App() {
   useEffect(() => {
@@ -47,6 +48,7 @@ export default function App() {
           <Route path="/ProfileSettings" element={<CommonLayout page={'ProfileSettings'} />} />
           <Route path="/postDetail/:postId" element={<CommonLayout page={'postDetail'} />} />
           <Route path="/postUpload" element={<CommonLayout page={'postUpload'} />} />
+          <Route path="/postEdit/:postId" element={<CommonLayout page={'postUpload'} />} />
         </Route>
 
         {/* 404 */}
