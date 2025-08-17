@@ -321,7 +321,8 @@ Chore: 리액트 프로젝트 구성
 ### 프로필
 
 <div align="left">
-  <img src="./docs/images/search.gif" width="200" alt="프로필"/>
+  <img src="./docs/images/profile1.gif" width="200" alt="상대방 프로필"/>
+  <img src="./docs/images/profile2.gif" width="200" alt="본인 프로필"/>
 </div>
 - 상대방 프로필/사용자 본인의 프로필
 - 팔로우버튼 기능(팔로우/언팔로우)
