@@ -1,5 +1,5 @@
 import * as Styled from './JoinProducer.style';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { registerProducer, isEmailAvailable, isAccountIdAvailable } from '../../api/authApi';
 import { login } from '../../auth/authService';
@@ -9,7 +9,7 @@ const JoinProducer = () => {
   // 기본 회원가입 정보
   const [formData, setFormData] = useState({
     account_id: '',
-    nickname: '',
+    username: '',
     email: '',
     password: '',
     rePassword: '',
@@ -30,9 +30,102 @@ const JoinProducer = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [emailStatus, setEmailStatus] = useState(null);
   const [accountIdStatus, setAccountIdStatus] = useState(null);
-  const [nicknameStatus, setNicknameStatus] = useState(null);
+  const [usernameStatus, setusernameStatus] = useState(null);
 
   const navigate = useNavigate();
+
+  // 비밀번호 유효성 검사 함수 (제출 시에만 사용)
+  const validatePassword = (password) => {
+    if (!password) return '비밀번호를 입력해주세요.';
+    
+    const hasLetter = /[a-zA-Z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    const isLengthValid = password.length >= 8;
+
+    if (!isLengthValid || !hasLetter || !hasNumber || !hasSpecial) {
+      return '영문자, 숫자, 특수문자를 포함해 8자 이상 입력해주세요.';
+    }
+    return null; // 유효함
+  };
+
+  // 비밀번호 확인 검사 함수 (제출 시에만 사용)
+  const validatePasswordConfirmation = (password, rePassword) => {
+    if (!rePassword) return '비밀번호 확인을 입력해주세요.';
+    if (password !== rePassword) {
+      return '비밀번호가 일치하지 않습니다.';
+    }
+    return null; // 일치함
+  };
+
+  // 폼 유효성 검사 및 버튼 활성화 상태 계산 (기본 입력만 확인)
+  const isFormValid = useMemo(() => {
+    // 기본 회원가입 정보 확인
+    const isBasicFieldsFilled = 
+      formData.email.trim() &&
+      formData.password.trim() &&
+      formData.rePassword.trim() &&
+      formData.account_id.trim() &&
+      formData.username.trim();
+
+    // 프로듀서 전용 정보 확인
+    const isProducerFieldsFilled = 
+      ceoName.trim() &&
+      phone.trim() &&
+      businessNumber.trim() &&
+      postalCode &&
+      address.trim() &&
+      businessType;
+
+    if (!isBasicFieldsFilled || !isProducerFieldsFilled) return false;
+
+    // 이메일 형식 검사
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const isEmailValid = emailRegex.test(formData.email);
+
+    // 최소 길이 검사
+    const isAccountIdValid = formData.account_id.length >= 2;
+    const isUsernameValid = formData.username.length >= 2;
+
+    // 전화번호 형식 검사
+    const isPhoneValid = /^01[0-9]-\d{3,4}-\d{4}$/.test(phone);
+
+    // 사업자번호 형식 검사
+    const isBusinessNumberValid = /^\d{3}-\d{2}-\d{5}$/.test(businessNumber);
+
+    // 중복 확인 상태 검사
+    const isDuplicateCheckPassed = 
+      emailStatus === 'available' &&
+      accountIdStatus === 'available' &&
+      usernameStatus === 'available';
+
+    // 중복 확인 중이 아닌지 검사
+    const isNotChecking = 
+      emailStatus !== 'checking' &&
+      accountIdStatus !== 'checking' &&
+      usernameStatus !== 'checking';
+
+    return (
+      isEmailValid &&
+      isAccountIdValid &&
+      isUsernameValid &&
+      isPhoneValid &&
+      isBusinessNumberValid &&
+      isDuplicateCheckPassed &&
+      isNotChecking
+    );
+  }, [
+    formData,
+    ceoName,
+    phone,
+    businessNumber,
+    postalCode,
+    address,
+    businessType,
+    emailStatus,
+    accountIdStatus,
+    usernameStatus
+  ]);
 
   // 다음 주소 API 스크립트 로드
   useEffect(() => {
@@ -47,23 +140,23 @@ const JoinProducer = () => {
   }, []);
 
   // 중복 확인 함수들
-  const checkNickname = async (nickname) => {
-    if (!nickname || nickname.length < 2) return;
+  const checkusername = async (username) => {
+    if (!username || username.length < 2) return;
 
-    setNicknameStatus('checking');
+    setusernameStatus('checking');
 
     try {
-      const available = await isAccountIdAvailable(nickname);
-      setNicknameStatus(available ? 'available' : 'taken');
+      const available = await isAccountIdAvailable(username);
+      setusernameStatus(available ? 'available' : 'taken');
 
       if (!available) {
-        setErrors((prev) => ({ ...prev, nickname: '이미 사용중인 닉네임입니다.' }));
+        setErrors((prev) => ({ ...prev, username: '이미 사용중인 닉네임입니다.' }));
       } else {
-        setErrors((prev) => ({ ...prev, nickname: '' }));
+        setErrors((prev) => ({ ...prev, username: '' }));
       }
     } catch (error) {
       console.error('닉네임 확인 실패:', error);
-      setNicknameStatus(null);
+      setusernameStatus(null);
     }
   };
 
@@ -116,6 +209,31 @@ const JoinProducer = () => {
     }
   };
 
+  // 비밀번호 입력 처리
+  const handlePasswordChange = (value) => {
+    setFormData((prev) => ({ ...prev, password: value }));
+    
+    // 기존 에러 제거 (안전한 방식)
+    setErrors((prev) => {
+      const newErrors = { ...prev };
+      delete newErrors.password;
+      delete newErrors.rePassword;
+      return newErrors;
+    });
+  };
+
+  // 비밀번호 확인 입력 처리
+  const handlePasswordConfirmChange = (value) => {
+    setFormData((prev) => ({ ...prev, rePassword: value }));
+    
+    // 기존 에러 제거 (안전한 방식)
+    setErrors((prev) => {
+      const newErrors = { ...prev };
+      delete newErrors.rePassword;
+      return newErrors;
+    });
+  };
+
   // 계정ID 입력 처리
   const handleAccountIdChange = (value) => {
     const filteredValue = value.replace(/[^a-zA-Z0-9._-]/g, '');
@@ -139,23 +257,23 @@ const JoinProducer = () => {
   };
 
   // 닉네임 입력 처리
-  const handleNicknameChange = (value) => {
+  const handleusernameChange = (value) => {
     const filteredValue = value.replace(/[^가-힣ㄱ-ㅎㅏ-ㅣ0-9]/g, '');
 
-    setFormData((prev) => ({ ...prev, nickname: filteredValue }));
+    setFormData((prev) => ({ ...prev, username: filteredValue }));
 
-    if (errors.nickname) {
-      setErrors((prev) => ({ ...prev, nickname: '' }));
+    if (errors.username) {
+      setErrors((prev) => ({ ...prev, username: '' }));
     }
 
-    if (nicknameStatus === 'available') {
-      setNicknameStatus(null);
+    if (usernameStatus === 'available') {
+      setusernameStatus(null);
     }
 
-    clearTimeout(window.nicknameCheckTimer);
+    clearTimeout(window.usernameCheckTimer);
     if (filteredValue.length >= 2) {
-      window.nicknameCheckTimer = setTimeout(() => {
-        checkNickname(filteredValue);
+      window.usernameCheckTimer = setTimeout(() => {
+        checkusername(filteredValue);
       }, 500);
     }
   };
@@ -252,6 +370,10 @@ const JoinProducer = () => {
   // 폼 제출 처리
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // 로딩 중이면 중단
+    if (isLoading) return;
+    
     const newErrors = {};
 
     // 기본 정보 유효성 검사
@@ -265,14 +387,14 @@ const JoinProducer = () => {
       newErrors.account_id = '계정ID 중복 확인을 완료해주세요.';
     }
 
-    if (!formData.nickname.trim()) {
-      newErrors.nickname = '닉네임을 입력해주세요.';
-    } else if (formData.nickname.length < 2) {
-      newErrors.nickname = '닉네임은 2자 이상이어야 합니다.';
-    } else if (nicknameStatus === 'taken') {
-      newErrors.nickname = '이미 사용중인 닉네임입니다.';
-    } else if (nicknameStatus !== 'available') {
-      newErrors.nickname = '닉네임 중복 확인을 완료해주세요.';
+    if (!formData.username.trim()) {
+      newErrors.username = '닉네임을 입력해주세요.';
+    } else if (formData.username.length < 2) {
+      newErrors.username = '닉네임은 2자 이상이어야 합니다.';
+    } else if (usernameStatus === 'taken') {
+      newErrors.username = '이미 사용중인 닉네임입니다.';
+    } else if (usernameStatus !== 'available') {
+      newErrors.username = '닉네임 중복 확인을 완료해주세요.';
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -285,20 +407,15 @@ const JoinProducer = () => {
     }
 
     // 비밀번호 유효성 검사
-    if (formData.password.length < 8) {
-      newErrors.password = '영문자, 숫자, 특수문자를 포함해 8자 이상 입력해주세요.';
-    } else {
-      const hasLetter = /[a-zA-Z]/.test(formData.password);
-      const hasNumber = /[0-9]/.test(formData.password);
-      const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(formData.password);
-
-      if (!hasLetter || !hasNumber || !hasSpecial) {
-        newErrors.password = '영문자, 숫자, 특수문자를 포함해 8자 이상 입력해주세요.';
-      }
+    const passwordError = validatePassword(formData.password);
+    if (passwordError) {
+      newErrors.password = passwordError;
     }
 
-    if (formData.password !== formData.rePassword) {
-      newErrors.rePassword = '비밀번호가 일치하지 않습니다.';
+    // 비밀번호 확인
+    const passwordConfirmError = validatePasswordConfirmation(formData.password, formData.rePassword);
+    if (passwordConfirmError) {
+      newErrors.rePassword = passwordConfirmError;
     }
 
     // 프로듀서 정보 유효성 검사
@@ -326,58 +443,61 @@ const JoinProducer = () => {
       newErrors.businessType = '업태를 선택해주세요.';
     }
 
-    setErrors(newErrors);
-    if (Object.keys(newErrors).length > 0) return;
-
     // 중복 확인 대기 중이면 에러
     if (
       emailStatus === 'checking' ||
       accountIdStatus === 'checking' ||
-      nicknameStatus === 'checking'
+      usernameStatus === 'checking'
     ) {
-      setErrors({ general: '중복 확인을 완료해주세요.' });
+      newErrors.general = '중복 확인을 완료해주세요.';
+    }
+
+    // 에러가 있으면 설정하고 함수 종료
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
       return;
     }
 
+    // 모든 검사를 통과한 경우에만 회원가입 진행
     setIsLoading(true);
 
-  try {
-    const fullAddress = detailAddress ? `${address} ${detailAddress}` : address;
+    try {
+      const fullAddress = detailAddress ? `${address} ${detailAddress}` : address;
 
-    const result = await registerProducer({
-      account_id: formData.account_id,
-      nickname: formData.nickname,
-      email: formData.email,
-      password: formData.password,
-      ceo_name: ceoName,
-      phone: phone,
-      business_number: businessNumber.replace(/-/g, ''),
-      address_postcode: postalCode,
-      address_line1: fullAddress,
-    });
-
-    console.log('프로듀서 회원가입 성공:', result);
-    setAccountId(formData.account_id);
-    
-    const loginResult = await login(formData.email, formData.password);
-    console.log('자동 로그인 성공:', loginResult);
-
-    alert('프로듀서 회원가입이 완료되었습니다!');
-    
-    navigate('/profile-settings', {
-      state: {
+      const result = await registerProducer({
         account_id: formData.account_id,
-        nickname: formData.nickname,
-        isFromProducerSignup: true
-      }
-    });
-  } catch (error) {
-    console.error('프로듀서 회원가입 실패:', error);
-    setErrors({ general: '회원가입에 실패했습니다. 다시 시도해주세요.' });
-  } finally {
-    setIsLoading(false);
-  }
-}; // handleSubmit 함수 끝
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+        ceo_name: ceoName,
+        phone: phone,
+        business_number: businessNumber.replace(/-/g, ''),
+        address_postcode: postalCode,
+        address_line1: fullAddress,
+      });
+
+      console.log('프로듀서 회원가입 성공:', result);
+      setAccountId(formData.account_id);
+      
+      const loginResult = await login(formData.email, formData.password);
+      console.log('자동 로그인 성공:', loginResult);
+
+      alert('프로듀서 회원가입이 완료되었습니다!');
+      
+      navigate('/ProfileSettings', {
+        state: {
+          account_id: formData.account_id,
+          username: formData.username,
+          isFromProducerSignup: true
+        }
+      });
+    } catch (error) {
+      console.error('프로듀서 회원가입 실패:', error);
+      setErrors({ general: '회원가입에 실패했습니다. 다시 시도해주세요.' });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Styled.Form onSubmit={handleSubmit}>
@@ -408,7 +528,7 @@ const JoinProducer = () => {
           type="password"
           placeholder="영문자, 숫자, 특수문자를 포함해 8자 이상"
           value={formData.password}
-          onChange={(e) => handleInputChange('password', e.target.value)}
+          onChange={(e) => handlePasswordChange(e.target.value)}
         />
         {errors.password && <Styled.Error>{errors.password}</Styled.Error>}
       </Styled.InputGroup>
@@ -420,7 +540,7 @@ const JoinProducer = () => {
           type="password"
           placeholder="한번 더 입력해주세요"
           value={formData.rePassword}
-          onChange={(e) => handleInputChange('rePassword', e.target.value)}
+          onChange={(e) => handlePasswordConfirmChange(e.target.value)}
         />
         {errors.rePassword && <Styled.Error>{errors.rePassword}</Styled.Error>}
       </Styled.InputGroup>
@@ -443,20 +563,20 @@ const JoinProducer = () => {
       </Styled.InputGroup>
 
       <Styled.InputGroup>
-        <Styled.Label htmlFor="nickname">사용자 이름</Styled.Label>
+        <Styled.Label htmlFor="username">사용자 이름</Styled.Label>
         <Styled.InputEmail
-          id="nickname"
+          id="username"
           type="text"
           placeholder="한글과 숫자만 입력 가능합니다"
-          value={formData.nickname}
-          onChange={(e) => handleNicknameChange(e.target.value)}
+          value={formData.username}
+          onChange={(e) => handleusernameChange(e.target.value)}
         />
-        {nicknameStatus === 'available' && (
+        {usernameStatus === 'available' && (
           <div style={{ fontSize: '12px', marginTop: '4px', color: 'green' }}>
             ✓ 사용 가능한 사용자 이름입니다
           </div>
         )}
-        {errors.nickname && <Styled.Error>{errors.nickname}</Styled.Error>}
+        {errors.username && <Styled.Error>{errors.username}</Styled.Error>}
       </Styled.InputGroup>
 
       {/* 프로듀서 전용 정보 */}
@@ -570,11 +690,15 @@ const JoinProducer = () => {
 
       {errors.general && <Styled.Error>{errors.general}</Styled.Error>}
 
-      <Styled.Button type="submit" disabled={isLoading}>
+      <Styled.Button 
+        type="submit" 
+        disabled={isLoading || !isFormValid}
+        $isActive={isFormValid}
+      >
         {isLoading ? '가입 중...' : '다음'}
       </Styled.Button>
 
-      <Link to="/join-membership">
+      <Link to="/JoinMembership">
         <Styled.Signup>일반 회원 가입하기</Styled.Signup>
       </Link>
     </Styled.Form>

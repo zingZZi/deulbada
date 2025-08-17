@@ -8,6 +8,7 @@ export const LoginContainer = styled.section`
   justify-content: space-between;
   align-items: center;
 `;
+
 export const Login = styled.section`
   display: flex;
   flex-direction: column;
@@ -27,8 +28,9 @@ export const SocialSection = styled.section`
   border-radius: 16px 16px 0px 0px;
   width: 100%;
   max-width: 53.4rem; 
-  height: 38%;
+  height: 42%; /* 높이를 38%에서 42%로 증가 */
   padding-top: 50px;
+  padding-bottom: 40px; /* 하단 여백 추가 */
   display: flex;
   align-items: center;
   flex-direction: column;

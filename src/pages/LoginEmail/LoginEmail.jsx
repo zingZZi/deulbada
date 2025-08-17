@@ -9,6 +9,9 @@ const LoginEmail = () => {
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
+  // 입력값이 모두 채워져 있는지 확인
+  const isFormValid = email.trim() !== '' && password.trim() !== '';
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
@@ -67,9 +70,14 @@ const LoginEmail = () => {
 
       {errors.general && <Styled.Error>{errors.general}</Styled.Error>}
 
-      <Styled.Button type="submit">로그인</Styled.Button>
+      <Styled.Button 
+        type="submit" 
+        disabled={!isFormValid}
+      >
+        로그인
+      </Styled.Button>
 
-      <Link to="/join-membership">
+      <Link to="/JoinMembership">
         <Styled.Signup>이메일로 회원가입</Styled.Signup>
       </Link>
     </Styled.Form>

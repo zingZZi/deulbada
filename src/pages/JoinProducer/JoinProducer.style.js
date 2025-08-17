@@ -276,22 +276,22 @@ export const FileNameNotice = styled.div`
 `;
 
 export const Error = styled.div`
-  font-size: 1rem;
+  font-size: 1.2rem;
   color: #e74c3c;
   margin-top: 0.5rem;
 `;
 
 export const Button = styled.button`
   padding: 1.1rem 0;
-  background: #A2D098;
+  background-color: ${props => props.$isActive ? '#5CA14E' : '#A2D098'};
   color: white;
   border: none;
   border-radius: 44px;
   margin-bottom: 1.0rem;
   cursor: pointer;
 
-  &:disabled {
-    background: #ccc;
+    &:disabled {
+    background-color: #your-disabled-color;
     cursor: not-allowed;
   }
 `;
@@ -300,6 +300,8 @@ export const Signup = styled.span`
   display: flex;
   justify-content: center;
   font-size: 1.2rem;
+  padding-top: 1.0rem;
+  padding-bottom: 6.0rem;
   color: ${({ theme }) => theme.colors.white700};
   font-weight: ${({ theme }) => theme.fonts.weights.regular};
 `;

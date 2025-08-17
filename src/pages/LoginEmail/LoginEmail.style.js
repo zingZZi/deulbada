@@ -19,7 +19,7 @@ export const H2 = styled.h2`
 export const InputGroup = styled.div`
   display: flex;
   flex-direction: column;
-  margin-bottom: 1.8rem;
+  margin-bottom: 0.8rem;
 `;
 
 export const Label = styled.label`
@@ -71,11 +71,11 @@ export const Error = styled.p`
 
 export const Button = styled.button`
   padding: 1.1rem 0;
-  background: #A2D098;
   color: white;
   border: none;
   border-radius: 44px;
   margin-bottom: 1.0rem;
+  background-color: ${({ disabled }) => (disabled ? '#A2D098' : '#5CA14E')};
 `;
 
 export const Signup = styled.span`

@@ -1,5 +1,5 @@
 import * as Styled from './JoinMembership.style';
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { registerUser, isEmailAvailable, isAccountIdAvailable } from '../../api/authApi';
 import { login } from '../../auth/authService';
@@ -8,7 +8,7 @@ import { setAccountId } from '../../auth/tokenStore';
 const JoinMembership = () => {
   const [formData, setFormData] = useState({
     account_id: '',
-    nickname: '',
+    username: '',
     email: '',
     password: '',
     rePassword: '',
@@ -17,26 +17,96 @@ const JoinMembership = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [emailStatus, setEmailStatus] = useState(null);
   const [accountIdStatus, setAccountIdStatus] = useState(null);
-  const [nicknameStatus, setNicknameStatus] = useState(null);
+  const [usernameStatus, setusernameStatus] = useState(null);
 
   const navigate = useNavigate();
 
-  // 닉네임 중복 확인
-  const checkNickname = async (nickname) => {
-    if (!nickname || nickname.length < 2) return;
+  // 비밀번호 유효성 검사 함수 (제출 시에만 사용)
+  const validatePassword = (password) => {
+    if (!password) return '비밀번호를 입력해주세요.';
+    
+    const hasLetter = /[a-zA-Z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    const isLengthValid = password.length >= 8;
 
-    setNicknameStatus('checking');
+    if (!isLengthValid || !hasLetter || !hasNumber || !hasSpecial) {
+      return '영문자, 숫자, 특수문자를 포함해 8자 이상 입력해주세요.';
+    }
+    return null; // 유효함
+  };
+
+  // 비밀번호 확인 검사 함수 (제출 시에만 사용)
+  const validatePasswordConfirmation = (password, rePassword) => {
+    if (!rePassword) return '비밀번호 확인을 입력해주세요.';
+    if (password !== rePassword) {
+      return '비밀번호가 일치하지 않습니다.';
+    }
+    return null; // 일치함
+  };
+
+  // 폼 유효성 검사 및 버튼 활성화 상태 계산 (기본 입력만 확인)
+  const isFormValid = useMemo(() => {
+    // 모든 필드가 입력되었는지만 확인
+    const isAllFieldsFilled = 
+      formData.email.trim() &&
+      formData.password.trim() &&
+      formData.rePassword.trim() &&
+      formData.account_id.trim() &&
+      formData.username.trim();
+
+    if (!isAllFieldsFilled) return false;
+
+    // 이메일 형식 검사
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const isEmailValid = emailRegex.test(formData.email);
+
+    // 최소 길이 검사
+    const isAccountIdValid = formData.account_id.length >= 2;
+    const isUsernameValid = formData.username.length >= 2;
+
+    // 중복 확인 상태 검사
+    const isDuplicateCheckPassed = 
+      emailStatus === 'available' &&
+      accountIdStatus === 'available' &&
+      usernameStatus === 'available';
+
+    // 중복 확인 중이 아닌지 검사
+    const isNotChecking = 
+      emailStatus !== 'checking' &&
+      accountIdStatus !== 'checking' &&
+      usernameStatus !== 'checking';
+
+    return (
+      isEmailValid &&
+      isAccountIdValid &&
+      isUsernameValid &&
+      isDuplicateCheckPassed &&
+      isNotChecking
+    );
+  }, [
+    formData,
+    emailStatus,
+    accountIdStatus,
+    usernameStatus
+  ]);
+
+  // 닉네임 중복 확인
+  const checkusername = async (username) => {
+    if (!username || username.length < 2) return;
+
+    setusernameStatus('checking');
 
     try {
-      const available = await isAccountIdAvailable(nickname);
-      setNicknameStatus(available ? 'available' : 'taken');
+      const available = await isAccountIdAvailable(username);
+      setusernameStatus(available ? 'available' : 'taken');
 
       if (!available) {
-        setErrors((prev) => ({ ...prev, nickname: '이미 사용중인 닉네임입니다.' }));
+        setErrors((prev) => ({ ...prev, username: '이미 사용중인 닉네임입니다.' }));
       }
     } catch (error) {
       console.error('닉네임 확인 실패:', error);
-      setNicknameStatus(null);
+      setusernameStatus(null);
     }
   };
 
@@ -88,6 +158,31 @@ const JoinMembership = () => {
     }
   };
 
+  // 비밀번호 입력 처리
+  const handlePasswordChange = (value) => {
+    setFormData((prev) => ({ ...prev, password: value }));
+    
+    // 기존 에러 제거 (안전한 방식)
+    setErrors((prev) => {
+      const newErrors = { ...prev };
+      delete newErrors.password;
+      delete newErrors.rePassword;
+      return newErrors;
+    });
+  };
+
+  // 비밀번호 확인 입력 처리
+  const handlePasswordConfirmChange = (value) => {
+    setFormData((prev) => ({ ...prev, rePassword: value }));
+    
+    // 기존 에러 제거 (안전한 방식)
+    setErrors((prev) => {
+      const newErrors = { ...prev };
+      delete newErrors.rePassword;
+      return newErrors;
+    });
+  };
+
   // 계정ID 입력 처리
   const handleAccountIdChange = (value) => {
     // 영문, 숫자, 특수문자만 허용
@@ -115,27 +210,27 @@ const JoinMembership = () => {
   };
 
   // 닉네임 입력 처리
-  const handleNicknameChange = (value) => {
+  const handleusernameChange = (value) => {
     // 한글과 숫자만 허용
     const filteredValue = value.replace(/[^가-힣ㄱ-ㅎㅏ-ㅣ0-9]/g, '');
 
-    setFormData((prev) => ({ ...prev, nickname: filteredValue }));
+    setFormData((prev) => ({ ...prev, username: filteredValue }));
 
     // 에러 제거
-    if (errors.nickname) {
-      setErrors((prev) => ({ ...prev, nickname: '' }));
+    if (errors.username) {
+      setErrors((prev) => ({ ...prev, username: '' }));
     }
 
     // 사용 가능 상태 초기화
-    if (nicknameStatus === 'available') {
-      setNicknameStatus(null);
+    if (usernameStatus === 'available') {
+      setusernameStatus(null);
     }
 
     // 중복 확인 (500ms 지연)
-    clearTimeout(window.nicknameCheckTimer);
+    clearTimeout(window.usernameCheckTimer);
     if (filteredValue.length >= 2) {
-      window.nicknameCheckTimer = setTimeout(() => {
-        checkNickname(filteredValue);
+      window.usernameCheckTimer = setTimeout(() => {
+        checkusername(filteredValue);
       }, 500);
     }
   };
@@ -161,6 +256,10 @@ const JoinMembership = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // 로딩 중이면 중단
+    if (isLoading) return;
+    
     const newErrors = {};
 
     // 계정ID 유효성 검사
@@ -173,12 +272,12 @@ const JoinMembership = () => {
     }
 
     // 닉네임 유효성 검사
-    if (!formData.nickname.trim()) {
-      newErrors.nickname = '닉네임을 입력해주세요.';
-    } else if (formData.nickname.length < 2) {
-      newErrors.nickname = '닉네임은 2자 이상이어야 합니다.';
-    } else if (nicknameStatus === 'taken') {
-      newErrors.nickname = '이미 사용중인 닉네임입니다.';
+    if (!formData.username.trim()) {
+      newErrors.username = '닉네임을 입력해주세요.';
+    } else if (formData.username.length < 2) {
+      newErrors.username = '닉네임은 2자 이상이어야 합니다.';
+    } else if (usernameStatus === 'taken') {
+      newErrors.username = '이미 사용중인 닉네임입니다.';
     }
 
     // 이메일 유효성 검사
@@ -190,42 +289,39 @@ const JoinMembership = () => {
     }
 
     // 비밀번호 유효성 검사
-    if (formData.password.length < 8) {
-      newErrors.password = '영문자, 숫자, 특수문자를 포함해 8자 이상 입력해주세요.';
-    } else {
-      const hasLetter = /[a-zA-Z]/.test(formData.password);
-      const hasNumber = /[0-9]/.test(formData.password);
-      const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(formData.password);
-
-      if (!hasLetter || !hasNumber || !hasSpecial) {
-        newErrors.password = '영문자, 숫자, 특수문자를 포함해 8자 이상 입력해주세요.';
-      }
+    const passwordError = validatePassword(formData.password);
+    if (passwordError) {
+      newErrors.password = passwordError;
     }
 
     // 비밀번호 확인
-    if (formData.password !== formData.rePassword) {
-      newErrors.rePassword = '비밀번호가 일치하지 않습니다.';
+    const passwordConfirmError = validatePasswordConfirmation(formData.password, formData.rePassword);
+    if (passwordConfirmError) {
+      newErrors.rePassword = passwordConfirmError;
     }
-
-    setErrors(newErrors);
-    if (Object.keys(newErrors).length > 0) return;
 
     // 중복 확인 대기 중이면 에러
     if (
       emailStatus === 'checking' ||
       accountIdStatus === 'checking' ||
-      nicknameStatus === 'checking'
+      usernameStatus === 'checking'
     ) {
-      setErrors({ general: '중복 확인을 완료해주세요.' });
+      newErrors.general = '중복 확인을 완료해주세요.';
+    }
+
+    // 에러가 있으면 설정하고 함수 종료
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
       return;
     }
 
+    // 모든 검사를 통과한 경우에만 회원가입 진행
     setIsLoading(true);
 
     try {
       const result = await registerUser({
         account_id: formData.account_id,
-        nickname: formData.nickname,
+        username: formData.username,
         email: formData.email,
         password: formData.password,
       });
@@ -240,10 +336,10 @@ const JoinMembership = () => {
       console.log('자동 로그인 성공:', loginResult);
 
       alert('회원가입이 완료되었습니다!');
-      navigate('/profile-settings', {
+      navigate('/ProfileSettings', {
         state: {
           account_id: formData.account_id,
-          nickname: formData.nickname,
+          username: formData.username,
           email: formData.email,
         },
       });
@@ -283,7 +379,7 @@ const JoinMembership = () => {
           type="password"
           placeholder="영문자, 숫자, 특수문자를 포함해 8자 이상 입력해주세요"
           value={formData.password}
-          onChange={(e) => handleInputChange('password', e.target.value)}
+          onChange={(e) => handlePasswordChange(e.target.value)}
         />
         {errors.password && <Styled.Error>{errors.password}</Styled.Error>}
       </Styled.InputGroup>
@@ -295,7 +391,7 @@ const JoinMembership = () => {
           type="password"
           placeholder="한 번 더 입력해주세요"
           value={formData.rePassword}
-          onChange={(e) => handleInputChange('rePassword', e.target.value)}
+          onChange={(e) => handlePasswordConfirmChange(e.target.value)}
         />
         {errors.rePassword && <Styled.Error>{errors.rePassword}</Styled.Error>}
       </Styled.InputGroup>
@@ -318,29 +414,33 @@ const JoinMembership = () => {
       </Styled.InputGroup>
 
       <Styled.InputGroup>
-        <Styled.Label htmlFor="nickname">사용자 이름</Styled.Label>
+        <Styled.Label htmlFor="username">사용자 이름</Styled.Label>
         <Styled.InputEmail
-          id="nickname"
+          id="username"
           type="text"
-          value={formData.nickname}
+          value={formData.username}
           placeholder="나는야 야채왕 (한글과 숫자만 입력 가능합니다)"
-          onChange={(e) => handleNicknameChange(e.target.value)}
+          onChange={(e) => handleusernameChange(e.target.value)}
         />
-        {nicknameStatus === 'available' && (
+        {usernameStatus === 'available' && (
           <div style={{ fontSize: '12px', marginTop: '4px', color: 'green' }}>
             ✓ 사용 가능한 사용자 이름입니다
           </div>
         )}
-        {errors.nickname && <Styled.Error>{errors.nickname}</Styled.Error>}
+        {errors.username && <Styled.Error>{errors.username}</Styled.Error>}
       </Styled.InputGroup>
 
       {errors.general && <Styled.Error>{errors.general}</Styled.Error>}
 
-      <Styled.Button type="submit" disabled={isLoading}>
+      <Styled.Button 
+        type="submit" 
+        disabled={isLoading || !isFormValid}
+        $isActive={isFormValid}
+      >
         {isLoading ? '가입 중...' : '다음'}
       </Styled.Button>
 
-      <Link to="/join-producer">
+      <Link to="/JoinProducer">
         <Styled.Signup>생산자 인증 가입하기</Styled.Signup>
       </Link>
     </Styled.Form>
