@@ -34,7 +34,7 @@ const Login = () => {
             </Styled.FacebookButton>
 
             <Styled.AuthLinks>
-              <Link to="/LoginEmail">
+              <Link to="/loginEmail">
                 <Styled.EmailLogin>이메일로 로그인</Styled.EmailLogin>
               </Link>
               <Link to="/JoinMembership">
