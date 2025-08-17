@@ -6,7 +6,6 @@ import { login } from '../../auth/authService';
 import { setAccountId } from '../../auth/tokenStore';
 
 const JoinProducer = () => {
-  // 기본 회원가입 정보
   const [formData, setFormData] = useState({
     account_id: '',
     username: '',
@@ -15,7 +14,6 @@ const JoinProducer = () => {
     rePassword: '',
   });
 
-  // 프로듀서 전용 정보
   const [postalCode, setPostalCode] = useState('');
   const [address, setAddress] = useState('');
   const [detailAddress, setDetailAddress] = useState('');
@@ -25,16 +23,14 @@ const JoinProducer = () => {
   const [businessNumber, setBusinessNumber] = useState('');
   const [fileName, setFileName] = useState('');
 
-  // 상태 관리
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [emailStatus, setEmailStatus] = useState(null);
   const [accountIdStatus, setAccountIdStatus] = useState(null);
-  const [usernameStatus, setusernameStatus] = useState(null);
+  const [usernameStatus, setUsernameStatus] = useState(null);
 
   const navigate = useNavigate();
 
-  // 비밀번호 유효성 검사 함수 (제출 시에만 사용)
   const validatePassword = (password) => {
     if (!password) return '비밀번호를 입력해주세요.';
     
@@ -46,21 +42,18 @@ const JoinProducer = () => {
     if (!isLengthValid || !hasLetter || !hasNumber || !hasSpecial) {
       return '영문자, 숫자, 특수문자를 포함해 8자 이상 입력해주세요.';
     }
-    return null; // 유효함
+    return null;
   };
 
-  // 비밀번호 확인 검사 함수 (제출 시에만 사용)
   const validatePasswordConfirmation = (password, rePassword) => {
     if (!rePassword) return '비밀번호 확인을 입력해주세요.';
     if (password !== rePassword) {
       return '비밀번호가 일치하지 않습니다.';
     }
-    return null; // 일치함
+    return null;
   };
 
-  // 폼 유효성 검사 및 버튼 활성화 상태 계산 (기본 입력만 확인)
   const isFormValid = useMemo(() => {
-    // 기본 회원가입 정보 확인
     const isBasicFieldsFilled = 
       formData.email.trim() &&
       formData.password.trim() &&
@@ -68,7 +61,6 @@ const JoinProducer = () => {
       formData.account_id.trim() &&
       formData.username.trim();
 
-    // 프로듀서 전용 정보 확인
     const isProducerFieldsFilled = 
       ceoName.trim() &&
       phone.trim() &&
@@ -79,27 +71,18 @@ const JoinProducer = () => {
 
     if (!isBasicFieldsFilled || !isProducerFieldsFilled) return false;
 
-    // 이메일 형식 검사
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const isEmailValid = emailRegex.test(formData.email);
-
-    // 최소 길이 검사
     const isAccountIdValid = formData.account_id.length >= 2;
     const isUsernameValid = formData.username.length >= 2;
-
-    // 전화번호 형식 검사
     const isPhoneValid = /^01[0-9]-\d{3,4}-\d{4}$/.test(phone);
-
-    // 사업자번호 형식 검사
     const isBusinessNumberValid = /^\d{3}-\d{2}-\d{5}$/.test(businessNumber);
 
-    // 중복 확인 상태 검사
     const isDuplicateCheckPassed = 
       emailStatus === 'available' &&
       accountIdStatus === 'available' &&
       usernameStatus === 'available';
 
-    // 중복 확인 중이 아닌지 검사
     const isNotChecking = 
       emailStatus !== 'checking' &&
       accountIdStatus !== 'checking' &&
@@ -127,7 +110,6 @@ const JoinProducer = () => {
     usernameStatus
   ]);
 
-  // 다음 주소 API 스크립트 로드
   useEffect(() => {
     const script = document.createElement('script');
     script.src = 'https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
@@ -139,24 +121,23 @@ const JoinProducer = () => {
     };
   }, []);
 
-  // 중복 확인 함수들
-  const checkusername = async (username) => {
+  const checkUsername = async (username) => {
     if (!username || username.length < 2) return;
 
-    setusernameStatus('checking');
+    setUsernameStatus('checking');
 
     try {
       const available = await isAccountIdAvailable(username);
-      setusernameStatus(available ? 'available' : 'taken');
+      setUsernameStatus(available ? 'available' : 'taken');
 
       if (!available) {
-        setErrors((prev) => ({ ...prev, username: '이미 사용중인 닉네임입니다.' }));
+        setErrors(prev => ({ ...prev, username: '이미 사용중인 닉네임입니다.' }));
       } else {
-        setErrors((prev) => ({ ...prev, username: '' }));
+        setErrors(prev => ({ ...prev, username: '' }));
       }
     } catch (error) {
       console.error('닉네임 확인 실패:', error);
-      setusernameStatus(null);
+      setUsernameStatus(null);
     }
   };
 
@@ -170,9 +151,9 @@ const JoinProducer = () => {
       setAccountIdStatus(available ? 'available' : 'taken');
 
       if (!available) {
-        setErrors((prev) => ({ ...prev, account_id: '이미 사용중인 계정ID입니다.' }));
+        setErrors(prev => ({ ...prev, account_id: '이미 사용중인 계정ID입니다.' }));
       } else {
-        setErrors((prev) => ({ ...prev, account_id: '' }));
+        setErrors(prev => ({ ...prev, account_id: '' }));
       }
     } catch (error) {
       console.error('계정ID 확인 실패:', error);
@@ -190,9 +171,9 @@ const JoinProducer = () => {
       setEmailStatus(available ? 'available' : 'taken');
 
       if (!available) {
-        setErrors((prev) => ({ ...prev, email: '이미 사용중인 이메일입니다.' }));
+        setErrors(prev => ({ ...prev, email: '이미 사용중인 이메일입니다.' }));
       } else {
-        setErrors((prev) => ({ ...prev, email: '' }));
+        setErrors(prev => ({ ...prev, email: '' }));
       }
     } catch (error) {
       console.error('이메일 확인 실패:', error);
@@ -200,21 +181,18 @@ const JoinProducer = () => {
     }
   };
 
-  // 입력값 변경 처리
   const handleInputChange = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData(prev => ({ ...prev, [field]: value }));
 
     if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: '' }));
+      setErrors(prev => ({ ...prev, [field]: '' }));
     }
   };
 
-  // 비밀번호 입력 처리
   const handlePasswordChange = (value) => {
-    setFormData((prev) => ({ ...prev, password: value }));
+    setFormData(prev => ({ ...prev, password: value }));
     
-    // 기존 에러 제거 (안전한 방식)
-    setErrors((prev) => {
+    setErrors(prev => {
       const newErrors = { ...prev };
       delete newErrors.password;
       delete newErrors.rePassword;
@@ -222,26 +200,23 @@ const JoinProducer = () => {
     });
   };
 
-  // 비밀번호 확인 입력 처리
   const handlePasswordConfirmChange = (value) => {
-    setFormData((prev) => ({ ...prev, rePassword: value }));
+    setFormData(prev => ({ ...prev, rePassword: value }));
     
-    // 기존 에러 제거 (안전한 방식)
-    setErrors((prev) => {
+    setErrors(prev => {
       const newErrors = { ...prev };
       delete newErrors.rePassword;
       return newErrors;
     });
   };
 
-  // 계정ID 입력 처리
   const handleAccountIdChange = (value) => {
     const filteredValue = value.replace(/[^a-zA-Z0-9._-]/g, '');
 
-    setFormData((prev) => ({ ...prev, account_id: filteredValue }));
+    setFormData(prev => ({ ...prev, account_id: filteredValue }));
 
     if (errors.account_id) {
-      setErrors((prev) => ({ ...prev, account_id: '' }));
+      setErrors(prev => ({ ...prev, account_id: '' }));
     }
 
     if (accountIdStatus === 'available') {
@@ -256,29 +231,27 @@ const JoinProducer = () => {
     }
   };
 
-  // 닉네임 입력 처리
-  const handleusernameChange = (value) => {
+  const handleUsernameChange = (value) => {
     const filteredValue = value.replace(/[^가-힣ㄱ-ㅎㅏ-ㅣ0-9]/g, '');
 
-    setFormData((prev) => ({ ...prev, username: filteredValue }));
+    setFormData(prev => ({ ...prev, username: filteredValue }));
 
     if (errors.username) {
-      setErrors((prev) => ({ ...prev, username: '' }));
+      setErrors(prev => ({ ...prev, username: '' }));
     }
 
     if (usernameStatus === 'available') {
-      setusernameStatus(null);
+      setUsernameStatus(null);
     }
 
     clearTimeout(window.usernameCheckTimer);
     if (filteredValue.length >= 2) {
       window.usernameCheckTimer = setTimeout(() => {
-        checkusername(filteredValue);
+        checkUsername(filteredValue);
       }, 500);
     }
   };
 
-  // 이메일 입력 처리
   const handleEmailChange = (value) => {
     const filteredValue = value.replace(/[^a-zA-Z0-9@._+-]/g, '');
 
@@ -294,7 +267,6 @@ const JoinProducer = () => {
     }, 500);
   };
 
-  // 전화번호 입력 처리
   const handlePhoneChange = (value) => {
     const filteredValue = value.replace(/[^0-9]/g, '');
     let formattedValue = filteredValue;
@@ -310,11 +282,10 @@ const JoinProducer = () => {
     setPhone(formattedValue);
 
     if (errors.phone) {
-      setErrors((prev) => ({ ...prev, phone: '' }));
+      setErrors(prev => ({ ...prev, phone: '' }));
     }
   };
 
-  // 사업자등록번호 입력 처리
   const handleBusinessNumberChange = (value) => {
     const filteredValue = value.replace(/[^0-9]/g, '');
     let formattedValue = filteredValue;
@@ -330,20 +301,17 @@ const JoinProducer = () => {
     setBusinessNumber(formattedValue);
 
     if (errors.businessNumber) {
-      setErrors((prev) => ({ ...prev, businessNumber: '' }));
+      setErrors(prev => ({ ...prev, businessNumber: '' }));
     }
   };
 
-  // 파일 업로드 처리
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setFileName(file.name);
-      console.log('선택된 파일:', file);
     }
   };
 
-  // 주소 API 처리
   const handleOpenPostcodeAPI = () => {
     new window.daum.Postcode({
       oncomplete: function (data) {
@@ -367,16 +335,13 @@ const JoinProducer = () => {
     setDetailAddress(e.target.value);
   };
 
-  // 폼 제출 처리
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // 로딩 중이면 중단
     if (isLoading) return;
     
     const newErrors = {};
 
-    // 기본 정보 유효성 검사
     if (!formData.account_id.trim()) {
       newErrors.account_id = '계정ID를 입력해주세요.';
     } else if (formData.account_id.length < 2) {
@@ -406,19 +371,16 @@ const JoinProducer = () => {
       newErrors.email = '이메일 중복 확인을 완료해주세요.';
     }
 
-    // 비밀번호 유효성 검사
     const passwordError = validatePassword(formData.password);
     if (passwordError) {
       newErrors.password = passwordError;
     }
 
-    // 비밀번호 확인
     const passwordConfirmError = validatePasswordConfirmation(formData.password, formData.rePassword);
     if (passwordConfirmError) {
       newErrors.rePassword = passwordConfirmError;
     }
 
-    // 프로듀서 정보 유효성 검사
     if (!ceoName.trim()) {
       newErrors.ceoName = '대표자명을 입력해주세요.';
     }
@@ -443,7 +405,6 @@ const JoinProducer = () => {
       newErrors.businessType = '업태를 선택해주세요.';
     }
 
-    // 중복 확인 대기 중이면 에러
     if (
       emailStatus === 'checking' ||
       accountIdStatus === 'checking' ||
@@ -452,19 +413,17 @@ const JoinProducer = () => {
       newErrors.general = '중복 확인을 완료해주세요.';
     }
 
-    // 에러가 있으면 설정하고 함수 종료
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) {
       return;
     }
 
-    // 모든 검사를 통과한 경우에만 회원가입 진행
     setIsLoading(true);
 
     try {
       const fullAddress = detailAddress ? `${address} ${detailAddress}` : address;
 
-      const result = await registerProducer({
+      await registerProducer({
         account_id: formData.account_id,
         username: formData.username,
         email: formData.email,
@@ -476,11 +435,9 @@ const JoinProducer = () => {
         address_line1: fullAddress,
       });
 
-      console.log('프로듀서 회원가입 성공:', result);
       setAccountId(formData.account_id);
       
-      const loginResult = await login(formData.email, formData.password);
-      console.log('자동 로그인 성공:', loginResult);
+      await login(formData.email, formData.password);
 
       alert('프로듀서 회원가입이 완료되었습니다!');
       
@@ -503,7 +460,6 @@ const JoinProducer = () => {
     <Styled.Form onSubmit={handleSubmit}>
       <Styled.H2>생산자 회원가입</Styled.H2>
 
-      {/* 기본 회원 정보 */}
       <Styled.InputGroup>
         <Styled.Label htmlFor="email">이메일</Styled.Label>
         <Styled.InputEmail
@@ -569,7 +525,7 @@ const JoinProducer = () => {
           type="text"
           placeholder="한글과 숫자만 입력 가능합니다"
           value={formData.username}
-          onChange={(e) => handleusernameChange(e.target.value)}
+          onChange={(e) => handleUsernameChange(e.target.value)}
         />
         {usernameStatus === 'available' && (
           <div style={{ fontSize: '12px', marginTop: '4px', color: 'green' }}>
@@ -579,7 +535,6 @@ const JoinProducer = () => {
         {errors.username && <Styled.Error>{errors.username}</Styled.Error>}
       </Styled.InputGroup>
 
-      {/* 프로듀서 전용 정보 */}
       <Styled.InputGroup>
         <Styled.Label htmlFor="name">대표자 실명</Styled.Label>
         <Styled.InputName
