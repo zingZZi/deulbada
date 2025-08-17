@@ -1,6 +1,6 @@
 import * as Styled from './MyPrifleEdit.style';
 import React, { useEffect, useState } from 'react';
-import { Camera } from 'lucide-react';
+import { CameraIcon } from '../../components/icon/Icons';
 import ImagePreview from '../../assets/images/image-preview.png';
 import { usePageActions } from '../../context/PageActionsContext';
 import { fetchUser, editProfile, checkAccountId } from '../../api/userApi'; // checkAccountId 추가
@@ -272,7 +272,7 @@ const MyProfileEdit = () => {
           alt="프로필 이미지"
         />
         <Styled.FileInputLabel htmlFor="profile-upload">
-          <Camera color="#fff" size={22} />
+          <CameraIcon size={22} />
         </Styled.FileInputLabel>
         <input
           id="profile-upload"

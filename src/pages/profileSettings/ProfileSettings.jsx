@@ -1,7 +1,7 @@
 import * as Styled from './ProfileSettings.style';
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Camera } from 'lucide-react';
+import { CameraIcon } from '../../components/icon/Icons';
 import ImagePreview from '../../assets/images/image-preview.png';
 import { getAccessToken, clearTokens } from '../../auth/tokenStore';
 
@@ -238,7 +238,7 @@ const ProfileSettings = () => {
           alt="프로필 이미지"
         />
         <Styled.FileInputLabel htmlFor="profile-upload">
-          <Camera color="#fff" size={22} />
+          <CameraIcon size={22} />
         </Styled.FileInputLabel>
         <input
           id="profile-upload"

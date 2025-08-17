@@ -1,6 +1,6 @@
 import * as Styled from './Product.style';
 import React, { useState, useEffect, useCallback } from 'react';
-import { Camera } from 'lucide-react';
+import { CameraIcon } from '../../components/icon/Icons';
 import { createPost } from '../../api/productApi';
 import { usePageActions } from '../../context/PageActionsContext';
 import { getAccessToken } from '../../auth/tokenStore';
@@ -385,7 +385,7 @@ const Product = () => {
           {preview && <img src={preview} alt="업로드 미리보기" />}
 
           <Styled.IconWrapper>
-            <Camera color="#fff" size={22} />
+            <CameraIcon size={22} />
           </Styled.IconWrapper>
         </Styled.ImageUploadWrapper>
       </Styled.InputGroup>
