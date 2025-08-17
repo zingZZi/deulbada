@@ -305,35 +305,31 @@ Chore: 리액트 프로젝트 구성
 
 ## 10. 구현 페이지
 
-### 프로필 초기세팅 / 수정
+### 로그인 / 회원가입
+
+  <div align="left">
+    <img src="./docs/images/Login.gif" width="200"/>
+    <img src="./docs/images/LoginValidator.gif" width="200"/>
+  </div>
+  <div align="left">
+    <img src="./docs/images/JoinMembership.gif" width="200"/>
+    <img src="./docs/images/JoinMembershipValidator.gif" width="200"/>
+  </div>
+  <div align="left">
+    <img src="./docs/images/JoinProducer.gif" width="200"/>
+    <img src="./docs/images/JoinProducerValidator.gif" width="200"/>
+  </div>
+
+- 이메일을 통한 로그인과 일반 회원 및 생산자 회원 가입
+
+  ### 프로필 초기세팅 / 수정
 
   <div align="left">
     <img src="./docs/images/ProfileSettings.gif" width="200"/>
     <img src="./docs/images/MyProfileEdit.gif" width="200"/>
   </div>
-- 회원가입 후 초기 프로필 설정 및 프로필 수정
-
-### 로그인 / 회원가입
-
-- 이메일을 통한 로그인과 일반 회원 및 생산자 회원 가입
-
-  <br>
-  <img src="./docs/images/Login.gif" width="200"/>
-  <img src="./docs/images/LoginValidator.gif" width="200"/>
-  <br>
-  <img src="./docs/images/JoinMembership.gif" width="200"/>
-  <img src="./docs/images/JoinMembershipValidator.gif" width="200"/>
-  <br>
-  <img src="./docs/images/JoinProducer.gif" width="200"/>
-  <img src="./docs/images/JoinProducerValidator.gif" width="200"/>
-
-  ### 프로필 초기세팅 / 수정
 
 - 회원가입 후 초기 프로필 설정 및 프로필 수정
-
-  <br>
-  <img src="./docs/images/ProfileSettings.gif" width="200"/>
-  <img src="./docs/images/MyProfileEdit.gif" width="200"/>
 
 ### 홈 피드
 
@@ -376,6 +372,8 @@ Chore: 리액트 프로젝트 구성
 - 계정 검색 기능
 - 검색어와 일치된 부분 하이라이팅 기능
 - 검색결과 없을시 검색결과 없을때의 케이스 처리
+
+### 404페이지
 
 ### 상품 등록
 
