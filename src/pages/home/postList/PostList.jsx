@@ -92,6 +92,7 @@ const PostList = () => {
                   like={e.like_count}
                   isLiked={e.is_liked}
                   comment={e.comment_count}
+                  imgSize={true}
                 />
               </Styled.StyledContentList>
             );
