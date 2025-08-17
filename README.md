@@ -1,4 +1,4 @@
-# <img src="src/assets/images/logo-symbol.png" width="30px"/>들바다 농수산물 마켓 플랫폼
+# <img src="src/assets/images/logo-symbol.png" width="30px"/> 들바다 농수산물 마켓 플랫폼
 
 > 농수산물 판매 및 구매와 SNS 기능을 결합한 모바일 최적화 마켓 플랫폼
 
