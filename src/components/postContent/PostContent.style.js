@@ -79,3 +79,9 @@ export const ImgBoxWrap = styled.figure`
   margin-top: 1.5rem;
   ${imgBox}
 `;
+export const SameImgBoxWrap = styled.figure`
+  ${imgBox}
+  ${boxImgWrap}
+  padding-top:69%;
+  margin-top: 1.5rem;
+`;

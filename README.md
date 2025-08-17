@@ -221,17 +221,17 @@ Chore: 리액트 프로젝트 구성
 ┃ ┣ 📂followings
 ┃ ┣ 📂guide
 ┃ ┣ 📂home
-┃ ┣ 📂join-membership
-┃ ┣ 📂join-producer
+┃ ┣ 📂joinMembership
+┃ ┣ 📂joinProducer
 ┃ ┣ 📂login
-┃ ┣ 📂login-email
+┃ ┣ 📂loginEmail
 ┃ ┣ 📂myProfileEdit
 ┃ ┣ 📂notFound
 ┃ ┣ 📂postDetail
 ┃ ┣ 📂postUpload
 ┃ ┣ 📂product
 ┃ ┣ 📂profile
-┃ ┣ 📂profile-settings
+┃ ┣ 📂profileSettings
 ┃ ┗ 📂search
 ┣ 📂styles // JSX 없이 스타일만 독립적으로 관리되는 공통 스타일 파일들
 ┃ ┣ 📜Button.style.js
@@ -320,7 +320,7 @@ Chore: 리액트 프로젝트 구성
 ### 상품 등록
 
 - 생산자 전용 상품 업로드 기능
-  ![상품 등록 데모](./public/docs/images/상품등록.gif)
+  ![상품 등록 데모](./docs/images/상품등록.gif)
 
 ### 스토리 등록
 

@@ -44,8 +44,6 @@ const PostDetail = () => {
         },
       };
 
-      console.log('Enhanced comment data:', enhancedCommentData); // 디버깅용
-
       // 댓글 입력창 초기화
       setNewComment('');
       // 댓글 카운트 업데이트
@@ -81,7 +79,6 @@ const PostDetail = () => {
         const data = response.data;
 
         const userInfo = await fetchUser(useraccountId);
-        console.log(userInfo);
         const userInfodata = userInfo.data;
 
         // 📌 사용자 정보 전체를 저장

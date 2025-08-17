@@ -3,9 +3,8 @@ import { boxImgWrap } from '../../styles/Common.style';
 
 export const Container = styled.div`
   min-height: calc(100vh - 4.8rem);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  position: relative;
+  padding-bottom: 7rem;
 `;
 export const PostSection = styled.section`
   padding: 2rem 1.6rem;
@@ -28,7 +27,14 @@ export const HeightWrap = styled.div`
   overflow-y: auto;
 `;
 export const CommentInputWrapper = styled.div`
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 640px;
   display: flex;
+  background-color: ${({ theme }) => theme.colors.white100};
   align-items: center;
   gap: 8px;
   border-top: 1px solid ${({ theme }) => theme.colors.white300};
@@ -73,6 +79,7 @@ export const ImgWrap = styled.figure`
   width: 10%;
   padding-top: 10%;
   border-radius: 50%;
+  max-width: 7rem;
   overflow: hidden;
   ${boxImgWrap}
 `;
