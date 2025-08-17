@@ -6,7 +6,16 @@ import { Pagination } from 'swiper/modules';
 import 'swiper/css';
 import { togglePostLike } from '../../api/postApi';
 
-const PostContent = ({ images, content, date, id, isLiked = false, like, comment }) => {
+const PostContent = ({
+  images,
+  content,
+  date,
+  id,
+  isLiked = false,
+  like,
+  comment,
+  imgSize = false,
+}) => {
   // 좋아요 상태 관리
   const [currentLikeCount, setCurrentLikeCount] = useState(like);
   const [liked, setLiked] = useState(isLiked);
@@ -43,12 +52,16 @@ const PostContent = ({ images, content, date, id, isLiked = false, like, comment
       <h3 className="text-ir">포스트컨텐츠 내용입니다</h3>
       <p>{content}</p>
 
-      {images && images.length === 1 && (
+      {images && !imgSize && images.length === 1 && (
         <Styled.ImgBoxWrap>
           <img src={`https://deulbada.duckdns.org/${images[0]}`} alt="업로드이미지" />
         </Styled.ImgBoxWrap>
       )}
-
+      {images && imgSize && images.length === 1 && (
+        <Styled.SameImgBoxWrap>
+          <img src={`https://deulbada.duckdns.org/${images[0]}`} alt="업로드이미지" />
+        </Styled.SameImgBoxWrap>
+      )}
       {images && images.length > 1 && (
         <Styled.CustomSwiper autoHeight={true} pagination={true} modules={[Pagination]}>
           {images.map((e, i) => (
