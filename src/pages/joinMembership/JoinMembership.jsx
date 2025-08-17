@@ -17,11 +17,10 @@ const JoinMembership = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [emailStatus, setEmailStatus] = useState(null);
   const [accountIdStatus, setAccountIdStatus] = useState(null);
-  const [usernameStatus, setusernameStatus] = useState(null);
+  const [usernameStatus, setUsernameStatus] = useState(null);
 
   const navigate = useNavigate();
 
-  // 비밀번호 유효성 검사 함수 (제출 시에만 사용)
   const validatePassword = (password) => {
     if (!password) return '비밀번호를 입력해주세요.';
     
@@ -33,21 +32,18 @@ const JoinMembership = () => {
     if (!isLengthValid || !hasLetter || !hasNumber || !hasSpecial) {
       return '영문자, 숫자, 특수문자를 포함해 8자 이상 입력해주세요.';
     }
-    return null; // 유효함
+    return null;
   };
 
-  // 비밀번호 확인 검사 함수 (제출 시에만 사용)
   const validatePasswordConfirmation = (password, rePassword) => {
     if (!rePassword) return '비밀번호 확인을 입력해주세요.';
     if (password !== rePassword) {
       return '비밀번호가 일치하지 않습니다.';
     }
-    return null; // 일치함
+    return null;
   };
 
-  // 폼 유효성 검사 및 버튼 활성화 상태 계산 (기본 입력만 확인)
   const isFormValid = useMemo(() => {
-    // 모든 필드가 입력되었는지만 확인
     const isAllFieldsFilled = 
       formData.email.trim() &&
       formData.password.trim() &&
@@ -57,21 +53,16 @@ const JoinMembership = () => {
 
     if (!isAllFieldsFilled) return false;
 
-    // 이메일 형식 검사
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const isEmailValid = emailRegex.test(formData.email);
-
-    // 최소 길이 검사
     const isAccountIdValid = formData.account_id.length >= 2;
     const isUsernameValid = formData.username.length >= 2;
 
-    // 중복 확인 상태 검사
     const isDuplicateCheckPassed = 
       emailStatus === 'available' &&
       accountIdStatus === 'available' &&
       usernameStatus === 'available';
 
-    // 중복 확인 중이 아닌지 검사
     const isNotChecking = 
       emailStatus !== 'checking' &&
       accountIdStatus !== 'checking' &&
@@ -84,33 +75,26 @@ const JoinMembership = () => {
       isDuplicateCheckPassed &&
       isNotChecking
     );
-  }, [
-    formData,
-    emailStatus,
-    accountIdStatus,
-    usernameStatus
-  ]);
+  }, [formData, emailStatus, accountIdStatus, usernameStatus]);
 
-  // 닉네임 중복 확인
-  const checkusername = async (username) => {
+  const checkUsername = async (username) => {
     if (!username || username.length < 2) return;
 
-    setusernameStatus('checking');
+    setUsernameStatus('checking');
 
     try {
       const available = await isAccountIdAvailable(username);
-      setusernameStatus(available ? 'available' : 'taken');
+      setUsernameStatus(available ? 'available' : 'taken');
 
       if (!available) {
-        setErrors((prev) => ({ ...prev, username: '이미 사용중인 닉네임입니다.' }));
+        setErrors(prev => ({ ...prev, username: '이미 사용중인 닉네임입니다.' }));
       }
     } catch (error) {
       console.error('닉네임 확인 실패:', error);
-      setusernameStatus(null);
+      setUsernameStatus(null);
     }
   };
 
-  // 계정ID 중복 확인
   const checkAccountId = async (accountId) => {
     if (!accountId || accountId.length < 2) return;
 
@@ -121,7 +105,7 @@ const JoinMembership = () => {
       setAccountIdStatus(available ? 'available' : 'taken');
 
       if (!available) {
-        setErrors((prev) => ({ ...prev, account_id: '이미 사용중인 계정ID입니다.' }));
+        setErrors(prev => ({ ...prev, account_id: '이미 사용중인 계정ID입니다.' }));
       }
     } catch (error) {
       console.error('계정ID 확인 실패:', error);
@@ -129,7 +113,6 @@ const JoinMembership = () => {
     }
   };
 
-  // 이메일 중복 확인
   const checkEmail = async (email) => {
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return;
 
@@ -140,7 +123,7 @@ const JoinMembership = () => {
       setEmailStatus(available ? 'available' : 'taken');
 
       if (!available) {
-        setErrors((prev) => ({ ...prev, email: '이미 사용중인 이메일입니다.' }));
+        setErrors(prev => ({ ...prev, email: '이미 사용중인 이메일입니다.' }));
       }
     } catch (error) {
       console.error('이메일 확인 실패:', error);
@@ -148,22 +131,18 @@ const JoinMembership = () => {
     }
   };
 
-  // 입력값 변경 처리
   const handleInputChange = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData(prev => ({ ...prev, [field]: value }));
 
-    // 해당 필드의 에러 제거
     if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: '' }));
+      setErrors(prev => ({ ...prev, [field]: '' }));
     }
   };
 
-  // 비밀번호 입력 처리
   const handlePasswordChange = (value) => {
-    setFormData((prev) => ({ ...prev, password: value }));
+    setFormData(prev => ({ ...prev, password: value }));
     
-    // 기존 에러 제거 (안전한 방식)
-    setErrors((prev) => {
+    setErrors(prev => {
       const newErrors = { ...prev };
       delete newErrors.password;
       delete newErrors.rePassword;
@@ -171,36 +150,29 @@ const JoinMembership = () => {
     });
   };
 
-  // 비밀번호 확인 입력 처리
   const handlePasswordConfirmChange = (value) => {
-    setFormData((prev) => ({ ...prev, rePassword: value }));
+    setFormData(prev => ({ ...prev, rePassword: value }));
     
-    // 기존 에러 제거 (안전한 방식)
-    setErrors((prev) => {
+    setErrors(prev => {
       const newErrors = { ...prev };
       delete newErrors.rePassword;
       return newErrors;
     });
   };
 
-  // 계정ID 입력 처리
   const handleAccountIdChange = (value) => {
-    // 영문, 숫자, 특수문자만 허용
     const filteredValue = value.replace(/[^a-zA-Z0-9._-]/g, '');
 
-    setFormData((prev) => ({ ...prev, account_id: filteredValue }));
+    setFormData(prev => ({ ...prev, account_id: filteredValue }));
 
-    // 에러 제거
     if (errors.account_id) {
-      setErrors((prev) => ({ ...prev, account_id: '' }));
+      setErrors(prev => ({ ...prev, account_id: '' }));
     }
 
-    // 사용 가능 상태 초기화
     if (accountIdStatus === 'available') {
       setAccountIdStatus(null);
     }
 
-    // 중복 확인 (500ms 지연)
     clearTimeout(window.accountIdCheckTimer);
     if (filteredValue.length >= 2) {
       window.accountIdCheckTimer = setTimeout(() => {
@@ -209,45 +181,36 @@ const JoinMembership = () => {
     }
   };
 
-  // 닉네임 입력 처리
-  const handleusernameChange = (value) => {
-    // 한글과 숫자만 허용
+  const handleUsernameChange = (value) => {
     const filteredValue = value.replace(/[^가-힣ㄱ-ㅎㅏ-ㅣ0-9]/g, '');
 
-    setFormData((prev) => ({ ...prev, username: filteredValue }));
+    setFormData(prev => ({ ...prev, username: filteredValue }));
 
-    // 에러 제거
     if (errors.username) {
-      setErrors((prev) => ({ ...prev, username: '' }));
+      setErrors(prev => ({ ...prev, username: '' }));
     }
 
-    // 사용 가능 상태 초기화
     if (usernameStatus === 'available') {
-      setusernameStatus(null);
+      setUsernameStatus(null);
     }
 
-    // 중복 확인 (500ms 지연)
     clearTimeout(window.usernameCheckTimer);
     if (filteredValue.length >= 2) {
       window.usernameCheckTimer = setTimeout(() => {
-        checkusername(filteredValue);
+        checkUsername(filteredValue);
       }, 500);
     }
   };
 
-  // 이메일 입력 처리
   const handleEmailChange = (value) => {
-    // 이메일에 허용되는 문자만 필터링
     const filteredValue = value.replace(/[^a-zA-Z0-9@._+-]/g, '');
 
     handleInputChange('email', filteredValue);
 
-    // 사용 가능 상태 초기화
     if (emailStatus === 'available') {
       setEmailStatus(null);
     }
 
-    // 중복 확인 (500ms 지연)
     clearTimeout(window.emailCheckTimer);
     window.emailCheckTimer = setTimeout(() => {
       checkEmail(filteredValue);
@@ -257,12 +220,10 @@ const JoinMembership = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // 로딩 중이면 중단
     if (isLoading) return;
     
     const newErrors = {};
 
-    // 계정ID 유효성 검사
     if (!formData.account_id.trim()) {
       newErrors.account_id = '계정ID를 입력해주세요.';
     } else if (formData.account_id.length < 2) {
@@ -271,7 +232,6 @@ const JoinMembership = () => {
       newErrors.account_id = '이미 사용중인 계정ID입니다.';
     }
 
-    // 닉네임 유효성 검사
     if (!formData.username.trim()) {
       newErrors.username = '닉네임을 입력해주세요.';
     } else if (formData.username.length < 2) {
@@ -280,7 +240,6 @@ const JoinMembership = () => {
       newErrors.username = '이미 사용중인 닉네임입니다.';
     }
 
-    // 이메일 유효성 검사
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       newErrors.email = '올바른 이메일 주소를 입력해주세요.';
@@ -288,19 +247,16 @@ const JoinMembership = () => {
       newErrors.email = '이미 사용중인 이메일입니다.';
     }
 
-    // 비밀번호 유효성 검사
     const passwordError = validatePassword(formData.password);
     if (passwordError) {
       newErrors.password = passwordError;
     }
 
-    // 비밀번호 확인
     const passwordConfirmError = validatePasswordConfirmation(formData.password, formData.rePassword);
     if (passwordConfirmError) {
       newErrors.rePassword = passwordConfirmError;
     }
 
-    // 중복 확인 대기 중이면 에러
     if (
       emailStatus === 'checking' ||
       accountIdStatus === 'checking' ||
@@ -309,31 +265,24 @@ const JoinMembership = () => {
       newErrors.general = '중복 확인을 완료해주세요.';
     }
 
-    // 에러가 있으면 설정하고 함수 종료
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) {
       return;
     }
 
-    // 모든 검사를 통과한 경우에만 회원가입 진행
     setIsLoading(true);
 
     try {
-      const result = await registerUser({
+      await registerUser({
         account_id: formData.account_id,
         username: formData.username,
         email: formData.email,
         password: formData.password,
       });
 
-      console.log('회원가입 성공:', result);
-
-      // account_id를 localStorage에 저장
       setAccountId(formData.account_id);
 
-      // 회원가입 성공 후 자동 로그인
-      const loginResult = await login(formData.email, formData.password);
-      console.log('자동 로그인 성공:', loginResult);
+      await login(formData.email, formData.password);
 
       alert('회원가입이 완료되었습니다!');
       navigate('/profileSettings', {
@@ -420,7 +369,7 @@ const JoinMembership = () => {
           type="text"
           value={formData.username}
           placeholder="나는야 야채왕 (한글과 숫자만 입력 가능합니다)"
-          onChange={(e) => handleusernameChange(e.target.value)}
+          onChange={(e) => handleUsernameChange(e.target.value)}
         />
         {usernameStatus === 'available' && (
           <div style={{ fontSize: '12px', marginTop: '4px', color: 'green' }}>
