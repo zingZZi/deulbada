@@ -276,7 +276,7 @@ export const FileNameNotice = styled.div`
 `;
 
 export const Error = styled.div`
-  font-size: 1rem;
+  font-size: 1.2rem;
   color: #e74c3c;
   margin-top: 0.5rem;
 `;
