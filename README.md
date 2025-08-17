@@ -556,7 +556,7 @@ Chore: 리액트 프로젝트 구성
 
 ---
 
-### 🛒 상품 관리 (생산자 전용)
+### 🛒 상품 관리
 
 <div align="left">
  <img src="./docs/images/product.gif" width="200" alt="상품등록"/>
