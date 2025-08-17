@@ -3,26 +3,33 @@ import { ArrowIcon, EllipsisVerticalIcon } from '../../icon/Icons';
 import { defaultHeaderMap } from './headerConfigs';
 import * as Styled from './DefaultHeader.style';
 import { MoreVertical } from 'lucide-react';
+import { usePageActions } from '../../../context/PageActionsContext';
 
 const DefaultHeader = ({ location, onAction }) => {
   const config = defaultHeaderMap(location.pathname);
   const { leftText, rightButton } = config;
+  const { actions } = usePageActions();
   // ChatRoom에서 navigate('', { state: { headerTitle: '상대닉네임' } })로 넣은 값
   const headerTitleFromState = location?.state?.headerTitle;
   const title = headerTitleFromState ?? leftText;
 
   const handleClick = () => {
-    // 1) 부모 콜백(onAction)로 actionKey 전달
-    if (rightButton?.actionKey && typeof onAction === 'function') {
-      onAction(rightButton.actionKey);
+    const rb = rightButton;
+    if (!rb) return;
+     // 1) actionKey 우선: 한 경로만 실행하고 즉시 return
+    if (rb.actionKey) {
+       // 1-1) 부모 onAction을 쓰는 화면이면 그걸로 처리
+      if (typeof onAction === 'function') return onAction(rb.actionKey);
+       // 1-2) 컨텍스트에 등록된 액션이 있으면 그걸로 처리
+      const fn = actions?.[rb.actionKey];
+      if (typeof fn === 'function') return fn();
+       // 1-3) 둘 다 없으면(레거시) 문서 이벤트로 폴백
+      document.dispatchEvent(new CustomEvent(rb.actionKey));
+      return;
     }
-    // 2) headerConfigs에 action 함수가 직접 온 경우도 지원
-    if (typeof rightButton?.action === 'function') {
-      rightButton.action();
-    }
-    // 3) 문서 이벤트도 같이 발행 (ChatRoom에서 리스닝)
-    if (rightButton?.actionKey) {
-      document.dispatchEvent(new CustomEvent(rightButton.actionKey));
+     // 2) action(인라인 함수) 버튼이면 그걸로 처리
+    if (typeof rb.action === 'function') {
+      return rb.action();
     }
   };
 

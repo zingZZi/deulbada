@@ -1,12 +1,15 @@
 /* eslint-disable no-case-declarations */
 /* eslint-disable no-unused-vars */
 import { usePopup } from '../context/PopupContext';
+import { useNavigate } from 'react-router-dom';
 import { usePageActions } from '../context/PageActionsContext';
 import { delePost, deleteComment, reportComment } from '../api/postApi';
 
 const useFeedActions = () => {
   // 전역 팝업 컨텍스트 사용
   const { openPopup, closePopup, openModal, closeModal } = usePopup();
+
+  const navigate = useNavigate();
 
   // Context 사용 시 에러 처리
   let executeAction;
@@ -167,7 +170,16 @@ const useFeedActions = () => {
             {
               label: '수정',
               action: () => {
+                // 게시물 ID 필수
+                const postId = feedData?.id;
+                if (!postId) {
+                  console.error('게시물 ID를 찾을 수 없습니다.', feedData);
+                  closePopup();
+                  return;
+                }
                 closePopup();
+                // ✅ 수정 페이지로 이동
+                navigate(`/postEdit/${postId}`);
               },
             },
           ];
