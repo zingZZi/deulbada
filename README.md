@@ -307,9 +307,9 @@ Chore: 리액트 프로젝트 구성
 ### 회원가입 / 로그인 / 프로필설정
 
 - 이메일을 통한 일반 회원 및 생산자 회원 가입  
-  <img src="./docs/images/[들바다]로그인.gif" width="400"/>
-  <img src="./docs/images/[들바다]일반회원가입+프로필등록.gif" width="400"/>
-  <img src="./docs/images/[들바다]생산자회원가입+프로필등록.gif" width="400"/>
+  <img src="./docs/images/login.gif" width="400"/>
+  <img src="./docs/images/joinMembership_profile.gif" width="400"/>
+  <img src="./docs/images/joinProducer_profile.gif" width="400"/>
 
 ### 홈 피드
 
@@ -323,8 +323,7 @@ Chore: 리액트 프로젝트 구성
 ### 상품 등록
 
 - 생산자 전용 상품 업로드 기능
-  ![상품 등록 데모](./docs/images/상품등록.gif)
-  ![상품 등록 데모](./docs/images/[들바다]상품등록.gif)
+  <img src="./docs/images/product.gif" width="400"/>
 
 ### 스토리 등록
 
