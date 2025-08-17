@@ -308,7 +308,7 @@ Chore: 리액트 프로젝트 구성
 ### 로그인 / 회원가입
 
   <div align="left">
-    <img src="./docs/images/Login.gif" width="200"/>
+    <img src="./docs/images/login.gif" width="200"/>
     <img src="./docs/images/LoginValidator.gif" width="200"/>
   </div>
   <div align="left">
