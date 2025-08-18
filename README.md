@@ -157,11 +157,6 @@ React 기반으로 3명의 프론트엔드 개발자와 2명의 백엔드 개발
 
 ### Backend
 
-- **Node.js & Express.js** - 서버 개발 환경
-- **MongoDB** - NoSQL 데이터베이스
-- **WebSocket** - 실시간 채팅 통신
-- **JWT** - 사용자 인증 및 권한 관리
-
 **백엔드 상세 기술 스택 및 API 문서**: [📋 Backend Repository 참고](https://github.com/BAEJUWAN5316/deulbada_BE)
 
 <br>
