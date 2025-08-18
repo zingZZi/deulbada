@@ -155,8 +155,6 @@ React 기반으로 3명의 프론트엔드 개발자와 2명의 백엔드 개발
 - **Styled Components** - CSS-in-JS 스타일링
 - **Lucide** - 아이콘 라이브러리
 
-### Backend
-
 **백엔드 상세 기술 스택 및 API 문서**: [📋 Backend Repository 참고](https://github.com/BAEJUWAN5316/deulbada_BE)
 
 <br>
