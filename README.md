@@ -56,7 +56,7 @@ React 기반으로 3명의 프론트엔드 개발자와 2명의 백엔드 개발
 | **박다솜** | 개발자 & UI/UX 디자이너 | Frontend Developer & Designer |
 | **김태훈** | 개발자                  | Frontend Developer            |
 | **배주완** | 개발자                  | Backend Developer             |
-| **정효운** | 개발자                  | Backend Developer             |
+| **정효은** | 개발자                  | Backend Developer             |
 
 **팀 구성**
 
