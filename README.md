@@ -537,7 +537,7 @@ Chore: 리액트 프로젝트 구성
 ### 📝 콘텐츠 작성
 
 <div align="left">
- <img src="./docs/post.gif" width="200" alt="포스트 등록"/>
+ <img src="./docs/images/post.gif" width="200" alt="포스트 등록"/>
 </div>
 
 **주요 기능**
@@ -552,7 +552,7 @@ Chore: 리액트 프로젝트 구성
 ### 💬 실시간 채팅
 
 <div align="left">
- <img src="./docs/chat.gif" width="200" alt="채팅"/>
+ <img src="./docs/images/chat.gif" width="200" alt="채팅"/>
 </div>
 
 **채팅 목록**
